@@ -3,7 +3,7 @@
 permalink:           pretty
 
 # Setup
-title:               jrheard
+title:               'jrheard'
 #tagline:             'A Jekyll theme'
 description:         "My name's <a href='http://jrheard.com'>JR Heard</a>. I think pure functions are the greatest. I live in Portland with my cat Frank."
 url:                 http://blog.jrheard.com
