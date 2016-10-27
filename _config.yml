@@ -1,11 +1,11 @@
 # Permalinks
 #
-permalink:           pretty
+permalink:           /:title
 
 # Setup
 title:               "jrheard's blog"
 #tagline:             'A Jekyll theme'
-description:         "My name's <a href='http://jrheard.com'>JR Heard</a>. I think pure functions are the greatest. I live in Portland with my cat Frank."
+description:         "My name's JR Heard. I think pure functions are the greatest. I live in Portland with my cat Frank."
 url:                 http://blog.jrheard.com
 baseurl:             ''
 paginate:            5
