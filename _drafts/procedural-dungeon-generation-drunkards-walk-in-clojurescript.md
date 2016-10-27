@@ -25,8 +25,6 @@ height (count grid)
 cell-width (/ canvas-width width)
 cell-height (/ canvas-height height)]
 
-(js/console.log cell-width cell-height)
-
 (.clearRect ctx 0 0 canvas-width canvas-height)
 (set! (.-fillStyle ctx) "#CCC")
 
@@ -41,11 +39,7 @@ cell-height (/ canvas-height height)]
 (doto ctx
 (.beginPath)
 (.rect (* x cell-width) (* y cell-height) cell-width cell-height)
-(.fill))
-
-(js/console.log "drew" (* x cell-width) (* y cell-height) cell-width cell-height)
-)
-
+(.fill)))
 
 (recur (if (identical? (dec x) width) 0 (inc x))
 (if (identical? (dec x) width) (inc y) y))))))
@@ -57,60 +51,21 @@ cell-height (/ canvas-height height)]
 (vec (repeat h
 (vec (repeat w :full)))))
 
-(full-grid 5 5)
+(full-grid 3 10)
 
 </code></pre>
 
 
 <pre><code class="language-klipse">
-(-> (full-grid 20 20)
+(-> (full-grid 10 10)
 (assoc-in [1 2] :empty)
-(assoc-in [19 19] :empty)
+(assoc-in [8 5] :empty)
+(assoc-in [9 9] :empty)
 draw-grid)
 
 </code></pre>
 
 <canvas id="canvas-1" width="400" height="400"></canvas>
-
-<pre><code class="language-klipse">
-
-(defn grid->str [grid]
-(apply str
-(map (fn [line]
-(str (apply str
-(map (fn [cell]
-(if (= cell :full)
-"X"
-" "))
-line))
-"\n"))
-grid)))
-
-(grid->str (full-grid 5 5))
-
-</code></pre>
-
-<pre><code class="language-klipse">
-
-(defn count-empty-spaces [grid]
-(apply +
-(map (fn [line]
-(count
-(filter #(= % :empty) line)))
-grid)))
-
-(count-empty-spaces (full-grid 5 5))
-
-</code></pre>
-
-<pre><code class="language-klipse">
-
-(-> (full-grid 5 5)
-    (assoc-in [1 2] :empty)
-	(assoc-in [4 4] :empty)
-	count-empty-spaces)
-
-</code></pre>
 
 <pre><code class="language-klipse">
 
