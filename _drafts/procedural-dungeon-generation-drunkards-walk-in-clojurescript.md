@@ -5,10 +5,54 @@ title:  "hi there"
 
 nothing to see here
 
+<pre class="hidden">
+<code class="language-klipse">
+
+(def canvas-id (atom "canvas-1"))
+(def canvas-width 400)
+(def canvas-height 400)
+
+(defn get-ctx []
+(-> @canvas-id
+(js/document.getElementById)
+(.getContext "2d")))
+
+(defn draw-grid
+[grid]
+(let [ctx (get-ctx)
+width (count (first grid))
+height (count grid)
+cell-width (/ canvas-width width)
+cell-height (/ canvas-height height)]
+
+(js/console.log cell-width cell-height)
+
+(.clearRect ctx 0 0 canvas-width canvas-height)
+(set! (.-fillStyle ctx) "#CCC")
+
+(loop [x 0 y 0]
+
+(when (< y height)
+(when (= (-> grid
+(get y)
+(get x))
+:empty)
+
+(doto ctx
+(.beginPath)
+(.rect (* x cell-width) (* y cell-height) cell-width cell-height)
+(.fill))
+
+(js/console.log "drew" (* x cell-width) (* y cell-height) cell-width cell-height)
+)
+
+
+(recur (if (identical? (dec x) width) 0 (inc x))
+(if (identical? (dec x) width) (inc y) y))))))
+</code>
+</pre>
+
 <pre><code class="language-klipse">
-
-(ns voke.world.generation)
-
 (defn full-grid [w h]
 (vec (repeat h
 (vec (repeat w :full)))))
@@ -16,6 +60,17 @@ nothing to see here
 (full-grid 5 5)
 
 </code></pre>
+
+
+<pre><code class="language-klipse">
+(-> (full-grid 20 20)
+(assoc-in [1 2] :empty)
+(assoc-in [19 19] :empty)
+draw-grid)
+
+</code></pre>
+
+<canvas id="canvas-1" width="400" height="400"></canvas>
 
 <pre><code class="language-klipse">
 

@@ -8,7 +8,7 @@ title:               "jrheard's blog"
 description:         "My name's JR Heard. I think pure functions are the greatest. I live in Portland with my cat Frank."
 url:                 http://blog.jrheard.com
 baseurl:             ''
-paginate:            5
+paginate:            40
 
 # Custom vars
 version:             1.0.0

@@ -571,3 +571,20 @@ a.pagination-item:hover {
 .layout-reverse.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
   box-shadow: -.25rem 0 .5rem rgba(0,0,0,.1);
 }
+
+
+
+/* custom */
+
+canvas {
+	margin: 0 auto;
+	background-color: #333;
+}
+
+.hidden {
+	display: none;
+}
+
+
+
+
