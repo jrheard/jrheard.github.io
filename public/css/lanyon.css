@@ -323,6 +323,16 @@ a.sidebar-nav-item:focus {
   margin-top: 0;
 }
 
+a.post-link {
+	font-size: 125%;
+}
+
+.post-listing .post-date {
+	display: inline;
+	margin-top: 0;
+	float: right;
+}
+
 /* Meta data line below post title */
 .post-date {
   display: block;
