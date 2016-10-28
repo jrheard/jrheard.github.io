@@ -84,7 +84,7 @@ That's not a very interesting cave. Let's try it again with a few empty cells ca
 
 <canvas id="canvas-2" width="200" height="200"></canvas>
 
-Did I mention all the code in this article is interactive? Play around with it, go nuts. Remove the <code>draw-grid</code> call from the snippet above to see what our actual 2D grid datastructure looks like when a few of its cells have been hollowed out.
+Did I mention all the code in this article is interactive? Play around with it, go nuts. Hollow out some more cells. Make the whole level empty. Remove the <code>draw-grid</code> call to see what our actual 2D grid datastructure looks like when some of its cells have been hollowed out.
 
 Okay, so the Drunkard's Walk algorithm looks like this:
 
