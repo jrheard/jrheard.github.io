@@ -45,7 +45,9 @@ I'm working on a toy [game](http://github.com/jrheard/voke), and figured it'd be
 
 <canvas id="canvas-4" width="400" height="400"></canvas>
 
-TODO: add button
+<div class="button-wrapper">
+<a class="button" id="generate-button">generate another</a>
+</div>
 
 As you can see, our level is a two-dimensional grid. Each cell on the grid is either empty or full. If it's empty, the player can wander around in there and find monsters and gold and items and stuff. If it's full, then it's a cave wall and the player smacks into it.
 
@@ -158,4 +160,12 @@ TODO: pros/cons
 
 TODO: references
 
-<pre class="hidden"><code class="cljs" data-preamble='(reset! canvas-id "canvas-4")'>(-> (full-grid 40 40) (drunkards-walk 400) draw-grid)</code></pre>
+<pre class="hidden"><code class="cljs" data-preamble='(reset! canvas-id "canvas-4")'>
+(-> (full-grid 40 40) (drunkards-walk 400) draw-grid)
+
+(-> "generate-button"
+	(js/document.getElementById)
+	(.addEventListener "click" (fn [e]
+(-> (full-grid 40 40) (drunkards-walk 400) draw-grid))))
+
+</code></pre>
