@@ -4,10 +4,11 @@ permalink:           /:title
 
 # Setup
 title:               "jrheard's blog"
-#tagline:             'A Jekyll theme'
-description:         "My name's JR Heard. I think pure functions are the greatest. I live in Portland with my cat <a href='/public/images/frank.jpg'>Frank</a>."
 url:                 http://blog.jrheard.com
+
 baseurl:             ''
+#baseurl:             '/blog-staging'
+
 paginate:            40
 
 # Custom vars
