@@ -6,22 +6,18 @@ title:  "hi there"
 nothing to see here
 
 <pre class="hidden">
-<code class="language-klipse">
+<code class="cljs">
 
 (def canvas-id (atom "canvas-1"))
-(def canvas-width 400)
-(def canvas-height 400)
-
-(defn get-ctx []
-(-> @canvas-id
-(js/document.getElementById)
-(.getContext "2d")))
 
 (defn draw-grid
 [grid]
-(let [ctx (get-ctx)
+(let [canvas (js/document.getElementById @canvas-id)
+ctx (.getContext canvas "2d")
 width (count (first grid))
 height (count grid)
+canvas-width (.-width canvas)
+canvas-height (.-height canvas)
 cell-width (/ canvas-width width)
 cell-height (/ canvas-height height)]
 
@@ -46,17 +42,22 @@ cell-height (/ canvas-height height)]
 </code>
 </pre>
 
-<pre><code class="language-klipse">
+<pre><code class="cljs">
 (defn full-grid [w h]
 (vec (repeat h
 (vec (repeat w :full)))))
 
-(full-grid 3 10)
+(full-grid 3 5)
 
 </code></pre>
 
+<pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-1")'>
+(draw-grid (full-grid 10 10))
 
-<pre><code class="language-klipse">
+</code></pre>
+<canvas id="canvas-1" width="200" height="200"></canvas>
+
+<pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-2")'>
 (-> (full-grid 10 10)
 (assoc-in [1 2] :empty)
 (assoc-in [8 5] :empty)
@@ -65,9 +66,9 @@ draw-grid)
 
 </code></pre>
 
-<canvas id="canvas-1" width="400" height="400"></canvas>
+<canvas id="canvas-2" width="200" height="200"></canvas>
 
-<pre><code class="language-klipse">
+<pre><code class="cljs">
 
 (defn bound-between
 [num lower upper]
