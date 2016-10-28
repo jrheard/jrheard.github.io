@@ -54,15 +54,16 @@ As you can see, our level is a two-dimensional grid. Each cell on the grid is ei
 The Drunkard's Walk algorithm starts with a totally-filled-in level and then hollows it out one cell at a time, so let's start by defining a function that creates a filled-in level.
 
 <pre><code class="cljs">
-(defn full-grid [w h]
-(vec (repeat h
-(vec (repeat w :full)))))
+(defn full-grid
+[width height]
+(vec (repeat height
+(vec (repeat width :full)))))
 
 (full-grid 3 5)
 
 </code></pre>
 
-All of the code snippets in this article are interactive - go ahead and change that to <code>(full-grid 10 10)</code> and see what happens.
+All of the code snippets in this article are interactive - go ahead and change that last line to <code>(full-grid 10 10)</code> and see what happens.
 
 Our <code>full-grid</code> function is a good start, but its output doesn't really look like a cave. Let's fix that. I've provided a <code>draw-grid</code> function that takes a grid and draws it for you, like this:
 
@@ -72,13 +73,13 @@ Our <code>full-grid</code> function is a good start, but its output doesn't real
 
 <canvas id="canvas-1" width="200" height="200"></canvas>
 
-Of course, that's not a very interesting cave. Let's try it again with a few empty cells carved out by hand, just so we're sure that this <code>draw-grid</code> function actually works.
+That's not a very interesting cave. Let's try it again with a few empty cells carved out by hand, just so we're sure that this <code>draw-grid</code> function actually works.
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-2")'>
 (-> (full-grid 10 10)
 (assoc-in [1 2] :empty)
 (assoc-in [8 5] :empty)
-(assoc-in [9 9] :empty)
+(assoc-in [5 9] :empty)
 draw-grid)
 
 </code></pre>
@@ -113,7 +114,8 @@ Okay, here we go!
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-3")'>
 
-(defn drunkards-walk [grid num-empty-cells]
+(defn drunkards-walk
+[grid num-empty-cells]
 (let [height (count grid)
 width (count (first grid))]
 
@@ -123,12 +125,12 @@ x (rand-int width)
 y (rand-int height)
 empty-cells 0]
 
-(if (= empty-cells num-empty-cells)
 ; Step 2: if we're done, return the grid.
+(if (= empty-cells num-empty-cells)
 grid
 
 (let [cell-was-full? (= (get-in grid [y x]) :full)
-; Step 3: walk in a random direction.
+; Step 3: walk one step in a random direction.
 direction (rand-nth [:north :east :south :west])]
 
 ; Step 4: back to step 2.
@@ -159,6 +161,8 @@ Focus the code snippet above and then press control+enter to generate a few more
 TODO: pros/cons
 
 TODO: references
+
+TODO: use min js
 
 <pre class="hidden"><code class="cljs" data-preamble='(reset! canvas-id "canvas-4")'>
 (-> (full-grid 40 40) (drunkards-walk 400) draw-grid)

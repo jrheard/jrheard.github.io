@@ -36,6 +36,7 @@ layout: default
 
 {% endcomment %}
 
+{% if page.klipse %}
   <script>
     window.klipse_settings = {
 		        selector: '.cljs',
@@ -48,3 +49,4 @@ layout: default
 					    };
   </script>
   <script src="{{ site.baseurl}}/public/js/klipse.js"></script>
+{% endif %}
