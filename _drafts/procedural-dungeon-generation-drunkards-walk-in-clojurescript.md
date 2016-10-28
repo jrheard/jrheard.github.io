@@ -44,9 +44,9 @@ I'm working on a toy [game](http://github.com/jrheard/voke), and figured it'd be
 
 <canvas id="canvas-4" width="400" height="400"></canvas>
 
-As you can see, our level is a simple two-dimensional grid. Each spot on the grid is either empty or full. If it's empty, the player can wander around in there and find monsters and gold and items and stuff. If it's full, then it's a cave wall and the player smacks into it.
+As you can see, our level is a two-dimensional grid. Each cell on the grid is either empty or full. If it's empty, the player can wander around in there and find monsters and gold and items and stuff. If it's full, then it's a cave wall and the player smacks into it.
 
-The drunkard's-walk algorithm starts with a totally-filled-in level and then hollows it out one cell at a time, so let's start by defining a function that creates a filled-in level.
+The Drunkard's Walk algorithm starts with a totally-filled-in level and then hollows it out one cell at a time, so let's start by defining a function that creates a filled-in level.
 
 <pre><code class="cljs">
 (defn full-grid [w h]
@@ -80,9 +80,16 @@ draw-grid)
 
 <canvas id="canvas-2" width="200" height="200"></canvas>
 
-Did I mention all the code in this article is interactive? Play around with it, go nuts.
+Did I mention all the code in this article is interactive? Play around with it, go nuts. Remove the <code>draw-grid</code> call from the snippet above to see what our actual 2D grid datastructure looks like when a few of its cells have been hollowed out.
 
-Okay, we're getting closer to the actual meat of the algorithm.
+The Drunkard's Walk algorithm looks like this:
+
+1. Pick a random cell on the grid as a starting point.
+1. If we've carved out enough empty spots, we're done.
+1. Walk in a random direction - north, south, east or west - and carve out that new spot.
+1. Go back to step 2.
+
+We're almost ready to implement it, but first let's define a little helper function that we'll use to make sure that we stay within the bounds of our 2D grid, so we don't try to walk off into the gaping void beyond.
 
 <pre><code class="cljs">
 
@@ -97,6 +104,8 @@ Okay, we're getting closer to the actual meat of the algorithm.
 
 </code></pre>
 
+Okay, here we go!
+
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-3")'>
 
 (defn drunkards-walk [grid num-empty-cells]
@@ -104,18 +113,20 @@ Okay, we're getting closer to the actual meat of the algorithm.
 width (count (first grid))]
 
 (loop [grid grid
+; Step 1: pick a random cell.
 x (rand-int width)
 y (rand-int height)
 empty-cells 0]
 
 (if (= empty-cells num-empty-cells)
-; All done!
+; Step 2: if we're done, return the grid.
 grid
 
-; Take a step in a random direction.
+; Step 3: walk in a random direction.
 (let [cell-was-full? (= (get-in grid [y x]) :full)
 direction (rand-nth [:north :east :south :west])]
 
+;Step 4: back to step 2.
 (recur (assoc-in grid [y x] :empty)
 (case direction
 :east (bound-between (inc x) 0 (dec width))
