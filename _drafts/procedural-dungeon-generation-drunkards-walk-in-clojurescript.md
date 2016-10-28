@@ -3,8 +3,6 @@ layout: post
 title:  "Procedural Dungeon Generation: A Drunkard's Walk in ClojureScript"
 ---
 
-nothing to see here
-
 <pre class="hidden"><code class="cljs">
 
 (def canvas-id (atom "canvas-1"))
@@ -40,6 +38,16 @@ cell-height (/ canvas-height height)]
 (if (identical? (dec x) width) (inc y) y))))))
 </code></pre>
 
+TODO goog analytics
+
+I'm working on a toy [game](http://github.com/jrheard/voke), and figured it'd be fun to learn how to write code that generates random levels for it. I'd like to show you a simple algorithm for level generation called the [Drunkard's Walk](http://www.roguebasin.com/index.php?title=Random_Walk_Cave_Generation). It generates levels that look like this:
+
+<canvas id="canvas-4" width="400" height="400"></canvas>
+
+As you can see, our level is a simple two-dimensional grid. Each spot on the grid is either empty or full. If it's empty, the player can wander around in there and find monsters and gold and items and stuff. If it's full, then it's a cave wall and the player smacks into it.
+
+The drunkard's-walk algorithm starts with a totally-filled-in level and then hollows it out one cell at a time, so let's start by defining a function that creates a filled-in level.
+
 <pre><code class="cljs">
 (defn full-grid [w h]
 (vec (repeat h
@@ -49,11 +57,17 @@ cell-height (/ canvas-height height)]
 
 </code></pre>
 
+All of the code snippets in this article are interactive - go ahead and change that to <code>(full-grid 10 10)</code> and see what happens.
+
+Our <code>full-grid</code> function is a good start, but its output doesn't really look like a cave. Let's fix that. I've provided a <code>draw-grid</code> function that takes a grid and draws it for you, like this:
+
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-1")'>
 (draw-grid (full-grid 10 10))
-
 </code></pre>
+
 <canvas id="canvas-1" width="200" height="200"></canvas>
+
+Of course, that's not a very interesting cave. Let's try it again with a few empty cells carved out by hand, just so we're sure that this <code>draw-grid</code> function actually works.
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-2")'>
 (-> (full-grid 10 10)
@@ -65,6 +79,10 @@ draw-grid)
 </code></pre>
 
 <canvas id="canvas-2" width="200" height="200"></canvas>
+
+Did I mention all the code in this article is interactive? Play around with it, go nuts.
+
+Okay, we're getting closer to the actual meat of the algorithm.
 
 <pre><code class="cljs">
 
@@ -112,8 +130,11 @@ y)
 empty-cells)))))))
 
 (-> (full-grid 40 40)
-(drunkards-walk 250)
+(drunkards-walk 350)
 draw-grid)
 </code></pre>
 
 <canvas id="canvas-3" width="400" height="400"></canvas>
+
+
+<pre class="hidden"><code class="cljs" data-preamble='(reset! canvas-id "canvas-4")'>(-> (full-grid 40 40) (drunkards-walk 400) draw-grid)</code></pre>
