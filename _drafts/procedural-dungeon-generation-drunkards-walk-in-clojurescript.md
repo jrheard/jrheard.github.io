@@ -44,6 +44,8 @@ I'm working on a toy [game](http://github.com/jrheard/voke), and figured it'd be
 
 <canvas id="canvas-4" width="400" height="400"></canvas>
 
+TODO: add button
+
 As you can see, our level is a two-dimensional grid. Each cell on the grid is either empty or full. If it's empty, the player can wander around in there and find monsters and gold and items and stuff. If it's full, then it's a cave wall and the player smacks into it.
 
 The Drunkard's Walk algorithm starts with a totally-filled-in level and then hollows it out one cell at a time, so let's start by defining a function that creates a filled-in level.
@@ -82,14 +84,14 @@ draw-grid)
 
 Did I mention all the code in this article is interactive? Play around with it, go nuts. Remove the <code>draw-grid</code> call from the snippet above to see what our actual 2D grid datastructure looks like when a few of its cells have been hollowed out.
 
-The Drunkard's Walk algorithm looks like this:
+Okay, so the Drunkard's Walk algorithm looks like this:
 
 1. Pick a random cell on the grid as a starting point.
 1. If we've carved out enough empty spots, we're done.
-1. Walk in a random direction - north, south, east or west - and carve out that new spot.
+1. Walk one step in a random cardinal direction - north, south, east, or west, no diagonals - and carve out that new spot.
 1. Go back to step 2.
 
-We're almost ready to implement it, but first let's define a little helper function that we'll use to make sure that we stay within the bounds of our 2D grid, so we don't try to walk off into the gaping void beyond.
+We're almost ready to implement it, but first let's define a little helper function that we'll use to make sure that we stay within the bounds of our grid and don't try to walk off into the gaping void beyond.
 
 <pre><code class="cljs">
 
@@ -100,7 +102,7 @@ We're almost ready to implement it, but first let's define a little helper funct
 (> number upper) upper
 :else number))
 
-(bound-between 100 2 50)
+(bound-between 10 0 9)
 
 </code></pre>
 
@@ -122,8 +124,8 @@ empty-cells 0]
 ; Step 2: if we're done, return the grid.
 grid
 
-; Step 3: walk in a random direction.
 (let [cell-was-full? (= (get-in grid [y x]) :full)
+; Step 3: walk in a random direction.
 direction (rand-nth [:north :east :south :west])]
 
 ;Step 4: back to step 2.
@@ -145,7 +147,18 @@ empty-cells)))))))
 draw-grid)
 </code></pre>
 
+The fruits of our labor:
+
 <canvas id="canvas-3" width="400" height="400"></canvas>
 
+Focus the code snippet above and then press control+enter to generate a few more random grids. Neat, huh?
+
+TODO: pros/cons
+
+TODO: references
+
+TODO: klipse attribution
+
+TODO: shoutout to github repo
 
 <pre class="hidden"><code class="cljs" data-preamble='(reset! canvas-id "canvas-4")'>(-> (full-grid 40 40) (drunkards-walk 400) draw-grid)</code></pre>
