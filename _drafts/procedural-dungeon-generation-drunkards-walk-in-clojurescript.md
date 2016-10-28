@@ -1,12 +1,11 @@
 ---
 layout: post
-title:  "hi there"
+title:  "Procedural Dungeon Generation: A Drunkard's Walk in ClojureScript"
 ---
 
 nothing to see here
 
-<pre class="hidden">
-<code class="cljs">
+<pre class="hidden"><code class="cljs">
 
 (def canvas-id (atom "canvas-1"))
 
@@ -39,8 +38,7 @@ cell-height (/ canvas-height height)]
 
 (recur (if (identical? (dec x) width) 0 (inc x))
 (if (identical? (dec x) width) (inc y) y))))))
-</code>
-</pre>
+</code></pre>
 
 <pre><code class="cljs">
 (defn full-grid [w h]
@@ -71,37 +69,51 @@ draw-grid)
 <pre><code class="cljs">
 
 (defn bound-between
-[num lower upper]
+[number lower upper]
 (cond
-(< num lower) lower
-(> num upper) upper
-:else num))
+(< number lower) lower
+(> number upper) upper
+:else number))
+
+(bound-between 100 2 50)
+
+</code></pre>
+
+<pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-3")'>
 
 (defn drunkards-walk [grid num-empty-cells]
 (let [height (count grid)
 width (count (first grid))]
 
 (loop [grid grid
-[x y] [(rand-int width) (rand-int height)]]
+x (rand-int width)
+y (rand-int height)
+empty-cells 0]
 
-(if (= (count-empty-spaces grid)
-num-empty-cells)
+(if (= empty-cells num-empty-cells)
+; All done!
 grid
 
-(recur (assoc-in grid [y x] :empty)
-(case (rand-nth [:north :east :south :west])
-:north [x
-(bound-between (dec y) 0 height)]
-:east [(bound-between (inc x) 0 width)
-y]
-:south [x
-(bound-between (inc y) 0 height)]
-:west [(bound-between (dec x) 0 width)
-y]))))))
+; Take a step in a random direction.
+(let [cell-was-full? (= (get-in grid [y x]) :full)
+direction (rand-nth [:north :east :south :west])]
 
-(-> (full-grid 10 10)
-(drunkards-walk 20)
-grid->str
-)
-</code>
-</pre>
+(recur (assoc-in grid [y x] :empty)
+(case direction
+:east (bound-between (inc x) 0 (dec width))
+:west (bound-between (dec x) 0 (dec width))
+x)
+(case direction
+:north (bound-between (dec y) 0 (dec height))
+:south (bound-between (inc y) 0 (dec height))
+y)
+(if cell-was-full?
+(inc empty-cells)
+empty-cells)))))))
+
+(-> (full-grid 40 40)
+(drunkards-walk 250)
+draw-grid)
+</code></pre>
+
+<canvas id="canvas-3" width="400" height="400"></canvas>
