@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Procedural Dungeon Generation: A Drunkard's Walk in ClojureScript"
+klipse: true
 ---
 
 <pre class="hidden"><code class="cljs">
@@ -128,7 +129,7 @@ grid
 ; Step 3: walk in a random direction.
 direction (rand-nth [:north :east :south :west])]
 
-;Step 4: back to step 2.
+; Step 4: back to step 2.
 (recur (assoc-in grid [y x] :empty)
 (case direction
 :east (bound-between (inc x) 0 (dec width))
@@ -156,9 +157,5 @@ Focus the code snippet above and then press control+enter to generate a few more
 TODO: pros/cons
 
 TODO: references
-
-TODO: klipse attribution
-
-TODO: shoutout to github repo
 
 <pre class="hidden"><code class="cljs" data-preamble='(reset! canvas-id "canvas-4")'>(-> (full-grid 40 40) (drunkards-walk 400) draw-grid)</code></pre>
