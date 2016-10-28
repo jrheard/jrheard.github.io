@@ -160,11 +160,16 @@ TODO: pros/cons
 
 TODO: references
 
-<pre class="hidden"><code class="cljs" data-preamble='(reset! canvas-id "canvas-4")'>
-(-> (full-grid 40 40) (drunkards-walk 400) draw-grid)
+<pre class="hidden"><code class="cljs">
+
+(defn draw-top-canvas []
+(reset! canvas-id "canvas-4")
+(-> (full-grid 40 40) (drunkards-walk 400) draw-grid))
+
+(draw-top-canvas)
 
 (-> "generate-button"
  (js/document.getElementById)
- (.addEventListener "click" (fn [e]
-							 (-> (full-grid 40 40) (drunkards-walk 400) draw-grid))))
+ (.addEventListener "click"  (fn [e]
+							 (draw-top-canvas))))
 </code></pre>
