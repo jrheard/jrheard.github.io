@@ -156,7 +156,7 @@ The fruits of our labor:
 
 <canvas id="canvas-3" width="400" height="400"></canvas>
 
-Focus the code snippet above and then press Control+Enter to generate a few more random grids. Neat, huh? Go on, make it a 200x200 grid and carve out 5000 cells.
+Focus the code snippet above and then press Control+Enter to generate a few more random levels. Neat, huh? Go on, make it a 200x200 grid and carve out 5000 cells.
 
 So, that's the Drunkard's Walk. I learned about it from [Kyzrati's excellent introductory blog post on procedural map generation](http://www.gridsagegames.com/blog/2014/06/procedural-map-generation/). It usually generates surprisingly cavelike levels, and they will always be connected — there will never be two separate subcaves that are separated from each other by a wall.
 
