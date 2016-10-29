@@ -7,8 +7,6 @@ title:               "jrheard's blog"
 url:                 http://blog.jrheard.com
 
 baseurl:             ''
-#baseurl:             '/blog-staging'
-
 paginate:            40
 
 # Custom vars

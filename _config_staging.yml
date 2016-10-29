@@ -1,0 +1,3 @@
+destination: '_staging'
+baseurl:             '/blog-staging'
+show_drafts: true
