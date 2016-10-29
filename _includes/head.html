@@ -29,4 +29,12 @@
 
 
   <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/public/css/codemirror.css">
+
+
+	  {% if page.custom_js %}
+		{% for js_file in page.custom_js %}
+		<script src='{{site.baseurl}}/public/js/{{ js_file }}.js' type="text/javascript"></script>
+		{% endfor %}
+	  {% endif %}
+
 </head>

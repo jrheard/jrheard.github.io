@@ -2,7 +2,27 @@
 layout: post
 title:  "Procedural Dungeon Generation: A Drunkard's Walk in ClojureScript"
 klipse: true
+custom_js:
+- drunkards-blog
+- seedrandom.min
 ---
+
+<style>
+
+#slider-ui .message p {
+margin-bottom: 0;
+}
+
+#slider-canvas {
+margin-bottom: 0.5rem;
+}
+
+#slider-ui input {
+width: 100%;
+}
+
+</style>
+
 
 <pre class="hidden"><code class="cljs">
 
@@ -157,6 +177,13 @@ The fruits of our labor:
 <canvas id="canvas-3" width="400" height="400"></canvas>
 
 Focus the code snippet above and then press Control+Enter a few times to generate some more levels. Neat, huh? Go on, make it a 200x200 grid and carve out 5000 cells.
+
+When looking at generated levels, I often find myself wondering: what exactly happened to make the level turn out this way? I've come up with a little tool that helps answer that question. Try dragging this slider around.
+
+<div id="slider-ui"></div>
+<script>
+voke.world.visualize.drunkards_blog()
+</script>
 
 So, that's the Drunkard's Walk. I learned about it from [Kyzrati's excellent introductory blog post on procedural map generation](http://www.gridsagegames.com/blog/2014/06/procedural-map-generation/). It usually generates surprisingly cavelike levels, and they will always be connected — there will never be two separate subcaves that are separated from each other by a wall.
 
