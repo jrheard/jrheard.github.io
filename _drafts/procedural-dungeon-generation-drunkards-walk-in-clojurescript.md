@@ -116,6 +116,8 @@ Okay, here we go!
  [grid num-empty-cells]
  (let [height (count grid)
   width (count (first grid))]
+  ; Guard against impossible demands.
+  (when (<= num-empty-cells (* width height))
 
   (loop [grid grid
    ; Step 1: pick a random cell.
@@ -143,7 +145,7 @@ Okay, here we go!
 	   y)
 	  (if cell-was-full?
 	   (inc empty-cells)
-	   empty-cells)))))))
+	   empty-cells))))))))
 
 (-> (full-grid 40 40)
  (drunkards-walk 350)
@@ -154,7 +156,7 @@ The fruits of our labor:
 
 <canvas id="canvas-3" width="400" height="400"></canvas>
 
-Focus the code snippet above and then press Control+Enter to generate a few more random grids. Neat, huh?
+Focus the code snippet above and then press Control+Enter to generate a few more random grids. Neat, huh? Go on, make it a 200x200 grid and carve out 5000 cells.
 
 So, that's the Drunkard's Walk. I learned about it from [Kyzrati's excellent introductory blog post on procedural map generation](http://www.gridsagegames.com/blog/2014/06/procedural-map-generation/). It usually generates surprisingly cavelike levels, and they will always be connected — there will never be two separate subcaves that are separated from each other by a wall.
 
