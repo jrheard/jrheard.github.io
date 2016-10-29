@@ -178,7 +178,7 @@ The fruits of our labor:
 
 Focus the code snippet above and then press Control+Enter a few times to generate some more levels. Neat, huh? Go on, make it a 200x200 grid and carve out 5000 cells.
 
-When looking at generated levels, I often find myself wondering: what exactly happened to make the level turn out this way? I've come up with a little tool that helps answer that question. Try dragging this slider around.
+When looking at generated levels, I often find myself wondering: what exactly happened to make the level turn out this way? I've come up with a little tool that helps answer that question for this particular algorithm. Try dragging this slider around.
 
 <div id="slider-ui"></div>
 <script>
