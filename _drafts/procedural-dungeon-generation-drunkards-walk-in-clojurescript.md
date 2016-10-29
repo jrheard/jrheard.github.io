@@ -162,6 +162,8 @@ So, that's the Drunkard's Walk. I learned about it from [Kyzrati's excellent int
 
 The bad news: you probably don't want to actually use this to generate levels for a video game. The main problem with it is that it's **unreliable** — sometimes it'll generate super cool tunnely cavey levels, and sometimes it'll just generate a boring-looking blob. It's pretty fun to play with, though!
 
+Don't worry, we'll look at a more useful algorithm next time 👍
+
 <pre class="hidden"><code class="cljs">
 
 (defn draw-top-canvas []
