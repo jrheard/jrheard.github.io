@@ -156,11 +156,11 @@ The fruits of our labor:
 
 <canvas id="canvas-3" width="400" height="400"></canvas>
 
-Focus the code snippet above and then press Control+Enter to generate a few more random levels. Neat, huh? Go on, make it a 200x200 grid and carve out 5000 cells.
+Focus the code snippet above and then press Control+Enter a few times to generate some more levels. Neat, huh? Go on, make it a 200x200 grid and carve out 5000 cells.
 
 So, that's the Drunkard's Walk. I learned about it from [Kyzrati's excellent introductory blog post on procedural map generation](http://www.gridsagegames.com/blog/2014/06/procedural-map-generation/). It usually generates surprisingly cavelike levels, and they will always be connected — there will never be two separate subcaves that are separated from each other by a wall.
 
-The bad news: you probably don't want to actually use this to generate levels for a video game. The main problem with it is that it's **unreliable** — sometimes it'll generate super cool tunnely cavey levels, and sometimes it'll just generate a boring-looking blob. It's pretty fun to play with, though!
+The bad news: you probably don't want to actually use this to generate levels for a video game. The main problem with it is that it's **unreliable** — it's so dang random that sometimes it'll generate super cool tunnely cavey levels, and sometimes it'll just generate a boring-looking blob. It's pretty fun to play with, though!
 
 Don't worry, we'll look at a more useful algorithm next time 👍
 
