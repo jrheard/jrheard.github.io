@@ -54,6 +54,31 @@ so let's start off by writing a function that does just that.
 
 	(recur (if (identical? (dec x) width) 0 (inc x))
 	 (if (identical? (dec x) width) (inc y) y))))))
+
+(defn highlight-neighbors
+[grid x y]
+(let [canvas (js/document.getElementById @canvas-id)
+  ctx (.getContext canvas "2d")
+  width (count (first grid))
+  height (count grid)
+  canvas-width (.-width canvas)
+  canvas-height (.-height canvas)
+  cell-width (/ canvas-width width)
+  cell-height (/ canvas-height height)]
+
+  (set! (.-fillStyle ctx) "#00ff00")
+  (doto ctx
+  (.save)
+(aset "globalAlpha" 0.2)
+(.beginPath)
+(.rect (* cell-width (dec x)) (* cell-height (dec y)) (* 3 cell-width) (* 3 cell-height))
+(.fill)
+(aset "globalAlpha" 0.4)
+(.beginPath)
+(.rect (* cell-width x) (* cell-height y) cell-width cell-height)
+(.fill)
+(.restore))))
+
 </code></pre>
 
 
@@ -93,11 +118,12 @@ it turns out that it's useful for generating caves too!
 
 explain neighbors
 
-<pre><code class="cljs">
+<pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-2")'>
 (defn neighbors
 [grid x y]
 (let [height (count grid)
 width (count (first grid))]
+
 (for [i (range (dec x) (+ x 2))
 j (range (dec y) (+ y 2))
 :when (not= [i j] [x y])]
@@ -108,12 +134,19 @@ j (range (dec y) (+ y 2))
 :full
 (get-in grid [j i])))))
 
-(neighbors (generate-grid 5 5 0.1) 1 0)
+(let [grid (generate-grid 5 5 0.5)
+x 2
+y 3]
+(draw-grid grid)
+(highlight-neighbors grid x y)
+(neighbors grid x y))
 </code></pre>
+
+<canvas id="canvas-2" width="200" height="200"></canvas>
 
 the next thing we'll need is a function that takes a `grid`, an `x` position, and a `y` position, and tells us whether or not the cell at that `x,y` position will be alive this round
 
-<pre><code class="cljs">
+<pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-3")'>
 
 (defn new-value-at-position
 [grid x y birth-threshold survival-threshold]
@@ -128,7 +161,35 @@ num-full-neighbors (count
 (> num-full-neighbors birth-threshold)) :full
 :else :empty)))
 
-(-> (generate-grid 5 5 0.7)
-(new-value-at-position 2 2 4 5))
+(let [grid (generate-grid 5 5 0.5)
+x 2
+y 3]
+(draw-grid grid)
+(highlight-neighbors grid x y)
+(new-value-at-position grid x y 4 5))
+</code></pre>
+
+<canvas id="canvas-3" width="200" height="200"></canvas>
+
+and with that...
+
+
+<pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-4")'>
+
+; TODO
+(defn automata-smoothing-pass
+[js-grid w h survival-threshold birth-threshold]
+(let [new-grid (-copy-js-grid js-grid)]
+(loop [x 0
+y 0]
+(when (< y h)
+(-> new-grid
+(aget y)
+(aset x (-new-value-at-position js-grid x y w h survival-threshold birth-threshold)))
+(recur (if (identical? (inc x) w) 0 (inc x))
+(if (identical? (inc x) w) (inc y) y))))
+new-grid))
 
 </code></pre>
+
+<canvas id="canvas-4" width="200" height="200"></canvas>
