@@ -79,7 +79,7 @@ so let's start off by writing a function that does just that.
 
 <canvas id="canvas-1" width="200" height="200"></canvas>
 
-as usual, all the code snippets in this article are interactive - try changing that `0.5` to a `0.1` or a `1.0`. you can always focus the snippet and press ctrl+enter to rerun it and generate a new random grid.
+as usual, all the code snippets in this article are interactive - try changing that `0.5` to a `0.1` or a `0.99`. you can always focus a snippet and press ctrl+enter to rerun it, too!
 
 now that we've got a grid of "alive" and "dead" cells, we'll be running some rules on this grid
 explain thresholds for survival, birth, death
@@ -91,4 +91,44 @@ slider for speeding up / slowing down
 
 it turns out that it's useful for generating caves too!
 
+explain neighbors
+
+<pre><code class="cljs">
+(defn neighbors
+[grid x y]
+(let [height (count grid)
+width (count (first grid))]
+(for [i (range (dec x) (+ x 2))
+j (range (dec y) (+ y 2))
+:when (not= [i j] [x y])]
+(if (or (< i 0)
+(>= i width)
+(< j 0)
+(>= j height))
+:full
+(get-in grid [j i])))))
+
+(neighbors (generate-grid 5 5 0.1) 1 0)
+</code></pre>
+
 the next thing we'll need is a function that takes a `grid`, an `x` position, and a `y` position, and tells us whether or not the cell at that `x,y` position will be alive this round
+
+<pre><code class="cljs">
+
+(defn new-value-at-position
+[grid x y birth-threshold survival-threshold]
+(let [cell-is-full? (= (get-in grid [y x]) :full)
+num-full-neighbors (count
+(filter #(= % :full)
+(neighbors grid x y)))]
+(cond
+(and cell-is-full?
+(> num-full-neighbors survival-threshold)) :full
+(and (not cell-is-full?)
+(> num-full-neighbors birth-threshold)) :full
+:else :empty)))
+
+(-> (generate-grid 5 5 0.7)
+(new-value-at-position 2 2 4 5))
+
+</code></pre>
