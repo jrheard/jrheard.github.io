@@ -82,7 +82,7 @@ so let's start off by writing a function that does just that.
 </code></pre>
 
 
-<pre><code class="cljs">
+<pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-1")'>
 
 (defn generate-row
 [width full-probability]
@@ -119,24 +119,27 @@ it turns out that it's useful for generating caves too!
 explain neighbors
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-2")'>
+(defn spot-is-off-grid?
+[x y width height]
+(or (< x 0)
+(>= x width)
+(< y 0)
+(>= y height)))
+
 (defn neighbors
 [grid x y]
 (let [height (count grid)
 width (count (first grid))]
-
 (for [i (range (dec x) (+ x 2))
 j (range (dec y) (+ y 2))
 :when (not= [i j] [x y])]
-(if (or (< i 0)
-(>= i width)
-(< j 0)
-(>= j height))
+
+(if (spot-is-off-grid? i j width height)
 :full
 (get-in grid [j i])))))
 
 (let [grid (generate-grid 5 5 0.5)
-x 2
-y 3]
+[x y] [2 3]]
 (draw-grid grid)
 (highlight-neighbors grid x y)
 (neighbors grid x y))
@@ -144,7 +147,7 @@ y 3]
 
 <canvas id="canvas-2" width="200" height="200"></canvas>
 
-the next thing we'll need is a function that takes a `grid`, an `x` position, and a `y` position, and tells us whether or not the cell at that `x,y` position will be alive this round
+the next thing we'll need is a function that takes a `grid`, an `x` position, and a `y` position, and tells us whether or not the cell at that `x, y` position will be alive this round
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-3")'>
 
@@ -162,8 +165,7 @@ num-full-neighbors (count
 :else :empty)))
 
 (let [grid (generate-grid 5 5 0.5)
-x 2
-y 3]
+[x y] [2 3]]
 (draw-grid grid)
 (highlight-neighbors grid x y)
 (new-value-at-position grid x y 4 5))
