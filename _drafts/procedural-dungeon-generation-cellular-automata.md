@@ -7,7 +7,7 @@ custom_js:
 - seedrandom.min
 ---
 
-Last time we looked at generating random dungeons using the [Drunkard's Walk]({% post_url 2016-10-31-procedural-dungeon-generation-drunkards-walk-in-clojurescript %}) algorithm. It's fun to play with, and often generates cool levels, but it's also pretty unreliable. That's not good enough for my purposes: I want to reliably generate big, open, cave-like maps, with lots of space for fast-moving enemies to swarm and surround the player.
+Last time we looked at generating random dungeons for [video games](https://github.com/jrheard/voke) using the [Drunkard's Walk]({% post_url 2016-10-31-procedural-dungeon-generation-drunkards-walk-in-clojurescript %}) algorithm. The Drunkard's Walk is fun to play with, and often generates cool levels, but it's also pretty unreliable. That's not good enough for my purposes: I want to reliably generate big, open, cave-like maps, with lots of space for fast-moving enemies to swarm and surround the player.
 
 To that end, we'll be using a [cellular automaton](http://natureofcode.com/book/chapter-7-cellular-automata/) to generate levels that look like this:
 
@@ -116,7 +116,7 @@ The algorithm starts by generating a grid of these cells, each of which has a ce
 
 As usual, all the code snippets in this article are interactive --- try changing that `0.5` to a `0.1` or a `0.99`. You can always focus a snippet and press Ctrl+Enter to rerun it, too!
 
-The basic idea with cellular automata is that you start with an initial grid like the one we've just generated, and then you pretend that its cells are bacteria in a petri dish. We'll be simulating the passage of time, during which cells are born and die.[^1]
+The basic idea with cellular automata is that you start with an initial grid like the one we've just generated, and then you pretend that its cells are bacteria in a petri dish. We simulate the passage of time, during which cells are born and die.[^1]
 
 The algorithm looks like this:
 
@@ -128,7 +128,7 @@ The algorithm looks like this:
 	1. Otherwise, the cell is dead.
 1. Go back to step 1.
 
-Cells on the outskirts of the grid will have neighbors that are out of bounds --- for simplicity, we'll say that these nonexistent neighbors are alive. (As a bonus, this rule tends to give our levels nice solid walls around the edges.)
+Before we get carried away, let's consider an edge case we'll have to deal with: cells on the outskirts of the grid will have some neighbors that are out of bounds!
 
 <pre><code class="cljs">
 (defn spot-is-off-grid?
@@ -143,10 +143,12 @@ width (count (first grid))]
 (spot-is-off-grid? (generate-grid 5 5 0.5) -1 0)
 </code></pre>
 
-Now let's write a function that finds a given cell's neighbors. (In addition to the `draw-grid` function from last time, I've supplied a `draw-higlighted-grid` function that lets you see what your cell's neighbors look like.)
+For simplicity, we'll say that these nonexistent neighbors are considered to be alive. (As a bonus, this rule tends to give our levels nice solid walls around the edges.)
+
+Now let's write a function that finds a given cell's neighbors. In addition to the `draw-grid` function from last time, I've supplied a `draw-grid-highlighted` function that lets you see what your cell's neighbors look like.
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-2")'>
-(defn neighbors
+(defn neighbor-values
 [grid x y]
 (for [i (range (dec x) (+ x 2))
 j (range (dec y) (+ y 2))
@@ -160,7 +162,7 @@ j (range (dec y) (+ y 2))
 (let [grid (generate-grid 5 5 0.5)
 [x y] [2 2]]
 (draw-grid-highlighted grid x y)
-(neighbors grid x y))
+(neighbor-values grid x y))
 </code></pre>
 
 <canvas id="canvas-2" width="200" height="200"></canvas>
@@ -171,15 +173,15 @@ Now that we're able to count how many of our neighbors are alive, let's figure o
 
 (defn new-value-at-position
 [grid x y birth-threshold survival-threshold]
-(let [cell-is-full? (= (get-in grid [y x]) :full)
-num-full-neighbors (count
+(let [cell-is-alive? (= (get-in grid [y x]) :full)
+alive-neighbors (count
 (filter #(= % :full)
-(neighbors grid x y)))]
+(neighbor-values grid x y)))]
 (cond
-(and cell-is-full?
-(>= num-full-neighbors survival-threshold)) :full
-(and (not cell-is-full?)
-(>= num-full-neighbors birth-threshold)) :full
+(and cell-is-alive?
+(>= alive-neighbors survival-threshold)) :full
+(and (not cell-is-alive?)
+(>= alive-neighbors birth-threshold)) :full
 :else :empty)))
 
 ; Let's try it out.
@@ -259,7 +261,7 @@ margin-bottom: 0.5rem;
 voke.world.visualize.cellular_tool()
 </script>
 
-After playing around with the different options available, I've come to like using an initial chance of `0.45`, a survival threshold of `4`, and a birth threshold of `5`. This set of parameters seems to reliably generate the specific kind of open cave areas that I'm interested in. Let's give our implementation another try using those values:
+After playing around with the different options available, I've settled on using an initial chance of `0.45`, a survival threshold of `4`, and a birth threshold of `5`. This set of parameters seems to reliably generate the specific kind of open cave areas that I'm interested in. Let's try our implementation again, usinagain, usingg those values:
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-5")'>
 (draw-grid
@@ -270,24 +272,32 @@ After playing around with the different options available, I've come to like usi
 
 Looks good! Kinda small, though.
 
-The snippet above runs our code on a `40x40` grid because this implementation of the algorithm is *really, really slow*, and it takes forever if you run it on e.g. a `100x100` grid. The snippets also use `4` as their default number of iterations, whereas in real life I find that a value around `12` makes for smoother caves.
+The snippet above runs our code on a `40x40` grid because this implementation of the algorithm is *really, really slow*, and it takes forever if you run it on e.g. a `100x100` grid. This speed issue is also the reason that these snippets use `4` as their default number of iterations --- in real life, I find that a value around `12` makes for smoother caves.
 
-I've written  an alternate version of this code that's much faster, and it powers the bigger caves in this article. I learned a lot about ClojureScript performance in the process, and will write a future post where we start with this article's version of the code and arrive at the optimized implementation.
+I've written  an alternate version of this code that's much faster, and that's what generates the bigger caves in this article. I learned a lot about ClojureScript performance in the process, and will write a future post where we start with this article's version of the code and arrive at the optimized implementation.
 
-## One more thing ##
+## Wrapping up ##
 
 I learned about today's algorithm from [Kyzrati's post on the topic](http://www.gridsagegames.com/blog/2014/06/mapgen-cellular-automata/). His implementation has an additional step: before running the birth/survival/death rules on all cells at once, he starts by running them on **random, individual cells**.
 
-I have an implementation that does this as well, and I *think* I like the results it gives, but I've been playing with it for a couple of weeks and frankly I still have no idea what actual effect it has. It does *something*, and it doesn't seem to make the levels *worse*, so I'm keeping it for now. Give it a shot yourself using [my visualization tool]({{site.baseurl}}/cellular-automata-tool.html).
+I have an implementation that does this as well, and I *think* I like the results it gives, but I've been playing with it for a couple of weeks and frankly I still have no idea what actual effect it has. It does *something*, and it doesn't seem to make the levels worse, so I'm keeping it for now. Give it a shot yourself using [my visualization tool]({{site.baseurl}}/cellular-automata-tool.html).
 
 ## Future work ##
 
 There's a lot left to do before these levels are super fun and playable:
 
-* If we generate one of these caves, place the player at one end, and put his goal at the other end, he'll have to do a ton of backtracking along the way, which isn't very fun. [Kyzrati's solution](http://www.gridsagegames.com/blog/2014/06/mapgen-cellular-automata/) is to tweak the boundaries of the input grid so that the algorithm generates longer, narrower caves that require less backtracking.
-* The algorithm often generates small "island" caves that are completely disconnected from the main cave; I need to write a step that uses a [flood fill](https://en.wikipedia.org/wiki/Flood_fill) to detect those subcaves and fills them in.
+* If we generate one of these caves, place the player at one end, and put his goal at the other end, he'll have to do a ton of backtracking along the way in his search for the exit, and that isn't very fun. [Kyzrati's solution](http://www.gridsagegames.com/blog/2014/06/mapgen-cellular-automata/) is to tweak the boundaries of the input grid so that the algorithm generates longer, narrower caves that require less backtracking.
+* The algorithm often generates small "island" caves that are completely disconnected from the main cave; I need to write a post-processing step that detects them and fills them in.
 
 This seems like a good stopping point for now, though. We've written some code that generates neato caves! We'll make it better in future posts.
+
+## Further Reading ##
+
+* [Mapgen: Cellular Automata](http://www.gridsagegames.com/blog/2014/06/mapgen-cellular-automata/)
+* [The Cellular Automaton Method for Cave Generation](https://jeremykun.com/2012/07/29/the-cellular-automaton-method-for-cave-generation/)
+* [The Nature of Code: Cellular Automata](http://natureofcode.com/book/chapter-7-cellular-automata/)
+* [Cellular Automata Method for Generating Random Cave-Like Levels](http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels)
+* [Generate Random Cave Levels Using Cellular Automata](https://gamedevelopment.tutsplus.com/tutorials/generate-random-cave-levels-using-cellular-automata--gamedev-9664)
 
 [^1]: This algorithm will seem very familiar to you if you've ever seen [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 
