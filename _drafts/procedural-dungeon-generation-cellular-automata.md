@@ -278,7 +278,7 @@ I've written  an alternate version of this code that's much faster, and it power
 
 I learned about today's algorithm from [Kyzrati's post on the topic](http://www.gridsagegames.com/blog/2014/06/mapgen-cellular-automata/). His implementation has an additional step: before running the birth/survival/death rules on all cells at once, he starts by running them on **random, individual cells**.
 
-I have an implementation that does this as well, and I *think* I like the results it gives, but I've been playing with it for a couple of weeks and frankly I still have no idea what actual effect it has. It does *something*, and it doesn't seem to make the levels *worse*, so I'm keeping it for now. Give it a shot yourself using [my visualization tool](http://www.jrheard.com/voke/generation.html).
+I have an implementation that does this as well, and I *think* I like the results it gives, but I've been playing with it for a couple of weeks and frankly I still have no idea what actual effect it has. It does *something*, and it doesn't seem to make the levels *worse*, so I'm keeping it for now. Give it a shot yourself using [my visualization tool]({{site.baseurl}}/cellular-automata-tool.html).
 
 ## Future work ##
 
