@@ -261,7 +261,7 @@ margin-bottom: 0.5rem;
 voke.world.visualize.cellular_tool()
 </script>
 
-After playing around with the different options available, I've settled on using an initial chance of `0.45`, a survival threshold of `4`, and a birth threshold of `5`. This set of parameters seems to reliably generate the specific kind of open cave areas that I'm interested in. Let's try our implementation again, usinagain, usingg those values:
+After playing around with the different options available, I've settled on using an initial chance of `0.45`, a survival threshold of `4`, and a birth threshold of `5`. This set of parameters seems to reliably generate the specific kind of open cave areas that I'm interested in. Let's try our implementation again, using those values:
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-5")'>
 (draw-grid
