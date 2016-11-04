@@ -9,7 +9,7 @@ custom_js:
 
 Last time we looked at generating random dungeons using the [Drunkard's Walk]({% post_url 2016-10-31-procedural-dungeon-generation-drunkards-walk-in-clojurescript %}) algorithm. It's fun to play with, and often generates cool levels, but it's also pretty unreliable. That's not good enough for my purposes: I want to reliably generate big, open, cave-like maps, with lots of space for fast-moving enemies to swarm and surround the player.
 
-To that end, we'll be using a concept called [cellular automata](http://natureofcode.com/book/chapter-7-cellular-automata/) this time to generate levels that look like this:
+To that end, we'll be using a concept called [cellular automata](http://natureofcode.com/book/chapter-7-cellular-automata/) to generate levels that look like this:
 
 <div id="cellular-example"></div>
 
@@ -17,7 +17,7 @@ To that end, we'll be using a concept called [cellular automata](http://natureof
 voke.world.visualize.cellular_example()
 </script>
 
-We're still using a 2D grid to represent our level, but we'll be using some new vocabulary this time. Each spot on the grid is a *cell*. Each cell is either *alive* or *dead*. (An alive cell is a cave wall, and a dead cell is empty space where the player can move around freely.)
+We're still using a 2D grid to represent our level, but we'll be using some new vocabulary this time. Each spot on the grid is now a *cell*. Each cell is either *alive* or *dead*. (An alive cell is a cave wall, and a dead cell is empty space where the player can move around freely.)
 
 The algorithm starts by generating a grid of cells, each of which has a certain chance of being alive.
 
