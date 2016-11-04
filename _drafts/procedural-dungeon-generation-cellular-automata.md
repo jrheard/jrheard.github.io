@@ -52,8 +52,8 @@ The algorithm starts by generating a grid of these cells, each of which has a ce
 	  (.rect (* x cell-width) (* y cell-height) cell-width cell-height)
 	  (.fill)))
 
-	(recur (if (identical? (dec x) width) 0 (inc x))
-	 (if (identical? (dec x) width) (inc y) y))))))
+	(recur (if (identical? (inc x) width) 0 (inc x))
+	 (if (identical? (inc x) width) (inc y) y))))))
 
 (defn highlight-neighbors
 [grid x y]
