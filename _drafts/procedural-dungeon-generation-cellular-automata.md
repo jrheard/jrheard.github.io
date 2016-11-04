@@ -45,7 +45,7 @@ The algorithm starts by generating a grid of these cells, each of which has a ce
 	(when (= (-> grid
 			  (get y)
 			  (get x))
-		   :empty)
+		   :dead)
 
 	 (doto ctx
 	  (.beginPath)
@@ -95,18 +95,18 @@ The algorithm starts by generating a grid of these cells, each of which has a ce
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-1")'>
 
 (defn generate-row
-[width full-probability]
+[width alive-probability]
 (vec
 (take width
-(repeatedly #(if (< (rand) full-probability)
-:full
-:empty)))))
+(repeatedly #(if (< (rand) alive-probability)
+:alive
+:dead)))))
 
 (defn generate-grid
-[width height full-probability]
+[width height alive-probability]
 (vec
 (take height
-(repeatedly #(generate-row width full-probability)))))
+(repeatedly #(generate-row width alive-probability)))))
 
 (draw-grid (generate-grid 50 50 0.5))
 
@@ -155,7 +155,7 @@ j (range (dec y) (+ y 2))
 ; We only care about our *neighbors*.
 :when (not= [i j] [x y])]
 (if (spot-is-off-grid? grid i j)
-:full
+:alive
 (get-in grid [j i]))))
 
 ; Let's try it out.
@@ -173,16 +173,16 @@ Now that we're able to count how many of our neighbors are alive, let's figure o
 
 (defn new-value-at-position
 [grid x y birth-threshold survival-threshold]
-(let [cell-is-alive? (= (get-in grid [y x]) :full)
+(let [cell-is-alive? (= (get-in grid [y x]) :alive)
 alive-neighbors (count
-(filter #(= % :full)
+(filter #(= % :alive)
 (neighbor-values grid x y)))]
 (cond
 (and cell-is-alive?
-(>= alive-neighbors survival-threshold)) :full
+(>= alive-neighbors survival-threshold)) :alive
 (and (not cell-is-alive?)
-(>= alive-neighbors birth-threshold)) :full
-:else :empty)))
+(>= alive-neighbors birth-threshold)) :alive
+:else :dead)))
 
 ; Let's try it out.
 (let [grid (generate-grid 5 5 0.5)
