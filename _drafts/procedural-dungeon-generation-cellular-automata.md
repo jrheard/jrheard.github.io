@@ -124,7 +124,7 @@ The algorithm looks like this:
 1. For each cell on the grid,
     1. Calculate the number of its neighbors that are alive.
     1. If the cell is dead and has at least `birth-threshold` alive neighbors, it becomes alive.
-	1. If the cell is alive and has at least `survival-threshold` neighbors, it stays alive.
+	1. If the cell is alive and has at least `survival-threshold` alive neighbors, it stays alive.
 	1. Otherwise, the cell is dead.
 1. Go back to step 1.
 
