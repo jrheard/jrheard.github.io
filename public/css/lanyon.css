@@ -532,3 +532,11 @@ div.footnotes {
 	font-size: 80%;
 	margin: 3rem auto 2rem;
 }
+
+div.message.update {
+	background-color: #fffec9;
+}
+
+div.message.update p:last-of-type {
+	margin-bottom: 0;
+}
