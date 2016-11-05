@@ -2,10 +2,10 @@
 layout: post
 title:  "Procedural Dungeon Generation: Cellular Automata"
 klipse: true
-custom_js:
-- cellular-blog
-- seedrandom.min
 ---
+
+{% javascript cellular-blog %}
+{% javascript seedrandom.min %}
 
 Last time we looked at generating random dungeons for [video games](https://github.com/jrheard/voke) using the [Drunkard's Walk]({{site.baseurl}}{% post_url 2016-10-31-procedural-dungeon-generation-drunkards-walk-in-clojurescript %}) algorithm. The Drunkard's Walk is fun to play with, and often generates cool levels, but it's also pretty unreliable. That's not good enough for my purposes: I want to reliably generate big, open, cave-like maps, with lots of space for fast-moving enemies to swarm and surround the player.
 

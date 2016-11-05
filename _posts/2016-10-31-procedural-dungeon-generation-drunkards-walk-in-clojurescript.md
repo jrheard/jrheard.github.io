@@ -2,10 +2,10 @@
 layout: post
 title:  "Procedural Dungeon Generation: A Drunkard's Walk in ClojureScript"
 klipse: true
-custom_js:
-- drunkards-blog
-- seedrandom.min
 ---
+
+{% javascript drunkards-blog %}
+{% javascript seedrandom.min %}
 
 <style>
 

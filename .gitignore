@@ -4,3 +4,4 @@ _staging
 .jekyll-metadata
 *.swp
 *.swo
+.asset-cache

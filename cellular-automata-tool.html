@@ -3,10 +3,10 @@
 <html>
 	<head>
 		<title>Cellular Automata Dungeon Generation Visualization Tool</title>
-		  <link rel="stylesheet" href="{{ site.baseurl }}/public/css/reset.css">
-		  <link rel="stylesheet" href="{{ site.baseurl }}/public/css/cellular-tool.css">
-		  <script src='{{site.baseurl}}/public/js/seedrandom.min.js' type="text/javascript"></script>
-		  <script src='{{site.baseurl}}/public/js/cellular-tool.js' type="text/javascript"></script>
+		{% stylesheet reset %}
+		{% stylesheet cellular-tool %}
+		{% javascript seedrandom.min %}
+		{% javascript cellular-tool %}
 	</head>
 	<body>
 		<div id="content"></div>
