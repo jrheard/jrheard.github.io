@@ -537,6 +537,6 @@ div.message.update {
 	background-color: #fffec9;
 }
 
-div.message.update p:last-of-type {
+div.message p:last-of-type {
 	margin-bottom: 0;
 }

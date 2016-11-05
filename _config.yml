@@ -15,6 +15,9 @@ version:             1.0.0
 paginate: 5
 paginate_path: "page:num"
 
+assets:
+  digest: true
+
 # Build settings
 markdown: kramdown
 gems:

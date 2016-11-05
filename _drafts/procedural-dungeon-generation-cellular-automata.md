@@ -4,15 +4,13 @@ title:  "Procedural Dungeon Generation: Cellular Automata"
 klipse: true
 ---
 
-{% javascript cellular-blog %}
-{% javascript seedrandom.min %}
-
 Last time we looked at generating random dungeons for [video games](https://github.com/jrheard/voke) using the [Drunkard's Walk]({{site.baseurl}}{% post_url 2016-10-31-procedural-dungeon-generation-drunkards-walk-in-clojurescript %}) algorithm. The Drunkard's Walk is fun to play with, and often generates cool levels, but it's also pretty unreliable. That's not good enough for my purposes: I want to reliably generate big, open, cave-like maps, with lots of space for fast-moving enemies to swarm and surround the player.
 
 To that end, we'll be using a [cellular automaton](http://natureofcode.com/book/chapter-7-cellular-automata/) to generate levels that look like this:
 
 <div id="cellular-example"></div>
 
+{% javascript cellular-blog %}
 <script>
 voke.world.visualize.cellular_example()
 </script>
@@ -257,10 +255,6 @@ margin-bottom: 0.5rem;
 }
 </style>
 
-<script>
-voke.world.visualize.cellular_tool()
-</script>
-
 After playing around with the different options available, I've settled on using an initial chance of `0.45`, a survival threshold of `4`, and a birth threshold of `5`. This set of parameters seems to reliably generate the specific kind of open cave areas that I'm interested in. Let's try our implementation again, using those values:
 
 <pre><code class="cljs" data-preamble='(reset! canvas-id "canvas-5")'>
@@ -301,4 +295,10 @@ This seems like a good stopping point for now, though. We've written some code t
 
 [^1]: Can we talk about how crazy this is? How many blogs have you ever seen with interactive code snippets like this? [KLIPSE](https://github.com/viebel/klipse/) rules. It's super-easy to use, *and* it can run python, ruby, javascript, plus [other languages too](http://blog.klipse.tech/klipse/2016/09/09/klipse-languages.html). Give it a shot in your blog! It's great for [documentation websites](http://viebel.github.io/gadjett/gadjett.collections.html), too!
 [^2]: This algorithm will seem very familiar to you if you've ever seen [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
+
+{% javascript seedrandom.min %}
+
+<script>
+voke.world.visualize.cellular_tool()
+</script>
 
