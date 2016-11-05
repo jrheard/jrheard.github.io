@@ -233,7 +233,7 @@ survival-threshold)
 iterations))
 
 (draw-grid
-(automata 40 40 0.35 4 5 4))
+(automata 40 40 0.35 3 5 4))
 
 </code></pre>
 
