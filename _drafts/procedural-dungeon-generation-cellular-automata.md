@@ -114,7 +114,7 @@ The algorithm starts by generating a grid of these cells, each of which has a ce
 
 As usual, all the code snippets in this article are interactive --- try changing that `0.5` to a `0.1` or a `0.99`. You can always focus a snippet and press Ctrl+Enter to rerun it, too![^1]
 
-The basic idea with cellular automata is that you start with an initial grid like the one we've just generated, and then you pretend that its cells are bacteria in a petri dish. We simulate the passage of time, during which cells are born and die.[^2]
+The basic idea with cellular automata is that we start with an initial grid like the one we've just generated, and then we pretend that its cells are bacteria in a petri dish. We simulate the passage of time, during which cells are born and die.[^2]
 
 The algorithm looks like this:
 
@@ -203,7 +203,7 @@ width (count (first grid))]
 x 0
 y 0]
 
-(if (identical? y height)
+(if (= y height)
 ; Done!
 new-grid
 
@@ -215,8 +215,8 @@ y
 birth-threshold
 survival-threshold)]
 (recur (assoc-in new-grid [y x] new-value)
-(if (identical? (inc x) width) 0 (inc x))
-(if (identical? (inc x) width) (inc y) y)))))))
+(if (= (inc x) width) 0 (inc x))
+(if (= (inc x) width) (inc y) y)))))))
 
 (defn automata
 [width height initial-probability
