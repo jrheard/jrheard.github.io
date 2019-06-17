@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Madison CS 3-4: Roguelike &middot; jrheard's blog
+    
+  </title>
+
+  <link type="text/css" rel="stylesheet" href="/assets/codemirror-d8d0e4f82d501ae76132942c181c87941858f8e1842e57cccffcbc40c4b69d44.css">
+  <link type="text/css" rel="stylesheet" href="/assets/poole-d51676d786fd1108e51aacca94d7f2b94fa5be569be05bacf27312246fdd8d7a.css">
+  <link type="text/css" rel="stylesheet" href="/assets/syntax-491475f8fdf68434f0c0085a0352afa7608a00596f3b2f52093067e8fac74fe0.css">
+  <link type="text/css" rel="stylesheet" href="/assets/lanyon-e1ec4ff82f67d35979b06a5847932fa3e4ad62b09b2ffc439e5cdbec84f61ff3.css">
+  <link type="text/css" rel="stylesheet" href="/assets/asciinema-player-5361e14a0d21a3d143479cc2f22fa61f93f6472823505642541f2103918b07fc.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+  <body class="theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+	<!--
+  <div class="sidebar-item">
+    <p>
+	My name's JR Heard. I think pure functions are the greatest. I live in Portland with my cat <a href='/assets/frank-9709494b241673162ec8304c71ecaa808165611abed403aa04a82820f3e94a31.jpg'>Frank</a>.
+	</p>
+  </div>
+	-->
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+      
+        
+      
+    
+      
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/about">About Me</a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item active" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+        
+      
+    
+      
+        
+		<a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+        
+      
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+	<a class="sidebar-nav-item" href="/quinto">Quinto</a>
+	<a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+	<a class="sidebar-nav-item" href="http://himom.jrheard.com">himom</a>
+  </nav>
+
+  
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">jrheard's blog</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+	
+        <div class="page">
+  <h1 class="page-title">Madison CS 3-4: Roguelike</h1>
+  <p>This project is going to be kind of an experiment! We’re going to give you some starter code for a terminal-based game, and we’ll give you some ideas about features you could add to it, and we’re going to see what happens.</p>
+
+<p>This assignment doesn’t have quite as many rules as we’ve had in previous projects - the goal is for you to come up with some fun features and add them to your game!</p>
+
+<h1 id="whats-a-roguelike">What’s A Roguelike?</h1>
+
+<p>In the old days, there was a game called <a href="https://en.wikipedia.org/wiki/Rogue_(video_game)">Rogue</a>. It looked like this:</p>
+
+<p><img src="/assets/rogue-0f8a9131a3093b50401e9be33d307c85425cc5e46a29658b72c742bfab258456.png" alt="via Wikipedia" width="637" height="371" /></p>
+
+<p>The player’s character is the little yellow smiley face. Wikipedia says:</p>
+
+<blockquote>
+  <p>In Rogue, players control a character as they explore several levels of a dungeon as they seek the Amulet of Yendor located in the dungeon’s lowest level. The player-character must fend off an array of monsters that roam the dungeons. Along the way, they can collect treasures that can help them offensively or defensively, such as weapons, armor, potions, scrolls, and other magical items. Rogue is turn-based taking place on a square grid represented in ASCII.</p>
+</blockquote>
+
+<p>A lot of the ideas originally found in Rogue have since spread to tons of other video games, and we call those games <strong>roguelikes</strong>. Here’s one called Brogue:</p>
+
+<p><img src="/assets/Brimstonebattle-b9d2870a35fd6ca63fbc7103f863671e7c1aff39103ea7467744979572e3e4d4.png" width="800" height="459" alt="Brimstonebattle.png" /></p>
+
+<p>Here’s a super cool one called Cogmind:</p>
+
+<iframe src="https://giphy.com/embed/DwSVbIKw0R808" width="480" height="340" frameborder="0" class="giphy-embed" allowfullscreen="" style="display: block; margin: 40px auto;"></iframe>
+
+<p>In this project, you’ll be building a roguelike of your very own.</p>
+
+<h1 id="what-we-give-you">What We Give You</h1>
+
+<p>This project comes with code for an extremely basic game. It looks like this:</p>
+
+<asciinema-player src="/roguelike_starter.json" rows="32" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>You’re the <code class="highlighter-rouge">@</code> sign, you can move around, you can’t go through walls, and you can quit the game when you get bored.</p>
+
+<h1 id="getting-started">Getting Started</h1>
+
+<p>We’ll be working on this project in repl.it!</p>
+
+<p>The starter code for this project is available in our <a href="https://repl.it/student/classrooms/125183">repl.it Python - Unit 6 - Dictionaries classroom</a> in the Projects section.</p>
+
+<h1 id="reading-the-code">Reading The Code</h1>
+
+<p>The starter code comes with three files:</p>
+
+<h2 id="leveltxt">1: <code class="highlighter-rouge">level.txt</code></h2>
+
+<p>A simple text file that looks like <a href="https://gist.github.com/jrheard/f721c0e9a95b41595e85228273a8b0d5">this</a>. It’s the level! If you want the game’s level to look differently, you can go ahead and edit <code class="highlighter-rouge">level.txt</code>. A <code class="highlighter-rouge">'#'</code> is a wall, a <code class="highlighter-rouge">' '</code> is an empty space, and a <code class="highlighter-rouge">'@'</code> is the player’s starting position.</p>
+
+<h2 id="roguelibpy">2: <code class="highlighter-rouge">roguelib.py</code></h2>
+
+<p>A Python file that contains some useful functions that can be combined together in order to make a simple roguelike game. Go ahead and read through this file - you don’t have fully read and understand every single line of code right now before you’ve started working on the project, but it’d be a good idea to look through the file and see what functions it defines and what their docstrings say the functions do.</p>
+
+<p>You’ll have to make changes to some of these functions when you add new features to the game!</p>
+
+<h2 id="mainpy">3: <code class="highlighter-rouge">main.py</code></h2>
+
+<p>A small Python file that combines the functions from <code class="highlighter-rouge">roguelib.py</code> together into a simple game loop. Read the game loop and convince yourself that you understand how it works. Refer back to the code in <code class="highlighter-rouge">roguelib.py</code> whenever <code class="highlighter-rouge">main.py</code> uses a function that don’t fully understand.</p>
+
+<p>Feel free to add more code to this file. You can also create more files if you want, it’s a useful thing to do as your project gets bigger.</p>
+
+<p>As a general rule of thumb: it’s hard to read and understand a big complicated file with 1000 lines of code in it and a vague name like <code class="highlighter-rouge">program.py</code>; it’s much easier to read and understand several smaller files, each of which has 150-200 lines of code and a good clear name like <code class="highlighter-rouge">ai.py</code> or <code class="highlighter-rouge">physics.py</code> or <code class="highlighter-rouge">quest.py</code>.</p>
+
+<h1 id="seriously-read-those-files">Seriously, Read Those Files</h1>
+
+<p>This is what programming in real life is like. It’s almost never the case that you’re starting a new program completely from scratch - you’ll almost always be working on a (probably really big!) program that someone else wrote years ago, or that you wrote a few weeks ago but it’s been long enough that now you don’t really remember what all the code does.</p>
+
+<p>This is what you do: you read through the preexisting code, convince yourself that you understand what it does and how it fits together, and <em>then</em>, once you’re familiar with the codebase, you can start making changes and adding features.</p>
+
+<h1 id="the-goal">The Goal</h1>
+
+<p>The point of this project is for you to come up with some cool features and then build them. Here are some ideas:</p>
+
+<ul>
+  <li>Monsters that just sit there and don’t do anything</li>
+  <li>A goal space (if the player makes it to this space, they’ve beaten the game!)</li>
+  <li>A combat system (when you bump into a monster, you fight it!)</li>
+  <li>XP / leveling up / stats</li>
+  <li>Monster AI (monsters follow you around!)</li>
+  <li>A combat log that says stuff like “you strike the skeleton for 3 damage!”</li>
+  <li>A dog that you can pet</li>
+  <li>Items / power-ups</li>
+  <li>Doors / traps</li>
+  <li>Spells / ranged combat</li>
+  <li>Puzzles</li>
+  <li>Quests</li>
+  <li>Randomly generated levels</li>
+</ul>
+
+<p>That’s just some stuff off the top of my head. If you come up with an idea you like better, you can do that instead!</p>
+
+<h1 id="adding-a-goal-space">Adding A Goal Space</h1>
+
+<p>For starters, let’s add a simple feature to the game: a <strong>goal space</strong>. We’ll add a <code class="highlighter-rouge">!</code> to the level, and if the player reaches it then we’ll tell them good job and end the game. It’ll look like this:</p>
+
+<asciinema-player src="/roguelike_goal_space.json" rows="32" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>Here are the things I did in order to add that feature to the game:</p>
+
+<ol>
+  <li>Added a <code class="highlighter-rouge">!</code> to <code class="highlighter-rouge">level.txt</code>.</li>
+  <li>Updated <code class="highlighter-rouge">load_level()</code> to look for a <code class="highlighter-rouge">!</code> in <code class="highlighter-rouge">level.txt</code> and save its <code class="highlighter-rouge">(x, y)</code> position in the game dictionary so that later we can check to see if the player has reached the goal space.</li>
+  <li>Updated <code class="highlighter-rouge">draw_game()</code> so that it prints out a <code class="highlighter-rouge">!</code> where the goal space is.</li>
+  <li>Updated <code class="highlighter-rouge">run_game()</code> in <code class="highlighter-rouge">game.py</code> to print out a message and end the game when the player reaches the goal space.</li>
+</ol>
+
+<p>Once I had done all of those things, I had a working goal space feature! Notice that this involved messing around with a lot of the code in <code class="highlighter-rouge">roguelib.py</code> - you’ll have to do this too when you add your own features. It’s going to involve reading code and figuring out what it does and figuring out what you want to do and where you should make your changes. This is what programming is like! :)</p>
+
+<p><strong><a href="https://gist.github.com/jrheard/0c3a5f51d26d29500b71ac5f39b0d982">Here’s the code I wrote to make that happen</a>.</strong> This file is a “diff”, which stands for “the difference between an old version of a program and a new version of that program” - red lines are old lines that I removed, green lines are new lines that I added.</p>
+
+<p>You’ll notice that I included a couple of <code class="highlighter-rouge">assert</code> statements in <code class="highlighter-rouge">load_level()</code>. You don’t have to do that when you add a feature, I just did it for this particular feature because I wanted the program to loudly complain if someone either a) forgot to add a goal space or b) tried to add two goal spaces even though this code only supports tracking the <code class="highlighter-rouge">(x, y)</code> position of a <em>single</em> goal space.</p>
+
+<p>You might read that and think: but what if I want to add a feature that can happen on more than one space at a time? Well, check this out:</p>
+
+<h1 id="implementing-dumb-monsters">Implementing Dumb Monsters</h1>
+
+<p>Here’s a feature that adds dumb goblins to the level. They just sit there and don’t do anything, and the player can’t move into a space if it has a goblin in it. Here’s what that looks like:</p>
+
+<asciinema-player src="/roguelike_monster.json" rows="32" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>Here are the things I did in order to add that feature to the game:</p>
+
+<ol>
+  <li>Added a couple of <code class="highlighter-rouge">g</code>s to <code class="highlighter-rouge">level.txt</code>.</li>
+  <li>Updated <code class="highlighter-rouge">load_level()</code> to look for <code class="highlighter-rouge">'g'</code>s in <code class="highlighter-rouge">level.txt</code>; every time we find a <code class="highlighter-rouge">'g'</code> we make a goblin dictionary, add that dictionary to a list, and include that list in the returned “game dictionary”.</li>
+  <li>Updated <code class="highlighter-rouge">draw_game()</code> so that it prints out a <code class="highlighter-rouge">g</code> on spaces that have a goblin in them.</li>
+  <li>Updated <code class="highlighter-rouge">move()</code> so that it doesn’t allow the player to move into a space that has a goblin in it.</li>
+</ol>
+
+<p><strong><a href="https://gist.github.com/jrheard/cb609d57e3b41ff622c790bdf337a7cc">Here’s the code I wrote to make that happen</a>.</strong> It’s another diff - green lines are lines I added, red lines are lines I removed.</p>
+
+<p><strong>Notice that this feature is more complicated than the goal space feature was</strong>. Because there can be multiple goblins in the level, <strong>I had to keep track of them in a list</strong>. Look at the code in <code class="highlighter-rouge">load_level()</code> that constructs that list and saves it in the game dictionary. Look at the code in <code class="highlighter-rouge">draw_game()</code> that looks through that list to see if the space that’s being printed out has a goblin in it. Look at the code in <code class="highlighter-rouge">move()</code> that looks through that list to see if the space that the player’s trying to move into has a goblin in it.</p>
+
+<h1 id="notice-that-theres-a-pattern-here">Notice That There’s A Pattern Here</h1>
+
+<p>I followed these steps when implementing both of those features:</p>
+
+<ol>
+  <li>Pick a character that hasn’t been used for some other feature already, like <code class="highlighter-rouge">☃</code></li>
+  <li>Add that character to <code class="highlighter-rouge">level.txt</code> one or more times</li>
+  <li>Update <code class="highlighter-rouge">load_level()</code> to look for that character and save its position in the game dictionary</li>
+  <li>Update <code class="highlighter-rouge">draw_game()</code> to print that character out in the right place so that the player can see this new thing you added to the game</li>
+  <li><strong>Add some more code that makes this feature actually <em>do</em> something</strong>. For the goal space I added code that ends the game if the player reaches the goal space; for monsters, I added code that prevents the player from moving into a space that has a monster in it.</li>
+</ol>
+
+<p>Steps 1 through 4 were the same both times, but step 5 was different for each feature.</p>
+
+<h1 id="submitting-your-project">Submitting your project</h1>
+<p>Copy the link at the top of your repl (it will look something like <code class="highlighter-rouge">https://repl.it/@tomalley/roguelike</code>) and turn in the link on Google Classroom.</p>
+
+<h1 id="assorted-notes">Assorted Notes</h1>
+
+<p>I’ve written a couple of really neat articles on how to generate simple random levels using a couple of different algorithms:</p>
+
+<ul>
+  <li><a href="https://blog.jrheard.com/procedural-dungeon-generation-drunkards-walk-in-clojurescript">Drunkard’s Walk</a></li>
+  <li><a href="https://blog.jrheard.com/procedural-dungeon-generation-cellular-automata">Cellular Automata</a></li>
+</ul>
+
+<p>Here’s a list of some of my favorite roguelikes (in no particular order):</p>
+
+<ul>
+  <li>Risk of Rain</li>
+  <li>FTL</li>
+  <li>Dead Cells</li>
+  <li>Slay the Spire</li>
+  <li>Isaac</li>
+  <li>Spelunky</li>
+  <li>Teleglitch</li>
+  <li>Crypt of the Necrodancer</li>
+  <li>Cogmind</li>
+  <li>Caves of Qud</li>
+</ul>
+
+<script type="text/javascript" src="/assets/codemirror-133d03a89b5a2e888e1c3749c5b9229f573f4445a34c39a4f3c790c71d109cf2.js"></script>
+
+<script type="text/javascript" src="/assets/codemirror_python-1772e8d9ded9bac3e139d973e2239231c4a1227ab6e67a68823ca49546270992.js"></script>
+
+<script type="text/javascript" src="/assets/codemirror_runmode-f6f4993f6f5684410d6311d5c4c0924d228502c1cc74857ec599f0b573f3eacd.js"></script>
+
+<script>
+var textAreas = document.getElementsByTagName("textarea");
+var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+for (var i = 0; i < textAreas.length; i++) {
+	CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+}
+</script>
+
+<script>
+window.klipse_settings = {
+	selector_eval_python_client: '.py',
+	codemirror_options_in: {
+		theme: "friendship-bracelet"
+	},
+	codemirror_options_out: {
+		theme: "friendship-bracelet"
+	}
+};
+</script>
+
+<script type="text/javascript" src="/assets/asciinema-player-1f95456b69531367899bb4f598a8e630671f3acffc06a02e391fe7fb1f1f8cd2.js"></script>
+
+<script type="text/javascript" src="/assets/klipse.min-9a994cce87ba04ff8001b120c54f1dd71b243824c8cec64d811cb4264b6be7ac.js"></script>
+
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+
+
+
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	  ga('create', 'UA-7013093-3', 'auto');
+	  ga('send', 'pageview');
+	</script>
+	
+
+  </body>
+</html>
