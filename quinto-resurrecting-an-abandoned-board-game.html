@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Quinto: Resurrecting an Abandoned Board Game &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="post">
+	<h1 class="post-title">Quinto: Resurrecting an Abandoned Board Game</h1>
+	<span class="post-date">11 Jan 2018</span>
+	<link rel="stylesheet" href="/assets/css/quinto.css" />
+
+<p>I played an old board game called Quinto when I was visiting a friend this past Thanksgiving. I developed a strange fixation on the game and wrote a program that lets you play it against a computer opponent. I’d like to show you that program, and also tell you about the tools I used to build it.</p>
+
+<p>I’ll start by teaching you how to play the game. Don’t worry, there are just like three rules. If you’d like to skip ahead, <a href="/quinto">here’s the game</a> and <a href="/assets/img/quinto.jpg">here’s the box</a>.</p>
+
+<h1 id="how-its-played">How It’s Played</h1>
+
+<p>Quinto is basically Scrabble, except with numbers instead of letters.</p>
+
+<p><img src="/assets/img/quinto_board.jpg" title="Image credit: Board Game Museum YouTube account" /></p>
+
+<p>In Scrabble, your goal is to place several tiles in a row or column, and have them spell a word; you get extra points if your freshly placed tiles contact multiple pre-existing words. Quinto’s the same thing, except that instead of trying to make words, <strong>you’re trying to make a run of tiles whose sum is a multiple of five</strong>. For example, this move would earn you 20 points.</p>
+
+<div class="grid-container small" id="grid-1"></div>
+
+<p>This next move is <em>invalid</em>, though, because these tiles sum to 17, which is not a multiple of five.</p>
+
+<div class="grid-container small" id="grid-2"></div>
+
+<p>That’s really most of the game. If you’re making the first move, your move must begin in the middle of the board; otherwise, your move must begin next to a previously placed tile.</p>
+
+<p>Now that you know how to make a move, let’s talk about how scores work. It’s easiest to explain that with examples. Let’s say it’s your turn, and the board currently looks like this:</p>
+
+<div class="grid-container small" id="grid-3"></div>
+
+<p>If you place the 3 and 5 shown below, you’ll get 10 points.</p>
+
+<div class="grid-container small" id="grid-4"></div>
+
+<p>That’s because 2 + <strong>3</strong> + <strong>5</strong> = 10.</p>
+
+<p>Now it’s your opponent’s turn.</p>
+
+<p>If they place the 5 and 7 shown below, they’ll get <strong>35</strong> points.</p>
+
+<div class="grid-container small" id="grid-5"></div>
+
+<p>That’s because:</p>
+
+<ul>
+  <li><strong>5</strong> + 5 = 10</li>
+  <li><strong>7</strong> + 3 = 10</li>
+  <li><strong>5</strong> + <strong>7</strong> + 3 = 15</li>
+</ul>
+
+<p>And 10 + 10 + 15 = 35.</p>
+
+<p>Now you know how to play Quinto! The game ends when you run out of tiles; whoever has the highest score at the end of the game wins.</p>
+
+<h2 id="but-wait">But Wait!</h2>
+
+<p>There’s one last rule: you can never make a move that would cause there to be a run of more than five tiles in a row. For instance, this move is invalid!</p>
+
+<div class="grid-container medium" id="grid-6"></div>
+
+<p>If you try to put that zero there, your opponent will heckle you, and you’ll have to come up with another move instead.</p>
+
+<h2 id="that-rule-is-infuriating">That Rule Is Infuriating</h2>
+
+<p>It turns out that this last rule makes the game really hard to play, because it adds this whole extra category of stuff that you need to keep track of in your head. When I’m deep into a game and there are a ton of tiles on the board, it takes <em>all</em> of my brainpower to look at the tiles in my hand, look back at the board, and feverishly think about whether placing these three tiles over <em>here</em> would—no, that’s not a multiple of five. Hm, maybe over here! Yes, perfect! Except—oh no, I can’t put a tile down on <em>that</em> space, because that would break the no-more-than-five-tiles-in-a-row rule!</p>
+
+<p>This some-cells-are-implicitly-verboten rule drove me just completely nuts. I was like: if you can’t make a move on a space, the board should light that space up in red! But of course the board couldn’t do that, because it’s just a dumb piece of cardboard.</p>
+
+<p>So I decided to write a computer program that would light up invalid cells in red and playable cells in green.</p>
+
+<div class="grid-container large" id="grid-7"></div>
+
+<p>While I was at it, I added a few more features that your cardboard copy of Quinto doesn’t have:</p>
+
+<ul>
+  <li>An AI opponent that plays against you (and will probably beat you).</li>
+  <li>Automatic score tracking.</li>
+  <li>If you play an “optimal” move—the highest-scoring move you could have made with the hand you had—your score for that move will be drawn in green to celebrate your achievement.</li>
+  <li>If you mouse over the score for one of your past non-optimal moves, the game will show you what the optimal move <em>would have been</em>. You can use this information to learn how to get better at the game! The AI will still beat you, though.</li>
+</ul>
+
+<p><a href="/quinto" style="font-weight: bold; font-size: 25px;">You can play Quinto here</a>. You can also read the <a href="https://github.com/jrheard/quinto/tree/master/src/quinto">source code</a> if you like.</p>
+
+<p>There are keyboard shortcuts for when clicking becomes too annoying: escape, enter, the left arrow key, and the 1-5 keys all control the parts of the UI that you expect them to.</p>
+
+<p>Have a good old time, and then come back so I can tell you about the tools I used to build this game.</p>
+
+<h1 id="tools">Tools</h1>
+
+<h2 id="clojure">Clojure</h2>
+
+<p><a href="https://clojure.org/">Clojure</a> is my favorite programming language. It’s got a strong focus on writing pure functions—all of its built-in data structures are immutable!—but you can still easily perform side effects when you want to. It sits on top of Java, so in addition to the excellent libraries that the Clojure community has created, you can also use any Java library in your Clojure program.</p>
+
+<p>The community’s great, too—they’re very active on <a href="https://www.reddit.com/r/Clojure/">/r/clojure</a> and the <a href="http://clojurians.net/">Clojurians Slack</a>, and are just generally a nice, smart, helpful, positive group that I’m proud to be a part of.</p>
+
+<p>Clojure strikes a nice balance between functional purity and actually getting stuff done. It’s a particularly excellent language for writing computer programs that transform and filter data<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>. You should try it out! I’ll include some useful links for beginners at the end of this article.</p>
+
+<h2 id="clojurescript">ClojureScript</h2>
+
+<p>I actually wrote my program in <a href="https://clojurescript.org/">ClojureScript</a>, though. ClojureScript is a dialect of Clojure that compiles to JavaScript<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup>.</p>
+
+<p>ClojureScript lets you write a Clojure program and then run it in a web browser. This means:</p>
+
+<ul>
+  <li>If you know a little HTML and CSS, your Clojure program now has a GUI.</li>
+  <li>You can share your program with other people by just uploading a .js file (and probably an <code class="language-plaintext highlighter-rouge">index.html</code> and a <code class="language-plaintext highlighter-rouge">style.css</code>) somewhere and giving your friends a link to it.</li>
+</ul>
+
+<p>ClojureScript programs can use any JavaScript library, as well as the majority of Clojure libraries. ClojureScript programs aren’t just limited to the browser—they can run <em>anywhere</em> JavaScript programs can run.</p>
+
+<p>On top of all that, programming in ClojureScript is <strong>fun</strong>, because the community has created a ton of really stellar libraries that make development a pleasure. Let’s take a look at some of my favorites.</p>
+
+<h2 id="reagent">Reagent</h2>
+<p><a href="https://reagent-project.github.io/">Reagent</a> is a React library for ClojureScript with a beautifully minimal interface. It lets you write code like this:</p>
+
+<script src="https://gist.github.com/jrheard/8c3b19198c36a0efa19be059475e3fa4.js"></script>
+
+<div id="reagent-example"></div>
+
+<p>(Try clicking the square.)</p>
+
+<p>There’s not much going on in that code: <code class="language-plaintext highlighter-rouge">cell-class</code> is an <a href="https://clojure.org/reference/atoms">atom</a>, <code class="language-plaintext highlighter-rouge">@cell-class</code> is how you read the atom’s value, and <code class="language-plaintext highlighter-rouge">reset!</code> modifies that value. <code class="language-plaintext highlighter-rouge">colorful-cell</code> is a function that evaluates to a plain old ClojureScript vector. This is all standard stuff.</p>
+
+<p>The remarkable thing about Reagent is that it gives you a <em>special</em> kind of atom, the <code class="language-plaintext highlighter-rouge">r/atom</code> you see on line 1. When your code modifies one of those special atoms, Reagent notices, and automatically recalculates just the parts of your UI that use that atom. If any of those parts have changed since the last time they were drawn, Reagent redraws just those parts.</p>
+
+<p>In Quinto, I keep the game’s entire state in a <a href="https://github.com/jrheard/quinto/blob/e4132342409369ae0ea8e03e6765205693ba0c27/src/quinto/core.cljs#L7">single atom</a>, and the UI is just a bunch of <a href="https://github.com/jrheard/quinto/blob/e4132342409369ae0ea8e03e6765205693ba0c27/src/quinto/html.cljs#L198">Reagent components</a> that take the game state as input and return HTML (represented by regular ClojureScript vectors) as output. Whenever the game’s state <a href="https://github.com/jrheard/quinto/blob/e4132342409369ae0ea8e03e6765205693ba0c27/src/quinto/input.cljs#L16">changes</a> due to user input, the UI automatically redraws only the parts that need to be redrawn.</p>
+
+<p>You just write a bunch of pure functions and Reagent handles the rest. Reagent is fantastic. I adore it.</p>
+
+<p>If you’d like to learn more about Reagent, I recommend <a href="http://timothypratley.blogspot.com/2017/01/reagent-deep-dive-part-1.html">Timothy Pratley’s excellent articles</a> on the library.</p>
+
+<h2 id="figwheel">Figwheel</h2>
+
+<p><a href="https://github.com/bhauman/lein-figwheel">Figwheel</a> is a lifechanging tool. It’s best explained by its author in <a href="https://www.youtube.com/watch?v=j-kj2qwJa_E">this great talk</a>, but here’s the short version.</p>
+
+<p>Frontend JavaScript development usually looks like this: you’ve got your editor up on one screen and your app up in another; you make a change to your JS; and then you manually reload the browser window and navigate the app—by hand—back to the state it was in before you made your change, so that you can see whether or not the code you just changed does the thing you wanted it to do.</p>
+
+<p>Figwheel makes it so that you don’t have to do that any more. When you’ve got Figwheel running, the changes you make to your code show up <em>immediately</em> in the browser, and your application’s state isn’t dropped on the ground in the process.</p>
+
+<p>Here’s what that looks like. I’m working in my editor off-camera, adding code that attaches a random nonsense CSS class to each cell on the grid. Whenever I save the file I’m working in, Figwheel instantly updates my running game’s behavior without clobbering its state.</p>
+
+<p><img src="https://thumbs.gfycat.com/ImperturbableScientificImperialeagle-size_restricted.gif" /></p>
+
+<h2 id="spec">Spec</h2>
+<p><a href="https://clojure.org/guides/spec">Spec</a> is an indispensable tool added in recent versions of Clojure/Script. It lets you formally specify what your program’s data looks like.</p>
+
+<script src="https://gist.github.com/jrheard/637d5815786edb8aa44100c018470eb3.js"></script>
+
+<p>Once you’ve done that, you can also annotate your program’s functions. For example, <code class="language-plaintext highlighter-rouge">draw-tiles</code> is a function that removes <code class="language-plaintext highlighter-rouge">num-tiles</code> tiles from a <code class="language-plaintext highlighter-rouge">deck</code> and adds them to a player’s <code class="language-plaintext highlighter-rouge">hand</code>.</p>
+
+<script src="https://gist.github.com/jrheard/7bd6f27cb49240b50a87a391092d2da3.js"></script>
+
+<p>Annotations like this make it easy for a human reader to figure out the shape of your program’s data. These annotations can also be <strong>verified</strong> using <a href="https://clojure.org/guides/spec#_instrumentation_and_testing"><code class="language-plaintext highlighter-rouge">instrument</code> and <code class="language-plaintext highlighter-rouge">check</code></a>.<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup></p>
+
+<p>I’m very happy that spec was added to the language. It makes Clojure/Script programs a lot easier to write, read, understand, and confidently modify.</p>
+
+<h2 id="specter">Specter</h2>
+
+<p><a href="https://github.com/nathanmarz/specter">Specter</a> is a library that allows you to elegantly and performantly manipulate Clojure data. <a href="https://www.youtube.com/watch?v=rh5J4vacG98">This screencast</a> was extremely useful when I was first trying to wrap my head around it.</p>
+
+<p>This was my first time using Specter, and I really enjoyed it. I’ll be using it often in the future.</p>
+
+<h2 id="intellij-and-cursive">IntelliJ and Cursive</h2>
+
+<p><a href="https://cursive-ide.com/">Cursive</a> is a plugin that makes <a href="https://www.jetbrains.com/idea/">IntelliJ</a> into a glorious environment for writing Clojure/Script programs. If you’re using Cursive for “non-commercial use, including personal hacking, open-source and student work”, then it’s <a href="https://cursive-ide.com/buy.html">free</a>.</p>
+
+<p>My favorite feature of Cursive is its REPL integration. Lisp programmers are used to this sort of thing, and often have <code class="language-plaintext highlighter-rouge">comment</code> blocks in their programs where they stash chunks of code that are useful for debugging. I never understood what that was all about until I tried doing it myself, and now I do this constantly: you just move the cursor over one of those blocks of code, press a keybinding, and you immediately see the result without leaving your editor. It makes for an incredibly tight feedback loop.</p>
+
+<p>Here’s what that looks like in action—I recorded this video when I was working on the code featured in my <a href="/procedural-dungeon-generation-drunkards-walk-in-clojurescript">Drunkard’s Walk</a> post.</p>
+
+<iframe class="youtube-embed" width="560" height="315" src="https://www.youtube.com/embed/Ilfk_OpXKgc?rel=0&amp;start=1603" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+
+<p>I use Cursive with rainbow parentheses and paredit mode enabled. I also have the IdeaVim plugin installed so that I can use Vim keybindings.</p>
+
+<h2 id="color-picking">Color Picking</h2>
+<p>I don’t have a good tool for this, and that bothers me. The colors I picked for the Quinto UI are awful, but all of the other combinations I tried were even worse.</p>
+
+<p>What would you have done if you were building this game and had to pick colors for UI elements? Do you have any advice for me?</p>
+
+<h1 id="techniques">Techniques</h1>
+
+<h2 id="dev-diary">Dev Diary</h2>
+
+<p>In the past few personal projects I’ve worked on, I’ve created a <a href="https://github.com/jrheard/quinto/blob/master/dev-diary.txt"><code class="language-plaintext highlighter-rouge">dev-diary.txt</code></a> file and used it as a scratchpad. Whenever I notice that I’m not sure what code to write next, I force myself to narrate my thoughts into that text file.</p>
+
+<p>This serves several purposes:</p>
+
+<ul>
+  <li>Expressing my thoughts in written form forces me to actually figure out what problem I’m currently facing and what solutions I’m currently thinking about. This helps me get to a better solution, faster.</li>
+  <li>If I can’t remember why I made a particular decision, I can just search for it in the text file to see what other options I considered.</li>
+  <li>If it’s been a little while since the last time I worked on the project and I don’t remember what I was working on, I can just look at most recent entry in my dev diary and I’m off to the races.</li>
+</ul>
+
+<p>This habit has been immensely valuable for me. I’m still figuring out the specifics—this system breaks down if I’m working on several projects at once, or on projects where I’m not the sole contributor—but those are solvable problems, and when I do solve them I’ll do a brief writeup about my finalized workflow.</p>
+
+<h2 id="grid-validation-function">Grid Validation Function</h2>
+
+<p>In <a href="http://www.codersatwork.com/">Coders At Work</a>, an interviewee (can’t remember which) has this piece of (paraphrased) advice: when you’re working with a novel data structure, you should create a function that inspects the data structure and checks to see if it’s “valid”, and then you should call that validation function all over the place.</p>
+
+<p>My Quinto grid is just a 2D vector of integers-or-<code class="language-plaintext highlighter-rouge">nil</code>s, which is not particularly novel. It does have a bunch of invariants that need to be maintained, though: you can never have more than five non-<code class="language-plaintext highlighter-rouge">nil</code> cells in a row; all contiguous runs of cells have to sum to a multiple of five; etc.</p>
+
+<p>Early on in development, I wrote <a href="https://github.com/jrheard/quinto/blob/daed3c3a426f00a5f9c9176b087dedfb8765bff7/src/quinto/grid.cljs#L208">a function that verifies these invariants</a>, and sprinkled a few asserts in various places in my program<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup>. These asserts failed immediately whenever I introduced a bug into the program, and so I was able to immediately fix the bug instead of finding it hours or days later.</p>
+
+<p>(Unit tests would have surfaced these bugs too.)</p>
+
+<h2 id="thats-it">That’s It!</h2>
+
+<p>ClojureScript with Reagent is truly a sweet spot for writing turn-based games. You happily write pure functions that express the game’s business logic; your UI is just a pure function of your game state; and Clojure’s atom abstraction makes it easy for you to manage that state confidently.</p>
+
+<p>I love these tools and hope you’ll consider trying them out yourself.</p>
+
+<p>If you’re interested in learning Clojure, I hear that <a href="https://www.braveclojure.com/">Clojure for the Brave and True</a> is the current best way to do that. I haven’t read that book myself, but it has a good reputation. I <em>can</em> confidently recommend <a href="http://shop.oreilly.com/product/0636920013754.do">Clojure Programming</a> and <a href="https://www.manning.com/books/the-joy-of-clojure-second-edition">The Joy of Clojure</a>, because those are the books that I read when I learned the language.</p>
+
+<h1 id="appendix-a" class="appendix">Appendix A: Quinto Origin Story</h1>
+
+<p>From what I can piece together from <a href="https://boardgamegeek.com/boardgame/2366/quinto">BoardGameGeek</a>, Quinto was printed once in 1964, once in 1968, and then never again. My friend’s copy was a purchase from Goodwill.</p>
+
+<p>Several different versions of Quinto were printed, each using different board sizes and tile distributions. For my program, I picked an arbitrary board size I liked, but I used the same <a href="https://github.com/jrheard/quinto/blob/2913a907344d2c016793785badf276c3c86dc04f/src/quinto/deck.cljs#L7">tile distribution</a> from the particular version I’d played at my friend’s house.</p>
+
+<p><a href="https://www.youtube.com/watch?v=NeKIgFFtuoo">This video</a> shows a version that sometimes uses a different base number instead of 5, which is interesting—the version I played on didn’t have that feature, so I didn’t include it. Exercise for the reader, pull requests accepted, etc.</p>
+
+<p>To be honest, I think Quinto died out because it’s not a very good game. It was fun to program, though!</p>
+
+<h1 id="appendix-b-quintus-origin-story">Appendix B: Quintus Origin Story</h1>
+
+<p>The Quinto box looks like this:</p>
+
+<p><img src="/assets/img/quinto_box.jpg" width="286" height="400" /></p>
+
+<p>Those Roman(?) dudes, combined with the name Quinto, reminded me of Latin class. I took Latin in middle school because my mom heard it would help my SAT scores. My teacher, Mr. Brunner, assigned me the “Latin name” Quintus.</p>
+
+<p>I remember liking Mr. Brunner, so when Quinto’s name reminded me of his class, I googled his name to see how things ended up going for him. He seems to be doing well, but that’s not what I’m writing about here.</p>
+
+<p>In middle school English, I had a teacher named Rick Riordan. I loved his class. I don’t remember what English-related material we covered, but I do have fond memories of learning all about Norse mythology and Japanese geography in that class, for reasons which elude me. Anyway, some years later, Rick struck it big: his book <a href="https://en.wikipedia.org/wiki/The_Lightning_Thief">Percy Jackson and the Lightning Thief</a> was a huge hit and ended up being made into a movie. I heard about this at some point in college and was happy for Mr. Riordan, but never ended up reading the book or seeing the movie.</p>
+
+<p>And so imagine my surprise when I googled Mr. Brunner and learned that he was a character in the book. He’s Percy’s Latin teacher. Pierce Brosnan plays him in the movie.</p>
+
+<p><img src="/assets/img/brunner_normal.png" width="700" height="298" /></p>
+
+<p>Except it turns out that Mr. Brunner is actually a centaur in disguise named Chiron.</p>
+
+<p><img src="/assets/img/brunner_centaur.jpg" width="467" height="300" /></p>
+
+<p>So that’s what I think about when I think about Quinto.</p>
+
+<script src="/assets/js/quinto.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script type="text/javascript">quinto.core.main()</script>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>This is all computer programs. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>When I first heard about ClojureScript, I thought it sounded like a wacky idea. I am delighted to have been proven so completely wrong. If you also think that ClojureScript is a wacky idea, you might enjoy <a href="https://www.youtube.com/watch?v=gsffg5xxFQI">this talk</a>. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>The built-in version of <code class="language-plaintext highlighter-rouge">instrument</code> <a href="https://www.reddit.com/r/Clojure/comments/7g4fl0/are_return_types_a_black_eye_for_clojure/dqglxv5/?context=3">does not verify that your <code class="language-plaintext highlighter-rouge">fdef</code>s’ <code class="language-plaintext highlighter-rouge">:ret</code> type annotations are respected</a>. <a href="https://github.com/jeaye/orchestra">Orchestra</a> has a drop-in replacement for <code class="language-plaintext highlighter-rouge">instrument</code> that solves this problem nicely. <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:4" role="doc-endnote">
+      <p>Later on, when I was tracking down a few performance issues, I realized that one of these asserts was getting run in the bottom of a hot loop; moving the assert somewhere less sensitive fixed my performance problem. <a href="https://thedailywtf.com/articles/The-Speedup-Loop">Classic</a>. <a href="#fnref:4" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</div>
+
+
+<div class="message">
+	
+	<p>If you've found an error or have a suggestion, please open an issue or pull request on <a
+			href="https://github.com/jrheard/blog">GitHub</a>.</p>
+</div>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Madison CS 3-4: Mad Libs &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item active" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="page">
+  <h1 class="page-title">Madison CS 3-4: Mad Libs</h1>
+  <p>Welcome to your first project in CS 3-4!</p>
+
+<p>In this project, you’ll be writing a program that lets the user fill in a <a href="https://en.wikipedia.org/wiki/Mad_Libs#Format">mad lib</a>. When you’re done, your program will look something like this:</p>
+
+<asciinema-player src="/madlib.json" rows="10" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>My mad lib script isn’t very good, though - you should write a better one!</p>
+
+<h1 id="starter-code">Starter Code</h1>
+
+<p>This project comes with some starter code to get you started. Download <a href="/python/mad_lib_starter_code.py">this file</a> and open it in IDLE.</p>
+
+<p>The starter code comes with a <code class="language-plaintext highlighter-rouge">mad_lib()</code> function - that’s where your code should go.</p>
+
+<p>The starter code has some comments with the word TODO in them, which are just reminders about what you’re supposed to do. Delete those comments once you’ve done the things that they tell you to do.</p>
+
+<h1 id="requirements">Requirements</h1>
+
+<p>Your program should prompt the user for <strong>at least five words</strong> and then plug them into a mad-lib script you’ve written. If you’d like to write a longer mad-lib, go ahead and prompt the user for lots more words!</p>
+
+<p>Remember: here’s how to use the <code class="language-plaintext highlighter-rouge">input()</code> function to ask the user for a string of text and then save that string to a variable:</p>
+
+<textarea class="hidden">
+word = input("I would like one word, please: ")
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<h1 id="submitting-your-project">Submitting your project</h1>
+
+<p>Submit a file called <code class="language-plaintext highlighter-rouge">mad_lib_YOUR_NAME.py</code>. For example, I’d submit a file called <code class="language-plaintext highlighter-rouge">mad_lib_jr_heard.py</code>.</p>
+
+<p>On the first line of that file, write a comment with your name on it, like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># JR Heard
+</code></pre></div></div>
+
+<h1 id="a-suggestion">A Suggestion</h1>
+
+<p>You’re probably going to end up writing a lot of code like this:</p>
+
+<textarea class="hidden">
+adjective = input("Please give me an adjective: ")
+noun = input("Please give me a noun: ")
+animal = input("Please give me an animal: ")
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>That can get pretty repetitive. If you want to make this feel a little less gross, you can write a function like this:</p>
+
+<textarea class="hidden">
+def get_word(kind_of_word):
+    return input("Please give me " + kind_of_word + ":")
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>Then you can use that function in your code like this:</p>
+
+<textarea class="hidden">
+adjective = get_word("an adjective")
+noun = get_word("a noun")
+animal = get_word("an animal")
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>I like this better because it means that I don’t have to type out <code class="language-plaintext highlighter-rouge">"Please give me a &lt;something&gt;:"</code> every time.</p>
+
+<p>You don’t have to do this <code class="language-plaintext highlighter-rouge">get_word()</code> thing, but you can if you want to!</p>
+
+<script src="/assets/js/asciinema-player.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script src="/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script src="/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script src="/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script>
+var textAreas = document.getElementsByTagName("textarea");
+var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+for (var i = 0; i < textAreas.length; i++) {
+	CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+}
+</script>
+
+
+</div>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

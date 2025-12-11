@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Truthiness and Short-Circuit Evaluation in Python &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="post">
+	<h1 class="post-title">Truthiness and Short-Circuit Evaluation in Python</h1>
+	<span class="post-date">22 Feb 2018</span>
+	<style>
+.target-audience {
+	background-color: #EEE;
+	font-family: sans-serif;
+	padding: 5px 10px;
+	margin: -20px 0 20px;
+	display: inline-block;
+	font-size: 15px;
+	font-weight: bold;
+}
+</style>
+
+<div class="target-audience">
+Target audience: beginner programmers
+</div>
+
+<p>In the <a href="/watercolorbot">high school Python class</a> I’m helping out with, I’ve noticed that students will often write a chunk of code that looks like this:</p>
+
+<textarea class="hidden">
+num = int(input())
+
+if num == 5 or 6 or 7:
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>In this example, the student has a <code class="language-plaintext highlighter-rouge">num</code> variable whose value is some integer, and they’re trying to write some code that gets run if the integer is <code class="language-plaintext highlighter-rouge">5</code> or <code class="language-plaintext highlighter-rouge">6</code> or <code class="language-plaintext highlighter-rouge">7</code>. The code snippet above seems reasonable at first glance, but it actually does something <strong>completely different</strong> from what the student would expect.</p>
+
+<p>Let’s focus on the <code class="language-plaintext highlighter-rouge">num == 5 or 6 or 7</code> part, because that’s the part that isn’t doing what the student expects. Here’s what Python sees when you write that code:</p>
+
+<div class="boolean-diagram">
+<div class="expression">num == 5</div>
+<div class="conjunction">or</div>
+<div class="expression">6</div>
+<div class="conjunction">or</div>
+<div class="expression">7</div>
+</div>
+
+<p>I’m going to be using a lot of diagrams like this throughout this article. In these diagrams, a yellow box is a <strong>chunk of code that Python hasn’t evaluated yet</strong>. (“Evaluated” basically means “run”.)</p>
+
+<p>Notice how the first yellow box in that diagram is</p>
+
+<div class="boolean-diagram"><div class="expression">num == 5</div></div>
+
+<p>and the second box is</p>
+
+<div class="boolean-diagram"><div class="expression">6</div></div>
+
+<p>That second box isn’t <code class="language-plaintext highlighter-rouge">num == 6</code>—it’s <strong>just <code class="language-plaintext highlighter-rouge">6</code></strong>. That’s kind of weird! What does the number <code class="language-plaintext highlighter-rouge">6</code> do if you put it in an <code class="language-plaintext highlighter-rouge">if</code> statement? Read on to find out!</p>
+
+<p>OK, so we’re trying to decipher this code:</p>
+
+<textarea class="hidden">
+num == 5 or 6 or 7
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>Let’s start our analysis by figuring out what that code does when the <code class="language-plaintext highlighter-rouge">num</code> variable has the value <code class="language-plaintext highlighter-rouge">10</code>.</p>
+
+<p>Python starts by evaluating <code class="language-plaintext highlighter-rouge">10 == 5</code>, which turns into <code class="language-plaintext highlighter-rouge">False</code>.</p>
+
+<div class="boolean-diagram">
+<div class="expression falsey">False</div>
+<div class="conjunction">or</div>
+<div class="expression">6</div>
+<div class="conjunction">or</div>
+<div class="expression">7</div>
+</div>
+
+<p>So at this point, our partly-evaluated expression is <code class="language-plaintext highlighter-rouge">False or 6 or 7</code>, and Python has to figure out whether or not that whole thing ends up evaluating to <code class="language-plaintext highlighter-rouge">True</code>, because we’re running this code as the condition part of an <code class="language-plaintext highlighter-rouge">if</code> statement.</p>
+
+<p>What does Python do when it sees <code class="language-plaintext highlighter-rouge">False or 6 or 7</code>? In order to answer that question, we’ll need to know about <strong>truthiness</strong> and <strong>short-circuiting</strong>.</p>
+
+<h1 id="truthiness">Truthiness</h1>
+
+<p>You’re familiar with the values <code class="language-plaintext highlighter-rouge">True</code> and <code class="language-plaintext highlighter-rouge">False</code>. We call them “Booleans”, and we use them most often in <code class="language-plaintext highlighter-rouge">if</code> statements.</p>
+
+<pre class="dont-format-output"><code class="py">
+hungry = True
+
+if hungry:
+	print('try eating a slice of pizza')
+else:
+	print('must be nice')
+</code></pre>
+
+<p>Python doesn’t limit us to just using <code class="language-plaintext highlighter-rouge">True</code> and <code class="language-plaintext highlighter-rouge">False</code> as the condition for <code class="language-plaintext highlighter-rouge">if</code> statements, though—you can put <em>any</em> expression in there. If you put something in an <code class="language-plaintext highlighter-rouge">if</code> statement’s condition section and it’s not <code class="language-plaintext highlighter-rouge">True</code> or <code class="language-plaintext highlighter-rouge">False</code>, Python will look at it and decide whether or not it’s “truthy”.</p>
+
+<p>According to the <a href="https://docs.python.org/3/library/stdtypes.html#truth-value-testing">official documentation</a>, <strong>everything</strong> in Python is considered truthy except for these things:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">False</code></li>
+  <li><code class="language-plaintext highlighter-rouge">None</code></li>
+  <li><code class="language-plaintext highlighter-rouge">0</code></li>
+  <li>Empty sequences, e.g. <code class="language-plaintext highlighter-rouge">[]</code>, <code class="language-plaintext highlighter-rouge">''</code>, <code class="language-plaintext highlighter-rouge">()</code>, <code class="language-plaintext highlighter-rouge">{}</code></li>
+</ul>
+
+<p>You can use the built-in <code class="language-plaintext highlighter-rouge">bool()</code> function to see if something is truthy. Here are some examples:</p>
+
+<pre><code class="py">
+print(bool(True))
+print(bool(False))
+print(bool('cat'))
+print(bool([]))
+print(bool(['pizza', 'tacos']))
+</code></pre>
+
+<p>That code snippet is interactive, so go ahead and mess around with those examples to convince yourself that you understand how truthiness works. Is <code class="language-plaintext highlighter-rouge">15</code> truthy?</p>
+
+<p>Now that we know what truthiness is, let’s talk about short-circuit evaluation.</p>
+
+<h1 id="short-circuit-evaluation">Short-Circuit Evaluation</h1>
+
+<p>The <code class="language-plaintext highlighter-rouge">and</code> and <code class="language-plaintext highlighter-rouge">or</code> operators in Python are <a href="https://docs.python.org/3/library/stdtypes.html#boolean-operations-and-or-not">short-circuit operators</a>. To see what this means, let’s look at an example use of the <code class="language-plaintext highlighter-rouge">or</code> operator.</p>
+
+<textarea class="hidden">
+1 == 1 or 1 == 2
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>This is what Python sees before it starts evaluating that code:</p>
+
+<div class="boolean-diagram">
+<div class="expression">1 == 1</div>
+<div class="conjunction">or</div>
+<div class="expression">1 == 2</div>
+</div>
+
+<p>Remember that if a box is yellow, that means that Python hasn’t evaluated it yet.</p>
+
+<p>An <code class="language-plaintext highlighter-rouge">or</code> expression is truthy if <em>at least one</em> thing in it is truthy. An <code class="language-plaintext highlighter-rouge">and</code> expression is truthy if <em>all</em> things in it are truthy.</p>
+
+<p>Since this is an <code class="language-plaintext highlighter-rouge">or</code>, Python evaluates each of the yellow boxes in order until it finds <strong>one</strong> that’s truthy. It starts by evaluating <code class="language-plaintext highlighter-rouge">1 == 1</code>, which turns into <code class="language-plaintext highlighter-rouge">True</code>.</p>
+
+<div class="boolean-diagram">
+<div class="expression truthy">True</div>
+<div class="conjunction">or</div>
+<div class="expression">1 == 2</div>
+</div>
+
+<p>At this point, Python <strong>stops</strong>, because you’re in an <code class="language-plaintext highlighter-rouge">or</code> and it’s found something truthy! That’s what short-circuiting means. The whole <code class="language-plaintext highlighter-rouge">or</code> expression evaluates to <code class="language-plaintext highlighter-rouge">True</code>, because that’s the value of the first truthy thing in it.</p>
+
+<p>Here’s how the official documentation describes <code class="language-plaintext highlighter-rouge">or</code>’s behavior:</p>
+
+<blockquote>
+  <p>it only evaluates the second argument if the first one is false.</p>
+</blockquote>
+
+<p>Here, I’ll prove it to you.</p>
+
+<p>If you divide a non-zero number by zero, Python will throw an exception:</p>
+
+<pre><code class="py">
+1 / 0
+</code></pre>
+
+<p>Now check out what happens if I put a <code class="language-plaintext highlighter-rouge">1 / 0</code> <em>after</em> a truthy thing in an <code class="language-plaintext highlighter-rouge">or</code>:</p>
+
+<pre><code class="py">
+print(True or 1 / 0)
+</code></pre>
+
+<p>The program prints <code class="language-plaintext highlighter-rouge">True</code> and <strong>doesn’t evaluate the <code class="language-plaintext highlighter-rouge">1 / 0</code></strong>! To convince yourself that this works the way I claim it does, try changing that <code class="language-plaintext highlighter-rouge">True</code> to a <code class="language-plaintext highlighter-rouge">False</code>.</p>
+
+<p>This matches the behavior we saw in our most recent diagram. Do you remember how the <code class="language-plaintext highlighter-rouge">1 == 2</code> box stayed yellow to indicate that Python hadn’t evaluated the code inside of it?</p>
+
+<p>So, that’s what “short-circuiting” means when you’re using the <code class="language-plaintext highlighter-rouge">or</code> operator. The <code class="language-plaintext highlighter-rouge">and</code> operator is pretty similar to <code class="language-plaintext highlighter-rouge">or</code>, except that the official documentation says that <code class="language-plaintext highlighter-rouge">and</code></p>
+
+<blockquote>
+  <p>only evaluates the second argument if the first one is true.</p>
+</blockquote>
+
+<p>That makes sense, because <code class="language-plaintext highlighter-rouge">and</code> wants to make sure that both of its operands are truthy. If the sub-expression on the left-hand side of an <code class="language-plaintext highlighter-rouge">and</code> is falsey, then <strong>the whole <code class="language-plaintext highlighter-rouge">and</code> expression is falsey!</strong> In that situation, there’s no need to evaluate the sub-expression on the right-hand side.</p>
+
+<p>Here are some more examples. Do they all behave the way that you expect?</p>
+
+<div class="boolean-diagram falsey">
+<div class="expression falsey">1 == 2</div>
+<div class="conjunction">and</div>
+<div class="expression">2 == 2</div>
+</div>
+
+<div class="boolean-diagram falsey">
+<div class="expression truthy">1 == 1</div>
+<div class="conjunction">and</div>
+<div class="expression falsey">1 == 2</div>
+</div>
+
+<div class="boolean-diagram truthy">
+<div class="expression truthy">1 == 1</div>
+<div class="conjunction">and</div>
+<div class="expression truthy">2 == 2</div>
+</div>
+
+<div class="boolean-diagram falsey">
+<div class="expression falsey">1 == 2</div>
+<div class="conjunction">or</div>
+<div class="expression truthy">1 == 1</div>
+</div>
+
+<h1 id="back-to-our-buggy-num-code">Back to our buggy <code class="language-plaintext highlighter-rouge">num</code> code</h1>
+
+<p>Now that we know about truthiness and short-circuit evaluation, we can finally figure out what this code does!</p>
+
+<textarea class="hidden">
+num = 10
+
+print(num == 5 or 6 or 7)
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>What do you think will be printed out when that code is run?</p>
+
+<p>Before we run it and find out for sure, let’s walk through one last set of diagrams using what we’ve learned. Here’s what Python sees before it starts evaluating anything:</p>
+
+<div class="boolean-diagram">
+<div class="expression">num == 5</div>
+<div class="conjunction">or</div>
+<div class="expression">6</div>
+<div class="conjunction">or</div>
+<div class="expression">7</div>
+</div>
+
+<p>Python begins by evaluating <code class="language-plaintext highlighter-rouge">10 == 5</code>, which turns into <code class="language-plaintext highlighter-rouge">False</code>.</p>
+
+<div class="boolean-diagram">
+<div class="expression falsey">False</div>
+<div class="conjunction">or</div>
+<div class="expression">6</div>
+<div class="conjunction">or</div>
+<div class="expression">7</div>
+</div>
+
+<p>Next up, it evaluates <code class="language-plaintext highlighter-rouge">6</code>. We saw earlier that all non-zero numbers are truthy, so now our diagram looks like this:</p>
+
+<div class="boolean-diagram">
+<div class="expression falsey">False</div>
+<div class="conjunction">or</div>
+<div class="expression truthy">6</div>
+<div class="conjunction">or</div>
+<div class="expression">7</div>
+</div>
+
+<p>At this point, Python stops and says: hey, I found something truthy! And that’s what the entire expression evaluates to. The answer is <code class="language-plaintext highlighter-rouge">6</code>!</p>
+
+<pre><code class="py">
+num = 10
+
+print(num == 5 or 6 or 7)
+</code></pre>
+
+<p>And so that’s why the code from the beginning of this article doesn’t do what our student expects. <code class="language-plaintext highlighter-rouge">num == 5 or 6 or 7</code> <strong>will always evaluate to either <code class="language-plaintext highlighter-rouge">True</code> or <code class="language-plaintext highlighter-rouge">6</code></strong>, and so the code inside that <code class="language-plaintext highlighter-rouge">if</code> statement will <strong>always</strong> be run!</p>
+
+<pre><code class="py">
+num = 10
+
+if num == 5 or 6 or 7:
+       1 / 0
+else:
+       print('safe!')
+</code></pre>
+
+<h1 id="wrapping-up">Wrapping up</h1>
+
+<p>Here are a few more examples—play around with them and try adding some of your own!</p>
+
+<pre><code class="py">
+print(False or [])
+print(2 or False)
+print(False or 0 or "hello")
+</code></pre>
+
+<p>Notice how if everything in an <strong><code class="language-plaintext highlighter-rouge">or</code></strong> is <strong>falsey</strong>, then the whole <code class="language-plaintext highlighter-rouge">or</code> expression will evaluate to the rightmost sub-expression.</p>
+
+<pre><code class="py">
+print(False or 0)
+</code></pre>
+
+<p>If everything in an <strong><code class="language-plaintext highlighter-rouge">and</code></strong> is <strong>truthy</strong>, then the whole <code class="language-plaintext highlighter-rouge">and</code> expression will evaluate to the rightmost sub-expression.</p>
+
+<pre><code class="py">
+print('cat' and 'dog')
+</code></pre>
+
+<p>Oh, and if you want to write some code that does what the student in our example actually wanted, try one of these:</p>
+
+<pre><code class="py">
+num = 7
+
+print(num == 5 or num == 6 or num == 7)
+print(num in [5, 6, 7])
+print(5 &lt;= num &lt;= 7)
+</code></pre>
+
+<p>By the way—what do you think this code does? Will it evaluate to <code class="language-plaintext highlighter-rouge">True</code>? If not, why not?</p>
+
+<textarea class="hidden">
+num = 7
+
+num == (5 or 6 or 7)
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<h1 id="resources">Resources</h1>
+
+<ul>
+  <li><a href="https://en.wikibooks.org/wiki/Non-Programmer%27s_Tutorial_for_Python_3/Boolean_Expressions">This walkthrough</a> is great.</li>
+  <li>So is <a href="https://stackoverflow.com/questions/2580136/does-python-support-short-circuiting/14892812#14892812">this StackOverflow answer</a>.</li>
+  <li><a href="https://twitter.com/codewithanthony">@codewithanthony</a> has <a href="https://www.youtube.com/watch?v=mRPU3l54Z7I&amp;app=desktop">this fascinating video</a> about <code class="language-plaintext highlighter-rouge">False == False in [False]</code>.</li>
+</ul>
+
+
+</div>
+
+
+<div class="message">
+	
+	<p>If you've found an error or have a suggestion, please open an issue or pull request on <a
+			href="https://github.com/jrheard/blog">GitHub</a>.</p>
+</div>
+
+
+<script src="/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800"></script>
+<script>
+	var textAreas = document.getElementsByTagName("textarea");
+	var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+	for (var i = 0; i < textAreas.length; i++) {
+		CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+	}
+
+	window.klipse_settings = {
+		selector_eval_python_client: '.py',
+		codemirror_options_in: {
+			theme: "friendship-bracelet"
+		},
+		codemirror_options_out: {
+			theme: "friendship-bracelet"
+		}
+	};
+</script>
+<script src="/assets/js/klipse.min.js?v=2025-12-11 14:39:50 -0800"></script>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

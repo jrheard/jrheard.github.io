@@ -1,0 +1,2012 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+ <title>jrheard's blog</title>
+ <link href="http://blog.jrheard.com/atom.xml" rel="self"/>
+ <link href="http://blog.jrheard.com/"/>
+ <updated>2025-12-11T14:39:50-08:00</updated>
+ <id>http://blog.jrheard.com</id>
+ <author>
+   <name>JR Heard</name>
+ </author>
+
+ 
+ <entry>
+   <title>Pure Functions</title>
+   <link href="http://blog.jrheard.com/pure-functions"/>
+   <updated>2024-08-31T00:00:00-07:00</updated>
+   <id>http://blog.jrheard.com/pure-functions</id>
+   <content type="html">&lt;p&gt;The hardest problem in software engineering (aside from choosing &lt;em&gt;which program to write&lt;/em&gt;) is keeping your program simple enough for maintainers to confidently read, understand, and make changes to. This problem is called “&lt;strong&gt;managing complexity&lt;/strong&gt;,” and there are lots of famous quotes about it&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;. Managing complexity is easy when a program is small, but it gets exponentially harder as years pass, the program gets bigger, the engineering organization gets bigger too, and the program’s original authors leave.&lt;/p&gt;
+
+&lt;p&gt;Pure functions are &lt;strong&gt;my favorite tool&lt;/strong&gt; for managing complexity. Let’s talk about what they are and why they’re so effective. Note: I’ll be showing examples in Python, but you can write pure functions in &lt;strong&gt;any&lt;/strong&gt; programming language.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-is-a-pure-function&quot;&gt;What is a pure function?&lt;/h2&gt;
+
+&lt;p&gt;We call a function “pure” if it follows these two rules:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;It always returns the same outputs when given the same inputs.&lt;/li&gt;
+  &lt;li&gt;It performs no side effects.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Here are some examples of what I mean when I say “side effects”:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Mutating one of the function’s arguments&lt;/li&gt;
+  &lt;li&gt;Mutating a global variable&lt;/li&gt;
+  &lt;li&gt;Reading/writing to a database&lt;/li&gt;
+  &lt;li&gt;Making an HTTP request&lt;/li&gt;
+  &lt;li&gt;Sending an email&lt;/li&gt;
+  &lt;li&gt;Sending a push notification&lt;/li&gt;
+  &lt;li&gt;Firing a missile&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;examples&quot;&gt;Examples&lt;/h2&gt;
+
+&lt;p&gt;This is a pure function:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+# Imagine that this `distance_between` library function is also pure.
+from some_library import distance_between
+
+def find_closest_scooter(
+    scooters: list[Scooter], point: Point
+) -&amp;gt; Scooter | None:
+    &quot;&quot;&quot;Returns the closest Scooter to `point`.&quot;&quot;&quot;
+    if not scooters:
+        return None
+
+    distances = [
+        distance_between(scooter.location, point)
+        for scooter in scooters
+    ]
+
+    closest_scooter, smallest_distance = min(
+        zip(scooters, distances),
+        key=lambda scooter, distance: distance
+    )
+
+    return closest_scooter
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;This function is impure:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+def find_closest_scooter(
+    scooters: list[Scooter], point: Point
+) -&amp;gt; Scooter | None:
+    &quot;&quot;&quot;Returns the closest Scooter to `point`.&quot;&quot;&quot;
+    if not scooters:
+        return None
+
+    for scooter in scooters:
+        # XXX: Mutating an input is a side effect!
+        scooter.distance = distance_between(scooter.location, point)
+
+    closest_scooter = min(
+        scooters,
+        key=lambda scooter: scooter.distance
+    )
+
+    return closest_scooter
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;This one’s &lt;strong&gt;super&lt;/strong&gt; impure:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+def notify_closest_scooter(
+    conn: DatabaseConnection, point: Point
+) -&amp;gt; None:
+    &quot;&quot;&quot;Sends the user an email about the closest scooter to `point`.&quot;&quot;&quot;
+
+    # XXX: Reading from the database is a side effect!
+    scooters = conn.get_some_scooters_near_point(point)
+
+    if not scooters:
+        return
+
+    distances = [
+        distance_between(scooter.location, point)
+        for scooter in scooters
+    ]
+
+    closest_scooter, smallest_distance = min(
+        zip(scooters, distances),
+        key=lambda scooter, distance: distance
+    )
+
+    # XXX: Reading from a global variable violates rule 1!
+    email = REQUEST[&quot;user_email&quot;]
+
+    # XXX: Sending an email is a side effect!
+    send_closest_scooter_email_to_user(email, closest_scooter)
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;primary-benefit&quot;&gt;Primary Benefit&lt;/h2&gt;
+
+&lt;p&gt;We have to put away some our tools when we write pure functions: we can’t read from the database, we can’t check what time it is, we can’t pull an API key from a global config object. What do we get in return?&lt;/p&gt;
+
+&lt;p&gt;The primary benefit of pure functions is that they are &lt;strong&gt;simple enough to fit into your head&lt;/strong&gt;. In order to understand what a pure function does, you just need to look at these things:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;What are the function’s inputs?&lt;/li&gt;
+  &lt;li&gt;What are the function’s outputs?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;By contrast, here are &lt;em&gt;some of&lt;/em&gt; the things that you need to think about when you’re reading an impure function:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;What are the function’s inputs?
+    &lt;ul&gt;
+      &lt;li&gt;When the function has finished running, what state will the inputs be in?&lt;/li&gt;
+      &lt;li&gt;Will some of the inputs have been mutated? Which ones?&lt;/li&gt;
+      &lt;li&gt;Will the inputs be mutated &lt;em&gt;every&lt;/em&gt; time the function runs, or only &lt;em&gt;sometimes&lt;/em&gt;?&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;What are the function’s outputs? Does it have any?&lt;/li&gt;
+  &lt;li&gt;What global variables does the function read from?
+    &lt;ul&gt;
+      &lt;li&gt;Have those global variables been initialized the way that we expect by the time that this function is called?&lt;/li&gt;
+      &lt;li&gt;What happens if they haven’t?&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;What global variables does the function &lt;em&gt;write to&lt;/em&gt;?
+    &lt;ul&gt;
+      &lt;li&gt;How does that affect the other parts of the program that read those variables?&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;What if the database is unreachable?&lt;/li&gt;
+  &lt;li&gt;What if the API we’re calling is down?&lt;/li&gt;
+  &lt;li&gt;What day of the week is it?&lt;/li&gt;
+  &lt;li&gt;What is the phase of the moon as seen from Mars?
+    &lt;ul&gt;
+      &lt;li&gt;&lt;em&gt;Which&lt;/em&gt; moon?&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;When working with pure functions, you can think about the function in isolation and don’t have to worry about fitting the rest of the program into your head. I’ve heard this described as “&lt;strong&gt;local reasoning&lt;/strong&gt;” (which pure functions enable you to do), as opposed to “global reasoning” (which impure code &lt;em&gt;forces&lt;/em&gt; you to do).&lt;/p&gt;
+
+&lt;h2 id=&quot;secondary-benefits&quot;&gt;Secondary Benefits&lt;/h2&gt;
+
+&lt;p&gt;As if that weren’t enough, you also get these things for free:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Pure functions are safe to &lt;strong&gt;cache&lt;/strong&gt;, since the same inputs always give the same outputs.&lt;/li&gt;
+  &lt;li&gt;Pure functions are safe to &lt;strong&gt;parallelize&lt;/strong&gt;, since they don’t mutate anything.&lt;/li&gt;
+  &lt;li&gt;Pure functions are trivial to &lt;strong&gt;test&lt;/strong&gt;, since you don’t need to mock anything.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let’s zoom in on that last bullet point, because the difference is really unbelievable. Here’s a test for the pure function I showed you earlier:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+import test_fixtures
+
+def test_find_closest_scooter():
+    scooters = [
+        test_fixtures.SCOOTER_IN_MIDDLE_OF_OCEAN,
+        test_fixtures.SCOOTER_IN_SOUTHEAST_PORTLAND,
+        test_fixtures.SCOOTER_IN_TORONTO_CANADA
+    ]
+
+    point = test_fixtures.DOWNTOWN_PORTLAND
+
+    assert_equal(
+        find_closest_scooter(scooters, point),
+        test_fixtures.SCOOTER_IN_SOUTHEAST_PORTLAND
+    )
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here’s a test for the one of the impure functions:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+from mock import patch
+
+import test_fixtures
+from scooters import notify
+
+@patch.object(
+    notify,
+    &quot;REQUEST&quot;,
+    {&quot;user_email&quot;: &quot;jrheard@zombo.com&quot;}
+)
+@patch.object(
+    notify,
+    &quot;send_closest_scooter_email_to_user&quot;
+)
+def test_notify_closest_scooter(send_email_mock, _request_mock):
+    conn = test_fixtures.get_database_connection()
+
+    scooters = [
+        test_fixtures.SCOOTER_IN_MIDDLE_OF_OCEAN,
+        test_fixtures.SCOOTER_IN_SOUTHEAST_PORTLAND,
+        test_fixtures.SCOOTER_IN_TORONTO_CANADA
+    ]
+
+    point = test_fixtures.DOWNTOWN_PORTLAND
+
+    with patch.object(
+        conn,
+        &quot;get_some_scooters_near_point&quot;,
+        return_value=scooters
+    ):
+        notify_closest_scooter(conn, point)
+
+    send_email_mock.assert_called_once_with(
+        &quot;jrheard@zombo.com&quot;,
+        test_fixtures.SCOOTER_IN_SOUTHEAST_PORTLAND
+    )
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;Which of these two worlds would you rather live in?&lt;/p&gt;
+
+&lt;h2 id=&quot;general-advice&quot;&gt;General Advice&lt;/h2&gt;
+
+&lt;p&gt;It’s easiest to write pure functions when you’re working with “&lt;a href=&quot;https://blog.jrheard.com/book-report-architecture-patterns-python#value-objects&quot;&gt;plain data&lt;/a&gt;,” i.e. stuff that doesn’t have an active connection to the database. You can still make a function pure even if it’s operating on database models, though: as long as your function follows the two rules we talked about earlier, it’s pure!&lt;/p&gt;
+
+&lt;p&gt;I’ll bet that a lot of functions in your codebase are just one or two tweaks away from purity. As you get in the habit of looking for side effects, you’ll get better at identifying them and eliminating them. For example: does your function &lt;em&gt;really&lt;/em&gt; need to modify its inputs and return &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;None&lt;/code&gt;? What if it left its inputs unmodified and returned a value instead?&lt;/p&gt;
+
+&lt;p&gt;Of course, not &lt;em&gt;every&lt;/em&gt; side effect can be removed. We write and run programs because they do stuff! For now, just focus on finding and eliminating the side effects that &lt;strong&gt;don’t need to happen&lt;/strong&gt; (and the ones that don’t need to happen in &lt;strong&gt;this specific function&lt;/strong&gt;). Next time we’ll talk about how to handle the side effects that remain!&lt;/p&gt;
+
+&lt;h2 id=&quot;appendix-smells-to-watch-out-for&quot;&gt;Appendix: Smells To Watch Out For&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;If a function takes no inputs, it’s probably impure.&lt;/li&gt;
+  &lt;li&gt;If a function has no output, it’s probably impure.&lt;/li&gt;
+  &lt;li&gt;If a function is async, it’s probably impure.&lt;/li&gt;
+  &lt;li&gt;If you need to use mocks when testing a function, it’s probably impure.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=PBQN62oUnN8&quot;&gt;Hoist Your I/O&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=P1vES9AgfC4&quot;&gt;Functional Core, Imperative Shell&lt;/a&gt; (Scott Wlaschin version)&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=vK1DazRK_a0&amp;amp;t=2368s&quot;&gt;This refactoring exercise&lt;/a&gt; from “Solving Problems the Clojure Way” - I love the visualization technique the presenter uses, it makes it really easy to follow the side effects as they get moved or eliminated.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://archive.is/zPtaC&quot;&gt;Functional Programming in C++&lt;/a&gt; (by John Carmack!!)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Edsger Dijkstra: “The computing scientist’s main challenge is not to get confused by the complexities of his own making.” Steve McConnell: “Managing complexity is the most important technical topic in software development.” Ben Moseley and Peter Marks: “Complexity is the single major difficulty in the successful development of large-scale software systems.” Dr. Pamela Zave: “The purpose of software engineering is to control complexity, not to create it.” Bruce Eckel: “Programming is about managing complexity: the complexity of the problem, laid upon the complexity of the machine. Because of this complexity, most of our programming projects fail.” &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Book Report: Architecture Patterns with Python</title>
+   <link href="http://blog.jrheard.com/book-report-architecture-patterns-python"/>
+   <updated>2024-06-22T00:00:00-07:00</updated>
+   <id>http://blog.jrheard.com/book-report-architecture-patterns-python</id>
+   <content type="html">&lt;p&gt;I recently read &lt;a href=&quot;https://www.cosmicpython.com/&quot;&gt;Architecture Patterns with Python&lt;/a&gt;. The book’s primary focus is on how to structure programs so that they stay simple and maintainable as they grow: that’s my specific favorite programming topic, so of course I liked it. I’m probably not going to use the exact techniques that the authors recommend in this book, but they discussed some cool ideas that reminded me of things I’ve run into at past jobs, and the book’s &lt;a href=&quot;https://www.cosmicpython.com/book/preface.html&quot;&gt;available for free online&lt;/a&gt;, so what’s not to like?&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/architecture_patterns_with_python.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The book discusses domain-driven design and an event-driven architecture (potentially, but not necessarily, a microservices-based one). I’m going to talk a bit about some of my favorite ideas from the book, but I want to knock out a few odds and ends before we get there:&lt;/p&gt;
+
+&lt;h2 id=&quot;side-notes&quot;&gt;Side Notes&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;It was a relatively fast read - nice clear prose, nice short chapters.&lt;/li&gt;
+  &lt;li&gt;The book didn’t make me a total expert in DDD, but that’s OK&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/li&gt;
+  &lt;li&gt;The authors were careful to not wholeheartedly recommend microservices, which I appreciated.&lt;/li&gt;
+  &lt;li&gt;Each chapter had a short pros/cons table at the end with some really frank discussion of whether or not the technique discussed in that chapter could be worth applying in your own work. Many of the “cons” sections looked something like this, and I appreciated their candor:
+    &lt;ul&gt;
+      &lt;li&gt;“We’ve been at pains to point out that each pattern comes at a cost. Each layer of indirection has a price in terms of complexity and duplication in our code and will be confusing to programmers who’ve never seen these patterns before.”&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;OK, on to the good stuff.&lt;/p&gt;
+
+&lt;h2 id=&quot;value-objects&quot;&gt;Value Objects&lt;/h2&gt;
+
+&lt;p&gt;The book recommends using “value objects” to represent core primitive business concepts, and suggests using dataclasses to do it. Here’s an example from &lt;a href=&quot;https://www.cosmicpython.com/book/chapter_01_domain_model.html#_dataclasses_are_great_for_value_objects&quot;&gt;Chapter 1&lt;/a&gt;:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+@dataclass(frozen=True)
+class OrderLine:
+    order_id: OrderReference
+    sku: ProductReference
+    quantity: Quantity
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;I &lt;strong&gt;also&lt;/strong&gt; recommend doing this. The important thing here is that this class doesn’t know anything about a database/ORM - it’s just a simple dataclass that refers to some other simple dataclasses. It’s really easy to write nice, easy-to-test pure functions that operate on data like this. In an ideal world, this is what &lt;strong&gt;all&lt;/strong&gt; of your core primitives would look like.&lt;/p&gt;
+
+&lt;p&gt;This brings us to our next topic, which is extremely related:&lt;/p&gt;
+
+&lt;h2 id=&quot;dependency-inversion-principle&quot;&gt;Dependency Inversion Principle&lt;/h2&gt;
+
+&lt;p&gt;This term was new to me. Apparently it’s an OO thing (it’s the D in SOLID?), and I don’t find the original formulation super helpful, but the authors translate it into a technique that I find very compelling. It’s easiest to demonstrate that technique by contrast to the previous example.&lt;/p&gt;
+
+&lt;p&gt;Instead of using the “value object” technique, most of the codebases I’ve worked in have used models like this to represent their core primitives:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+class OrderLine(ORMBaseClass):
+	order_id = orm.ForeignKey(Order)
+	sku = orm.ForeignKey(Product)
+	quantity = orm.IntegerField()
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;In a system like this, the vast majority of your code operates directly on these database-focused models, which makes it a lot harder to reliably write pure functions. Instead, you tend to end up with code that’s littered with lots of little reads+writes to the database. Code written this way is hard to unit test (because you have to patch out all of those database interactions), and it tends to grow in complexity over time as maintainers add more and more little reads and writes, because what’s the harm in just one more?&lt;/p&gt;
+
+&lt;p&gt;The authors say that instead of using database-focused models as the core primitives of your system, you should use simple pure-Python data structures like the frozen dataclass you saw earlier, and &lt;em&gt;your database models should be derived from those pure-Python models&lt;/em&gt;. &lt;a href=&quot;https://www.cosmicpython.com/book/chapter_02_repository.html#_inverting_the_dependency_orm_depends_on_model&quot;&gt;To put it another way&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The ORM imports (or “depends on” or “knows about”) the domain model, and not the other way around.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I’d love to work in a system like this someday :)&lt;/p&gt;
+
+&lt;h2 id=&quot;pure-functions&quot;&gt;Pure Functions&lt;/h2&gt;
+
+&lt;p&gt;Pure functions&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt; come up now and then throughout the book, although I don’t remember the authors spending much time addressing the topic head-on. That’s OK, because the book does a great job of showing them in action.&lt;/p&gt;
+
+&lt;p&gt;For instance, &lt;a href=&quot;https://www.cosmicpython.com/book/chapter_03_abstractions.html&quot;&gt;Chapter 3&lt;/a&gt; focuses on a program for syncing files between two directories, and the authors are trying to figure out how to make it easy to test. At first, the whole program is concerned with operating directly on the file system, and so in all their tests they have to spin up some temporary directories and write a bunch of files to them and call the program and then examine what it did to the temporary directories. Ick!&lt;/p&gt;
+
+&lt;p&gt;Then they propose a different approach: “[w]e’re going to separate &lt;em&gt;what&lt;/em&gt; we want to do from &lt;em&gt;how&lt;/em&gt; to do it”. They change the core of their program so that it takes two dicts as input, each representing the files in a directory:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+source_files = {&apos;hash1&apos;: &apos;path1&apos;, &apos;hash2&apos;: &apos;path2&apos;}
+dest_files = {&apos;hash1&apos;: &apos;path1&apos;, &apos;hash2&apos;: &apos;pathX&apos;}
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;And to go along with that, their program now returns a list of operations that it wants to perform in order to sync the two directories:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+(&quot;COPY&quot;, &quot;sourcepath&quot;, &quot;destpath&quot;),
+(&quot;MOVE&quot;, &quot;old&quot;, &quot;new&quot;),
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;In order to test the sync algorithm, the authors don’t have to read from and write to the file system any more - they can just pass a couple of dicts into the program, examine the data that it returns as output, and check to see if the program &lt;em&gt;wants&lt;/em&gt; to do the right thing. The dicts and tuples that their tests use are trivial to construct, no side effects or mocking/patching necessary.&lt;/p&gt;
+
+&lt;p&gt;There’s still some code at the edges of their program that a) examines the file system to create those input dicts and b) modifies the file system based off of the instructions in those output commands, but that’s an unavoidable fact of life; the main thing that matters is that the bulk of the program is now side-effect-free. Lovely!&lt;/p&gt;
+
+&lt;p&gt;This approach is often called &lt;a href=&quot;https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell&quot;&gt;“functional core, imperative shell”&lt;/a&gt;&lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;, which is the idea that the bulk of your program should be pure functions with a thin layer at the edges for actually interacting with the real world. I like this idea very much 🙂&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;This book was pretty decent, I’d give it 3.5 stars. I’m not going to go write an event-driven microservice-based system with lots of DDD techniques, but it was fun to hear the authors talk about those topics, and I enjoyed their treatment of the ideas above!&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;I have Scott Wlaschin’s “&lt;a href=&quot;https://pragprog.com/titles/swdddf/domain-modeling-made-functional/&quot;&gt;Domain Modeling Made Functional&lt;/a&gt;” on my desk, and am hoping that that book’ll be the one that finally makes DDD click for me. I love his talks on YouTube, I need to go back and watch them all. Brilliant guy. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;For more info about pure functions: I love the talk “&lt;a href=&quot;https://www.youtube.com/watch?v=PBQN62oUnN8&quot;&gt;Hoist Your IO&lt;/a&gt;”, and &lt;a href=&quot;https://youtu.be/vK1DazRK_a0?si=c4onwoql5J7RH1Ty&amp;amp;t=2368&quot;&gt;this refactoring exercise&lt;/a&gt; is a great companion piece. &lt;a href=&quot;https://tylerayoung.com/2022/03/16/write-more-pure-functions/&quot;&gt;This post&lt;/a&gt; is pretty good, too! &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Oh my gosh, I just found out as I was writing this that Scott Wlaschin just &lt;a href=&quot;https://www.youtube.com/watch?v=P1vES9AgfC4&quot;&gt;gave a talk on this exact topic&lt;/a&gt;! Added it to my watchlist! &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Getting High Schoolers To Write A Tiny 'Roguelike' In An Intro Python Class</title>
+   <link href="http://blog.jrheard.com/roguelike"/>
+   <updated>2019-06-15T00:00:00-07:00</updated>
+   <id>http://blog.jrheard.com/roguelike</id>
+   <content type="html">&lt;p&gt;I spent the past couple years volunteering in a couple of tech classes at a local high school, primarily in an introductory Python class led by an excellent teacher named Tamara O’Malley. I’ve written about this a &lt;a href=&quot;https://blog.jrheard.com/watercolorbot&quot;&gt;few&lt;/a&gt; &lt;a href=&quot;https://blog.jrheard.com/hypothesis-and-pexpect&quot;&gt;times&lt;/a&gt; &lt;a href=&quot;https://blog.jrheard.com/truthiness-and-short-circuit-evaluation-in-python&quot;&gt;before&lt;/a&gt;.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; It was extremely fun, and it still hasn’t really sunk in that it’s over now.&lt;/p&gt;
+
+&lt;p&gt;The students in this Python class were beginners - they had all done some programming in block-based languages like &lt;a href=&quot;https://snap.berkeley.edu/&quot;&gt;Snap!&lt;/a&gt;, but none of them had taken AP CS yet, to give you an idea of where they were at experience-wise.&lt;/p&gt;
+
+&lt;p&gt;As one of the final projects of the year, we had them write a little roguelike (a term with many definitions, which here I’m using to mean “a game where you’re an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@&lt;/code&gt; sign and you wander around an ASCII art world”). We gave them some &lt;a href=&quot;https://repl.it/@jrheard/roguelike&quot;&gt;starter code&lt;/a&gt; and one of my usual &lt;a href=&quot;https://blog.jrheard.com/python/roguelike&quot;&gt;project writeups&lt;/a&gt; and turned them loose.&lt;/p&gt;
+
+&lt;p&gt;This is what the starter code does when you run it:&lt;/p&gt;
+
+&lt;asciinema-player src=&quot;/roguelike_starter.json&quot; rows=&quot;32&quot; cols=&quot;90&quot; autoplay=&quot;true&quot; loop=&quot;true&quot;&gt;&lt;/asciinema-player&gt;
+
+&lt;p&gt;You’re the @ sign, you can move around, you can’t go through walls. Great game, right?&lt;/p&gt;
+
+&lt;p&gt;We had the kids start by changing my terrible controls to be WASD-based, which turned out to be a good way for them to get their bearings - this was their first time being dumped into a (tiny) legacy codebase, and having to change the controls forced them to read the code and figure out where the relevant moving parts were.&lt;/p&gt;
+
+&lt;p&gt;After that, we walked them through how to add a &lt;a href=&quot;https://blog.jrheard.com/python/roguelike#adding-a-goal-space&quot;&gt;goal space&lt;/a&gt; that ends the game if you get to it, then showed them how to add some &lt;a href=&quot;https://blog.jrheard.com/python/roguelike#implementing-dumb-monsters&quot;&gt;dumb monsters&lt;/a&gt; that just sit there and don’t do anything. Once they had done that, we were like: okay, now make a game!&lt;/p&gt;
+
+&lt;h1 id=&quot;heres-some-of-the-cool-stuff-they-made&quot;&gt;Here’s some of the cool stuff they made!&lt;/h1&gt;
+
+&lt;h2 id=&quot;coin-getter&quot;&gt;Coin Getter&lt;/h2&gt;
+
+&lt;p&gt;You’re the smiley face, you want to get to the X, but there’s a door blocking the way to it - the door doesn’t open until you get all the coins first.&lt;/p&gt;
+
+&lt;asciinema-player src=&quot;/roguelike_coin_getter.json&quot; rows=&quot;34&quot; cols=&quot;90&quot; autoplay=&quot;true&quot; loop=&quot;true&quot;&gt;&lt;/asciinema-player&gt;
+
+&lt;p&gt;The program uses the © symbol for its coins, and so when we were having the kids demo each other’s games on the projector at the end of the project, some kid in the peanut gallery shouted “if you get all five copyright strikes, your channel gets taken down!”.&lt;/p&gt;
+
+&lt;p&gt;I thought that was pretty good.&lt;/p&gt;
+
+&lt;h2 id=&quot;bait-and-switch&quot;&gt;Bait-And-Switch&lt;/h2&gt;
+
+&lt;p&gt;In this one, you’re the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ö&lt;/code&gt;, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ӂ&lt;/code&gt;s are enemy squids, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ᵹ&lt;/code&gt;s are health potions, and your goal is to get to the next level, which is too big to fit on this page so I’ll just show you the first level.&lt;/p&gt;
+
+&lt;p&gt;The squids don’t do anything, but notice how if you pick up a health potion, your health increases!&lt;/p&gt;
+
+&lt;p&gt;If you pick up the second health potion, though, your health &lt;em&gt;decreases&lt;/em&gt;. This puzzled me for a bit, but I pieced it together - if you pick up the farthest-down health potion on the level, the game gets confused and thinks it’s a health potion and &lt;em&gt;also&lt;/em&gt; a monster, and so it increments your health by 10 but then decrements it by 20 because that’s what bumping into a squid is supposed to do. Interesting little bug.&lt;/p&gt;
+
+&lt;asciinema-player src=&quot;/roguelike_bait_and_switch.json&quot; rows=&quot;30&quot; cols=&quot;90&quot; autoplay=&quot;true&quot; loop=&quot;true&quot;&gt;&lt;/asciinema-player&gt;
+
+&lt;p&gt;This game has a little trick to it - the door to the next level is actually the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;▐&lt;/code&gt;, but if you get confused and hit the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;+&lt;/code&gt; instead, the game insults you in big ASCII art and unceremoniously exits. I love it.&lt;/p&gt;
+
+&lt;h2 id=&quot;king-of-thing&quot;&gt;King Of THING&lt;/h2&gt;
+
+&lt;p&gt;You’re the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;☻&lt;/code&gt;, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;∩&lt;/code&gt;s are harmless barrels that you effortlessly smash through, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;r&lt;/code&gt;s are rats, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;g&lt;/code&gt;s are goblins. You can kill the rats and goblins, but it’s hard and you take a lot of damage doing it because you start off with really low attack power. If you pick up a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;†&lt;/code&gt;, though, now you have a dagger and can wreck ‘em easily!&lt;/p&gt;
+
+&lt;p&gt;Once you make it to the next level, you can pick up a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;✟&lt;/code&gt; (sword) to really boost your damage, and if your HP is low after fighting some goblins you can chug a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;✚&lt;/code&gt; (health potion) to heal up. Be careful of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;✠&lt;/code&gt; you’ll pass on your way to the next floor of the dungeon - it’s a chainsaw, and if you touch it, you’ll die!&lt;/p&gt;
+
+&lt;p&gt;After that, it’s time to fight the big boss himself: you’ve gotta beat the king and take his crown! I love how this third level is structured, it’s so simple but somehow, like, evocative. It starts with a traditional ammo room so you just &lt;em&gt;know&lt;/em&gt; you’re about to fight a scary boss, and I love the little corridor you have to squeeze through to get to the king - I actually got kinda scared on my way through it. It felt like anything could happen!&lt;/p&gt;
+
+&lt;asciinema-player src=&quot;/roguelike_king_thing.json&quot; rows=&quot;37&quot; cols=&quot;90&quot; autoplay=&quot;true&quot; loop=&quot;true&quot;&gt;&lt;/asciinema-player&gt;
+
+&lt;p&gt;Favorite parts:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The little heart in the congratulations message&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kings Killed: 0&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;a-maze-ing&quot;&gt;A-Maze-Ing&lt;/h2&gt;
+
+&lt;p&gt;Look, I didn’t come up with these names, it’s not my fault.&lt;/p&gt;
+
+&lt;asciinema-player src=&quot;/roguelike_maze.json&quot; rows=&quot;30&quot; cols=&quot;90&quot; autoplay=&quot;true&quot; loop=&quot;true&quot;&gt;&lt;/asciinema-player&gt;
+
+&lt;p&gt;I think I have RSI now.&lt;/p&gt;
+
+&lt;h2 id=&quot;soccer&quot;&gt;Soccer&lt;/h2&gt;
+
+&lt;p&gt;One kid made the starter code into a soccer game!&lt;/p&gt;
+
+&lt;p&gt;You’re the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;%&lt;/code&gt;, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$&lt;/code&gt; is the AI enemy player and it chases the ball, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@&lt;/code&gt; is the ball, and when you kick the ball there’s some randomness involved so sometimes you find yourself chasing after it and trying to get there before the AI does.&lt;/p&gt;
+
+&lt;asciinema-player src=&quot;/roguelike_soccer.json&quot; rows=&quot;38&quot; cols=&quot;90&quot; autoplay=&quot;true&quot; loop=&quot;true&quot;&gt;&lt;/asciinema-player&gt;
+
+&lt;h2 id=&quot;other-cool-projects-we-did-this-year&quot;&gt;Other Cool Projects We Did This Year&lt;/h2&gt;
+
+&lt;p&gt;Here are all the projects I put together for this class, in increasing order of difficulty. They start off assuming basically zero knowledge of Python, and slowly require more and more over time as the students learn about if-statements, loops, lists, etc.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/mad-libs&quot;&gt;Mad Libs&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/guess-my-number&quot;&gt;A guess-my-number game&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/plotter&quot;&gt;Generated art with a pen plotter&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/password-generator&quot;&gt;A password generator&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/password-checker&quot;&gt;A password strength checker&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/caesar&quot;&gt;A Caesar cipher program&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/tic-tac-toe&quot;&gt;Tic-Tac-Toe with an AI opponent&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/blackjack&quot;&gt;Blackjack against an AI dealer&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.jrheard.com/python/roguelike&quot;&gt;Roguelike&lt;/a&gt; (&lt;a href=&quot;https://repl.it/@jrheard/roguelike&quot;&gt;starter code&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I put a lot of time into these over the course of two years, and I’m really proud of how they turned out. Many many thanks to Tamara for her help and feedback.&lt;/p&gt;
+
+&lt;p&gt;If you’d like to use these projects in a classroom or for practice on your own, please feel free! Hit me up at jrrrheard@gmail.com if you have questions or want me to review your code, I’d be delighted to hear from you.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-next-for-me&quot;&gt;What’s Next For Me&lt;/h2&gt;
+
+&lt;p&gt;This has been a really great time, but I feel like having a regular job again and having coworkers to hang out with, so I’m joining &lt;a href=&quot;https://www.ridereport.com/&quot;&gt;Ride Report&lt;/a&gt; as a senior engineer. They offered me the job back in April, and were kind enough to let me finish out the school year before my start date.&lt;/p&gt;
+
+&lt;p&gt;I’ve been looking forward to this for a while, it’s going to be fun and I’m going to learn a lot. Down with cars!&lt;/p&gt;
+
+&lt;script src=&quot;/assets/js/asciinema-player.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;I was originally placed in this high school through an organization called &lt;a href=&quot;https://www.tealsk12.org/&quot;&gt;TEALS&lt;/a&gt;. They’re accepting applications for the coming school year, so you should apply if this sounds like fun. It &lt;em&gt;is&lt;/em&gt; fun! &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Jobs</title>
+   <link href="http://blog.jrheard.com/jobs"/>
+   <updated>2018-11-12T00:00:00-08:00</updated>
+   <id>http://blog.jrheard.com/jobs</id>
+   <content type="html">&lt;p&gt;I think that it’s bad that people have to have jobs.&lt;/p&gt;
+
+&lt;p&gt;I don’t think that jobs are bad. I’ve been spent the past couple of years without a job, and over that time I’ve noticed a lot of things that I miss about employment. I miss having coworkers, I miss working on a long-term project, and I miss having a reason to get out of the house every day. I didn’t expect to miss anything about having a job, but I miss those things very much.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; I’m not trying to say that I think that jobs are a completely bad idea.&lt;/p&gt;
+
+&lt;p&gt;I think that it’s bad that people &lt;em&gt;have&lt;/em&gt; to have jobs.&lt;/p&gt;
+
+&lt;p&gt;I’m not an economist, I’m not a historian, I don’t have any numbers to show you, I don’t have any relevant non-anecdotal experience that I can bring to bear on this topic. Usually when I make an argument, I like to have facts and figures to back it up, and I haven’t done that research here, and I understand that this makes my argument a not-very-good one.&lt;/p&gt;
+
+&lt;p&gt;I just have this gut feeling that it’s bad that we live in a world where people have to have jobs, and if they lose their job they get really scared, and maybe they can’t pay their medical bills or they become homeless, and their family suffers too, and they’re at 100% maximum stress constantly until they can find another job. I think that people should be able to &lt;strong&gt;choose&lt;/strong&gt; to have a job, and I think that it’s bad that they’re instead &lt;strong&gt;forced&lt;/strong&gt; to have a job.&lt;/p&gt;
+
+&lt;p&gt;This is not a post about universal basic income, although I do think that UBI’s an interesting idea, and I hope that we continue to experiment with it.&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;I don’t know what we should be doing instead of our current system where everyone has to have a job. But humans are smart, and I’m sure that if we thought about it really hard we could come up with some more ideas and try them out. I know that this is a difficult and expensive problem, but I also think that it’s important that we &lt;em&gt;identify&lt;/em&gt; it as a problem. I think that more people should be thinking and talking about this.&lt;/p&gt;
+
+&lt;p&gt;I think that it’s bad that people have to have jobs or else they starve and die. I think that we as a society should have an &lt;strong&gt;explicit goal&lt;/strong&gt; of getting to a point where people no longer have to have jobs, and can instead choose how to spend their time. I’m surprised that that’s not currently a goal that people talk about on the news and at dinner parties. I think that we should talk about this more.&lt;/p&gt;
+
+&lt;p&gt;I &lt;em&gt;expect&lt;/em&gt; that once people no longer have to have jobs, they’ll be able to spend time on things that actually interest them instead of trading lots of years of their life for room and board. I expect that some people will vegetate and play video games all day, and some people will do drugs or whatever, but I also expect that a lot of people will get involved in their community, and in nonprofit-type organizations, and just generally have the time and energy to be able to really think about how to make the world around them better and then implement the ideas they come up with.&lt;/p&gt;
+
+&lt;p&gt;Those are just vague uninformed guesses. Nobody knows what would happen if we took our society and made it into one where people didn’t have to have jobs. I just think that it’s bad that people have to have jobs, and I think that we should be talking about this more.&lt;/p&gt;
+
+&lt;p&gt;I mean: If you were the president of the world, and you were in charge of figuring out how people spent their time and got their food and housing, would you have come up with &lt;em&gt;this&lt;/em&gt;?&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Don’t worry, I completely recognize that I am very, very, very fortunate to be able to have this experience and learn that I miss these things. I don’t take this for granted. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;I’m skeptical of people who say that UBI is a stupid idea because everyone &lt;em&gt;needs&lt;/em&gt; to have a job because it’s good for the moral fiber or whatever. It’s very possible that we’ll find a lot of things that are bad about UBI, but in my opinion it seems like a compelling enough idea that we should really try it out, because maybe the good things will vastly outweigh the bad, and maybe not many bad things will happen. I know that people are currently earnestly investigating UBI, and I’m glad that they’re doing that. I donate monthly to GiveDirectly’s basic income experiment. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Truthiness and Short-Circuit Evaluation in Python</title>
+   <link href="http://blog.jrheard.com/truthiness-and-short-circuit-evaluation-in-python"/>
+   <updated>2018-02-22T00:00:00-08:00</updated>
+   <id>http://blog.jrheard.com/truthiness-and-short-circuit-evaluation-in-python</id>
+   <content type="html">&lt;style&gt;
+.target-audience {
+	background-color: #EEE;
+	font-family: sans-serif;
+	padding: 5px 10px;
+	margin: -20px 0 20px;
+	display: inline-block;
+	font-size: 15px;
+	font-weight: bold;
+}
+&lt;/style&gt;
+
+&lt;div class=&quot;target-audience&quot;&gt;
+Target audience: beginner programmers
+&lt;/div&gt;
+
+&lt;p&gt;In the &lt;a href=&quot;/watercolorbot&quot;&gt;high school Python class&lt;/a&gt; I’m helping out with, I’ve noticed that students will often write a chunk of code that looks like this:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+num = int(input())
+
+if num == 5 or 6 or 7:
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;In this example, the student has a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;num&lt;/code&gt; variable whose value is some integer, and they’re trying to write some code that gets run if the integer is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;5&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;7&lt;/code&gt;. The code snippet above seems reasonable at first glance, but it actually does something &lt;strong&gt;completely different&lt;/strong&gt; from what the student would expect.&lt;/p&gt;
+
+&lt;p&gt;Let’s focus on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;num == 5 or 6 or 7&lt;/code&gt; part, because that’s the part that isn’t doing what the student expects. Here’s what Python sees when you write that code:&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;
+&lt;div class=&quot;expression&quot;&gt;num == 5&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;6&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;7&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;I’m going to be using a lot of diagrams like this throughout this article. In these diagrams, a yellow box is a &lt;strong&gt;chunk of code that Python hasn’t evaluated yet&lt;/strong&gt;. (“Evaluated” basically means “run”.)&lt;/p&gt;
+
+&lt;p&gt;Notice how the first yellow box in that diagram is&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;&lt;div class=&quot;expression&quot;&gt;num == 5&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;and the second box is&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;&lt;div class=&quot;expression&quot;&gt;6&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;That second box isn’t &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;num == 6&lt;/code&gt;—it’s &lt;strong&gt;just &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6&lt;/code&gt;&lt;/strong&gt;. That’s kind of weird! What does the number &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6&lt;/code&gt; do if you put it in an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if&lt;/code&gt; statement? Read on to find out!&lt;/p&gt;
+
+&lt;p&gt;OK, so we’re trying to decipher this code:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+num == 5 or 6 or 7
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let’s start our analysis by figuring out what that code does when the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;num&lt;/code&gt; variable has the value &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;10&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Python starts by evaluating &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;10 == 5&lt;/code&gt;, which turns into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;
+&lt;div class=&quot;expression falsey&quot;&gt;False&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;6&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;7&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;So at this point, our partly-evaluated expression is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False or 6 or 7&lt;/code&gt;, and Python has to figure out whether or not that whole thing ends up evaluating to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt;, because we’re running this code as the condition part of an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if&lt;/code&gt; statement.&lt;/p&gt;
+
+&lt;p&gt;What does Python do when it sees &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False or 6 or 7&lt;/code&gt;? In order to answer that question, we’ll need to know about &lt;strong&gt;truthiness&lt;/strong&gt; and &lt;strong&gt;short-circuiting&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;truthiness&quot;&gt;Truthiness&lt;/h1&gt;
+
+&lt;p&gt;You’re familiar with the values &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False&lt;/code&gt;. We call them “Booleans”, and we use them most often in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if&lt;/code&gt; statements.&lt;/p&gt;
+
+&lt;pre class=&quot;dont-format-output&quot;&gt;&lt;code class=&quot;py&quot;&gt;
+hungry = True
+
+if hungry:
+	print(&apos;try eating a slice of pizza&apos;)
+else:
+	print(&apos;must be nice&apos;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Python doesn’t limit us to just using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False&lt;/code&gt; as the condition for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if&lt;/code&gt; statements, though—you can put &lt;em&gt;any&lt;/em&gt; expression in there. If you put something in an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if&lt;/code&gt; statement’s condition section and it’s not &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False&lt;/code&gt;, Python will look at it and decide whether or not it’s “truthy”.&lt;/p&gt;
+
+&lt;p&gt;According to the &lt;a href=&quot;https://docs.python.org/3/library/stdtypes.html#truth-value-testing&quot;&gt;official documentation&lt;/a&gt;, &lt;strong&gt;everything&lt;/strong&gt; in Python is considered truthy except for these things:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;None&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Empty sequences, e.g. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[]&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;&apos;&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;()&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{}&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;You can use the built-in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bool()&lt;/code&gt; function to see if something is truthy. Here are some examples:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+print(bool(True))
+print(bool(False))
+print(bool(&apos;cat&apos;))
+print(bool([]))
+print(bool([&apos;pizza&apos;, &apos;tacos&apos;]))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That code snippet is interactive, so go ahead and mess around with those examples to convince yourself that you understand how truthiness works. Is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;15&lt;/code&gt; truthy?&lt;/p&gt;
+
+&lt;p&gt;Now that we know what truthiness is, let’s talk about short-circuit evaluation.&lt;/p&gt;
+
+&lt;h1 id=&quot;short-circuit-evaluation&quot;&gt;Short-Circuit Evaluation&lt;/h1&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt; operators in Python are &lt;a href=&quot;https://docs.python.org/3/library/stdtypes.html#boolean-operations-and-or-not&quot;&gt;short-circuit operators&lt;/a&gt;. To see what this means, let’s look at an example use of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt; operator.&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+1 == 1 or 1 == 2
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is what Python sees before it starts evaluating that code:&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;
+&lt;div class=&quot;expression&quot;&gt;1 == 1&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;1 == 2&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Remember that if a box is yellow, that means that Python hasn’t evaluated it yet.&lt;/p&gt;
+
+&lt;p&gt;An &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt; expression is truthy if &lt;em&gt;at least one&lt;/em&gt; thing in it is truthy. An &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt; expression is truthy if &lt;em&gt;all&lt;/em&gt; things in it are truthy.&lt;/p&gt;
+
+&lt;p&gt;Since this is an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt;, Python evaluates each of the yellow boxes in order until it finds &lt;strong&gt;one&lt;/strong&gt; that’s truthy. It starts by evaluating &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1 == 1&lt;/code&gt;, which turns into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;
+&lt;div class=&quot;expression truthy&quot;&gt;True&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;1 == 2&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;At this point, Python &lt;strong&gt;stops&lt;/strong&gt;, because you’re in an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt; and it’s found something truthy! That’s what short-circuiting means. The whole &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt; expression evaluates to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt;, because that’s the value of the first truthy thing in it.&lt;/p&gt;
+
+&lt;p&gt;Here’s how the official documentation describes &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt;’s behavior:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;it only evaluates the second argument if the first one is false.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Here, I’ll prove it to you.&lt;/p&gt;
+
+&lt;p&gt;If you divide a non-zero number by zero, Python will throw an exception:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+1 / 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now check out what happens if I put a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1 / 0&lt;/code&gt; &lt;em&gt;after&lt;/em&gt; a truthy thing in an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+print(True or 1 / 0)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The program prints &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt; and &lt;strong&gt;doesn’t evaluate the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1 / 0&lt;/code&gt;&lt;/strong&gt;! To convince yourself that this works the way I claim it does, try changing that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt; to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This matches the behavior we saw in our most recent diagram. Do you remember how the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1 == 2&lt;/code&gt; box stayed yellow to indicate that Python hadn’t evaluated the code inside of it?&lt;/p&gt;
+
+&lt;p&gt;So, that’s what “short-circuiting” means when you’re using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt; operator. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt; operator is pretty similar to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt;, except that the official documentation says that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;only evaluates the second argument if the first one is true.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;That makes sense, because &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt; wants to make sure that both of its operands are truthy. If the sub-expression on the left-hand side of an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt; is falsey, then &lt;strong&gt;the whole &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt; expression is falsey!&lt;/strong&gt; In that situation, there’s no need to evaluate the sub-expression on the right-hand side.&lt;/p&gt;
+
+&lt;p&gt;Here are some more examples. Do they all behave the way that you expect?&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram falsey&quot;&gt;
+&lt;div class=&quot;expression falsey&quot;&gt;1 == 2&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;and&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;2 == 2&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;boolean-diagram falsey&quot;&gt;
+&lt;div class=&quot;expression truthy&quot;&gt;1 == 1&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;and&lt;/div&gt;
+&lt;div class=&quot;expression falsey&quot;&gt;1 == 2&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;boolean-diagram truthy&quot;&gt;
+&lt;div class=&quot;expression truthy&quot;&gt;1 == 1&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;and&lt;/div&gt;
+&lt;div class=&quot;expression truthy&quot;&gt;2 == 2&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;boolean-diagram falsey&quot;&gt;
+&lt;div class=&quot;expression falsey&quot;&gt;1 == 2&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression truthy&quot;&gt;1 == 1&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;back-to-our-buggy-num-code&quot;&gt;Back to our buggy &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;num&lt;/code&gt; code&lt;/h1&gt;
+
+&lt;p&gt;Now that we know about truthiness and short-circuit evaluation, we can finally figure out what this code does!&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+num = 10
+
+print(num == 5 or 6 or 7)
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;What do you think will be printed out when that code is run?&lt;/p&gt;
+
+&lt;p&gt;Before we run it and find out for sure, let’s walk through one last set of diagrams using what we’ve learned. Here’s what Python sees before it starts evaluating anything:&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;
+&lt;div class=&quot;expression&quot;&gt;num == 5&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;6&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;7&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Python begins by evaluating &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;10 == 5&lt;/code&gt;, which turns into &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;
+&lt;div class=&quot;expression falsey&quot;&gt;False&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;6&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;7&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Next up, it evaluates &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6&lt;/code&gt;. We saw earlier that all non-zero numbers are truthy, so now our diagram looks like this:&lt;/p&gt;
+
+&lt;div class=&quot;boolean-diagram&quot;&gt;
+&lt;div class=&quot;expression falsey&quot;&gt;False&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression truthy&quot;&gt;6&lt;/div&gt;
+&lt;div class=&quot;conjunction&quot;&gt;or&lt;/div&gt;
+&lt;div class=&quot;expression&quot;&gt;7&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;At this point, Python stops and says: hey, I found something truthy! And that’s what the entire expression evaluates to. The answer is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6&lt;/code&gt;!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+num = 10
+
+print(num == 5 or 6 or 7)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And so that’s why the code from the beginning of this article doesn’t do what our student expects. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;num == 5 or 6 or 7&lt;/code&gt; &lt;strong&gt;will always evaluate to either &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6&lt;/code&gt;&lt;/strong&gt;, and so the code inside that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;if&lt;/code&gt; statement will &lt;strong&gt;always&lt;/strong&gt; be run!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+num = 10
+
+if num == 5 or 6 or 7:
+       1 / 0
+else:
+       print(&apos;safe!&apos;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h1&gt;
+
+&lt;p&gt;Here are a few more examples—play around with them and try adding some of your own!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+print(False or [])
+print(2 or False)
+print(False or 0 or &quot;hello&quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notice how if everything in an &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt;&lt;/strong&gt; is &lt;strong&gt;falsey&lt;/strong&gt;, then the whole &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or&lt;/code&gt; expression will evaluate to the rightmost sub-expression.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+print(False or 0)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If everything in an &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt;&lt;/strong&gt; is &lt;strong&gt;truthy&lt;/strong&gt;, then the whole &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and&lt;/code&gt; expression will evaluate to the rightmost sub-expression.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+print(&apos;cat&apos; and &apos;dog&apos;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Oh, and if you want to write some code that does what the student in our example actually wanted, try one of these:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;py&quot;&gt;
+num = 7
+
+print(num == 5 or num == 6 or num == 7)
+print(num in [5, 6, 7])
+print(5 &amp;lt;= num &amp;lt;= 7)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;By the way—what do you think this code does? Will it evaluate to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;True&lt;/code&gt;? If not, why not?&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+num = 7
+
+num == (5 or 6 or 7)
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;h1 id=&quot;resources&quot;&gt;Resources&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikibooks.org/wiki/Non-Programmer%27s_Tutorial_for_Python_3/Boolean_Expressions&quot;&gt;This walkthrough&lt;/a&gt; is great.&lt;/li&gt;
+  &lt;li&gt;So is &lt;a href=&quot;https://stackoverflow.com/questions/2580136/does-python-support-short-circuiting/14892812#14892812&quot;&gt;this StackOverflow answer&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://twitter.com/codewithanthony&quot;&gt;@codewithanthony&lt;/a&gt; has &lt;a href=&quot;https://www.youtube.com/watch?v=mRPU3l54Z7I&amp;amp;app=desktop&quot;&gt;this fascinating video&lt;/a&gt; about &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;False == False in [False]&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Using Hypothesis and Pexpect to Test High School Programming Assignments</title>
+   <link href="http://blog.jrheard.com/hypothesis-and-pexpect"/>
+   <updated>2018-01-25T00:00:00-08:00</updated>
+   <id>http://blog.jrheard.com/hypothesis-and-pexpect</id>
+   <content type="html">&lt;p&gt;I’ve been coming up with some &lt;a href=&quot;/python/passwords&quot;&gt;fun&lt;/a&gt; &lt;a href=&quot;/python/caesar&quot;&gt;projects&lt;/a&gt; for a &lt;a href=&quot;/watercolorbot&quot;&gt;beginner Python high school class&lt;/a&gt;. Most of these projects are simple command-line programs that prompt the user for some input, perform some calculation, and print some output. For instance, here’s the password checker project:&lt;/p&gt;
+
+&lt;asciinema-player src=&quot;/password_checker_cast.json?v=1&quot; rows=&quot;12&quot; cols=&quot;90&quot; autoplay=&quot;true&quot;&gt;&lt;/asciinema-player&gt;
+
+&lt;p&gt;This program should prompt the user for their username, student ID, and password, and it should print out the string GOOD or BAD to indicate whether or not the password is “valid”; see the &lt;a href=&quot;/python/passwords&quot;&gt;assignment writeup&lt;/a&gt; for more details.&lt;/p&gt;
+
+&lt;h1 id=&quot;testing&quot;&gt;Testing&lt;/h1&gt;
+
+&lt;p&gt;When a student finishes their password checker, we need to examine it to see whether or not the student programmed it correctly. We have around thirty students, and the checker program needs to satisfy a variety of constraints, and students often don’t get them all right the first time, so each student will usually submit several versions of the checker.&lt;/p&gt;
+
+&lt;p&gt;Testing submitted password checkers a jillion times by hand (“does the latest version of Jane’s checker correctly reject &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;abcd&apos;&lt;/code&gt;? How about &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;$!@#5555&apos;&lt;/code&gt;?”) sounded pretty awful, so I decided to write a program to do this for us.&lt;/p&gt;
+
+&lt;p&gt;These students hadn’t learned about functions yet, so their programs didn’t have an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;is_password_good(password)&lt;/code&gt; function that I could import and unit-test. Instead, I needed to write code that would run the student’s program, send it several lines of input, and read its output.&lt;/p&gt;
+
+&lt;p&gt;My first instinct was to use &lt;a href=&quot;https://docs.python.org/3/library/subprocess.html&quot;&gt;the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;subprocess&lt;/code&gt; library&lt;/a&gt; to do this, but I had trouble getting that to work. I needed to send a line to the program, then wait and then send another line, and then wait and send a third line; but the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;subprocess&lt;/code&gt; library’s API isn’t particularly well-suited for situations where you want to send a program more than one line of input. I Googled around and found a bunch of StackOverflow questions written by people in my exact situation, and the answers all said to use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pexpect&lt;/code&gt; instead.&lt;/p&gt;
+
+&lt;h1 id=&quot;pexpect&quot;&gt;Pexpect&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/pexpect/pexpect&quot;&gt;Pexpect&lt;/a&gt; is a library that lets you start a program, feed it as many lines of input as you want, and read as many lines of output as you want.&lt;/p&gt;
+
+&lt;p&gt;Here’s how to use pexpect to operate the password-checker program you saw earlier:&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+def get_checker_output(password, checker):
+	program = pexpect.popen_spawn.PopenSpawn(&apos;python &apos; + checker)
+	program.sendline(&apos;jrheard&apos;)
+	program.sendline(&apos;12345&apos;)
+	program.sendline(password)
+
+	lines = program.read().decode(&apos;utf-8&apos;).splitlines()
+	# Return the last line of the program&apos;s output,
+	# which should be a string like &apos;GOOD&apos; or &apos;BAD&apos;.
+	return filter(bool, lines)[-1]
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once I had that working, I wrote some standard unit tests.&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+def test_contains_student_id(checker):
+    assert_bad(&apos;jifoaw12345@!#*LKJFSklfaew&apos;, checker)
+
+def test_two_categories(checker):
+    assert_bad(&apos;JIFEOWjiofewajife&apos;, checker)
+    assert_bad(&apos;13283248JIOFEWOI&apos;, checker)
+    assert_bad(&apos;faewjio*(#$@$&apos;, checker)
+    assert_bad(&apos;$#*(($#@83248&apos;, checker)
+    assert_bad(&apos;jioaew123345&apos;, checker)
+
+def test_exactly_eight_characters(checker):
+    assert_good(&apos;abc123!P&apos;, checker)
+
+# Remember this one for later!
+def test_too_short_rejected(checker):
+    assert_bad(&apos;X$3&apos;, checker)
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;I hand-wrote around twenty assertions like those and called it a day. It was very satisfying to run the resulting tests, and I felt great about the amount of time that they would save.&lt;/p&gt;
+
+&lt;p&gt;A week later, though, I stumbled across Hypothesis and realized that my tests had a lot of room for improvement.&lt;/p&gt;
+
+&lt;h1 id=&quot;hypothesis&quot;&gt;Hypothesis&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://hypothesis.works/&quot;&gt;Hypothesis&lt;/a&gt; is a &lt;strong&gt;&lt;a href=&quot;http://blog.jessitron.com/2013/04/property-based-testing-what-is-it.html&quot;&gt;property-based testing&lt;/a&gt;&lt;/strong&gt; library. Its homepage says:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Hypothesis runs your tests against a much wider range of scenarios than a human tester could, finding edge cases in your code that you would otherwise have missed.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Earlier, I showed you a test called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test_too_short_rejected()&lt;/code&gt;. That test asserts that the password &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;X$3&apos;&lt;/code&gt; is marked “BAD”, because the password checker is supposed to reject passwords that are shorter than eight characters.&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+def test_too_short_rejected(checker):
+    assert_bad(&apos;X$3&apos;, checker)
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is an &lt;strong&gt;example-based test&lt;/strong&gt;, which means that I wrote it by hand using an example too-short password that I came up with off the top of my head.&lt;/p&gt;
+
+&lt;p&gt;This test is actually pretty flimsy, because it only checks to see if &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;X$3&apos;&lt;/code&gt; is rejected—but if the student’s checker program incorrectly allows a seven-character-long password like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;X$12345&apos;&lt;/code&gt;, my test won’t catch that bug, because I didn’t think to include that example in my test. I could add more examples to my test, but that isn’t very fun; and even if I did think really hard and came up with five more examples, my test still wouldn’t be very exhaustive, because students are very good at coming up with bugs that I wouldn’t think to test for.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-to-use-hypothesis&quot;&gt;How To Use Hypothesis&lt;/h2&gt;
+
+&lt;p&gt;Let’s use Hypothesis to improve this test. We’ll start by adding the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@given&lt;/code&gt; decorator to our test function.&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+from hypothesis import given
+
+@given(password=TODO_DEFINE_ME)
+def test_too_short_rejected(password, checker):
+    assert_bad(password, checker)
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;When Hypothesis sees a test that’s annotated with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@given&lt;/code&gt; decorator, it runs that test a bunch of times. This test’s decorator says that the test wants a random &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;password&lt;/code&gt; argument; so each time Hypothesis runs this test, it’ll generate a random password, and will supply it to the test via the test function’s newly added &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;password&lt;/code&gt; parameter.&lt;/p&gt;
+
+&lt;p&gt;We’re halfway there—all we have to do now is tell Hypothesis how to actually &lt;em&gt;generate&lt;/em&gt; too-short passwords.&lt;/p&gt;
+
+&lt;p&gt;A too-short password is a string with some characters in it. Those characters can be the lowercase letters a-z, the uppercase letters A-Z, the digits 0-9, and some specific symbols given in the assignment writeup. The student’s password-checker program is supposed to reject passwords that are shorter than eight characters, so a too-short password can have at most seven characters.&lt;/p&gt;
+
+&lt;p&gt;Here’s how to say that to Hypothesis:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+from hypothesis import strategies as st
+
+VALID_PASSWORD_CHARACTERS = string.ascii_letters \
+	+ string.digits \
+	+ &apos;!@#$%^&amp;amp;*()-_=+.,&apos;
+
+short_password_strategy = st.text(alphabet=VALID_PASSWORD_CHARACTERS,
+                               max_size=7)
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;st.text()&lt;/code&gt; returns a &lt;strong&gt;strategy&lt;/strong&gt;, which is an object that Hypothesis can use to generate random data. Hypothesis has a &lt;a href=&quot;http://hypothesis.readthedocs.io/en/latest/data.html&quot;&gt;ton of these&lt;/a&gt; that you can use to generate all sorts of stuff.&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;When we give &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;short_password_strategy&lt;/code&gt; to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@given&lt;/code&gt; decorator, Hypothesis will generate random passwords like these:&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+&apos;yKbSH7)&apos;
+&apos;aa&apos;
+&apos;,xcc69&apos;
+&apos;#g^teH&apos;
+&apos;&apos;
+&apos;pbFr&apos;
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;That’s all there is to it—now that we know how to generate random too-short passwords, we can convert our example-based test to a property-based test.&lt;/p&gt;
+
+&lt;textarea class=&quot;hidden&quot;&gt;
+@given(password=short_password_strategy)
+def test_too_short_rejected(password, checker):
+       assert_bad(password, checker)
+&lt;/textarea&gt;
+&lt;pre class=&quot;cm-s-friendship-bracelet&quot;&gt;&lt;/pre&gt;
+
+&lt;p&gt;We’re done! That wasn’t so hard.&lt;/p&gt;
+
+&lt;p&gt;Here’s what our test looks like in action:&lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;asciinema-player src=&quot;/hypothesis_cast.json?v=1&quot; rows=&quot;16&quot; cols=&quot;90&quot; autoplay=&quot;true&quot; loop=&quot;true&quot;&gt;&lt;/asciinema-player&gt;
+
+&lt;p&gt;That’s a lot more thorough than &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;assert_bad(&apos;X$3&apos;, checker)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Before I wrap up, I’d like to tell you about two of my favorite Hypothesis features: &lt;strong&gt;shrinking&lt;/strong&gt; and the &lt;strong&gt;example database&lt;/strong&gt;. Both of these features are also described in &lt;a href=&quot;http://hypothesis.works/articles/anatomy-of-a-test/&quot;&gt;Anatomy of a Hypothesis Based Test&lt;/a&gt;, which is well worth a read.&lt;/p&gt;
+
+&lt;h2 id=&quot;shrinking&quot;&gt;Shrinking&lt;/h2&gt;
+
+&lt;p&gt;If Hypothesis generates a random value that causes your test to fail, it will then attempt to &lt;strong&gt;shrink&lt;/strong&gt; that value, which means that it tries to find a “&lt;a href=&quot;http://hypothesis.works/articles/compositional-shrinking/&quot;&gt;simpler&lt;/a&gt;” value that still causes your test to fail.&lt;/p&gt;
+
+&lt;p&gt;For instance, if Hypothesis finds that a student’s password checker incorrectly accepts the too-short password&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;,xcc69&apos;&lt;/code&gt;, it will usually shrink that password down to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;A1!&apos;&lt;/code&gt;. That’s because even when students forget to implement the at-least-eight-characters rule, they still often remember to implement the rule that says that passwords must contain “at least three categories of character”; and so for programs like that, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&apos;A1!&apos;&lt;/code&gt; is the simplest possible input that causes the test to fail.&lt;/p&gt;
+
+&lt;p&gt;This is a really great quality-of-life feature that makes test failures much easier to decipher. It doesn’t make much of a difference in this example, but it’s a lifesaver when you’re dealing with large/complex inputs.&lt;/p&gt;
+
+&lt;h2 id=&quot;example-database&quot;&gt;Example Database&lt;/h2&gt;
+
+&lt;p&gt;When I first learned about Hypothesis, I was concerned that its randomness would be a liability. If Hypothesis gives my tests random input every time, and the program I’m testing has a failure that’s only triggered by a rare input, then won’t my tests sometimes pass and sometimes fail?&lt;/p&gt;
+
+&lt;p&gt;Hypothesis solves this problem by saving previously seen failures in a folder called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.hypothesis/examples&lt;/code&gt; and trying them again the next time you run your tests. This “example database” feature means that once your Hypothesis test fails, it’ll keep on failing until you fix the bug. Which is an extremely good thing.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-it-feels-like-to-use-hypothesis&quot;&gt;What It Feels Like To Use Hypothesis&lt;/h2&gt;
+
+&lt;p&gt;It feels really good.&lt;/p&gt;
+
+&lt;p&gt;Our Hypothesis tests have caught a really amazing amount of bugs in students’ programs, many of which were things I simply would not have caught with example-based tests. One student’s password checker turned out to use the hand-crafted string &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;abcdefghijklmnopqrstuvwyz&lt;/code&gt;, which if you’ll look closely you may notice is missing the letter &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;x&lt;/code&gt;. &lt;em&gt;Lots&lt;/em&gt; of little tiny bugs like this.&lt;/p&gt;
+
+&lt;p&gt;Hypothesis tests—at least, the basic ones I’ve written so far—aren’t hard to write. In fact, writing them is pretty fun! When I write Hypothesis tests, my tests find a lot of bugs; I tell our students to fix their bugs; and I feel like a happy calm wizard.&lt;/p&gt;
+
+&lt;p&gt;You should try using &lt;a href=&quot;http://hypothesis.works/&quot;&gt;Hypothesis&lt;/a&gt; the next time you’re writing tests in Python. If you use a different programming language, check &lt;a href=&quot;http://hypothesis.works/articles/quickcheck-in-every-language/&quot;&gt;this page&lt;/a&gt; to see if your language has a good property-based testing library. If it does, try it out!&lt;/p&gt;
+
+&lt;script src=&quot;/assets/js/asciinema-player.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+var textAreas = document.getElementsByTagName(&quot;textarea&quot;);
+var pres = document.querySelectorAll(&quot;pre.cm-s-friendship-bracelet&quot;);
+
+for (var i = 0; i &lt; textAreas.length; i++) {
+	CodeMirror.runMode(textAreas[i].value, &quot;python&quot;, pres[i]);
+}
+&lt;/script&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;It’s interesting to note that &lt;a href=&quot;https://github.com/pexpect/pexpect/blob/master/pexpect/popen_spawn.py#L46&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pexpect.popen_spawn.PopenSpawn&lt;/code&gt; uses the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;subprocess&lt;/code&gt; library&lt;/a&gt; under the hood. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;subprocess&lt;/code&gt; library can’t easily be used to send/receive multiple lines to/from a program, but it seems to still be a fine primitive to use when building a system that &lt;em&gt;can&lt;/em&gt; do that. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;If you’d like to generate instances of classes defined in your program, you might find &lt;a href=&quot;http://hypothesis.works/articles/generating-the-right-data/&quot;&gt;this guide&lt;/a&gt; handy. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;In this recording, I’ve put Hypothesis into verbose mode using the &lt;a href=&quot;http://hypothesis.readthedocs.io/en/latest/settings.html#seeing-intermediate-result&quot;&gt;HYPOTHESIS_VERBOSITY_LEVEL&lt;/a&gt; environment variable so that we can see the random passwords that it generates. On the rare occasions when I write a Hypothesis test that passes the first time it’s run, I like to put Hypothesis into verbose mode and run the test again to convince myself that I haven’t made some sort of generation mistake. &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Quinto: Resurrecting an Abandoned Board Game</title>
+   <link href="http://blog.jrheard.com/quinto-resurrecting-an-abandoned-board-game"/>
+   <updated>2018-01-11T00:00:00-08:00</updated>
+   <id>http://blog.jrheard.com/quinto-resurrecting-an-abandoned-board-game</id>
+   <content type="html">&lt;link rel=&quot;stylesheet&quot; href=&quot;/assets/css/quinto.css&quot; /&gt;
+
+&lt;p&gt;I played an old board game called Quinto when I was visiting a friend this past Thanksgiving. I developed a strange fixation on the game and wrote a program that lets you play it against a computer opponent. I’d like to show you that program, and also tell you about the tools I used to build it.&lt;/p&gt;
+
+&lt;p&gt;I’ll start by teaching you how to play the game. Don’t worry, there are just like three rules. If you’d like to skip ahead, &lt;a href=&quot;/quinto&quot;&gt;here’s the game&lt;/a&gt; and &lt;a href=&quot;/assets/img/quinto.jpg&quot;&gt;here’s the box&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;how-its-played&quot;&gt;How It’s Played&lt;/h1&gt;
+
+&lt;p&gt;Quinto is basically Scrabble, except with numbers instead of letters.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/quinto_board.jpg&quot; title=&quot;Image credit: Board Game Museum YouTube account&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In Scrabble, your goal is to place several tiles in a row or column, and have them spell a word; you get extra points if your freshly placed tiles contact multiple pre-existing words. Quinto’s the same thing, except that instead of trying to make words, &lt;strong&gt;you’re trying to make a run of tiles whose sum is a multiple of five&lt;/strong&gt;. For example, this move would earn you 20 points.&lt;/p&gt;
+
+&lt;div class=&quot;grid-container small&quot; id=&quot;grid-1&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;This next move is &lt;em&gt;invalid&lt;/em&gt;, though, because these tiles sum to 17, which is not a multiple of five.&lt;/p&gt;
+
+&lt;div class=&quot;grid-container small&quot; id=&quot;grid-2&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;That’s really most of the game. If you’re making the first move, your move must begin in the middle of the board; otherwise, your move must begin next to a previously placed tile.&lt;/p&gt;
+
+&lt;p&gt;Now that you know how to make a move, let’s talk about how scores work. It’s easiest to explain that with examples. Let’s say it’s your turn, and the board currently looks like this:&lt;/p&gt;
+
+&lt;div class=&quot;grid-container small&quot; id=&quot;grid-3&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;If you place the 3 and 5 shown below, you’ll get 10 points.&lt;/p&gt;
+
+&lt;div class=&quot;grid-container small&quot; id=&quot;grid-4&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;That’s because 2 + &lt;strong&gt;3&lt;/strong&gt; + &lt;strong&gt;5&lt;/strong&gt; = 10.&lt;/p&gt;
+
+&lt;p&gt;Now it’s your opponent’s turn.&lt;/p&gt;
+
+&lt;p&gt;If they place the 5 and 7 shown below, they’ll get &lt;strong&gt;35&lt;/strong&gt; points.&lt;/p&gt;
+
+&lt;div class=&quot;grid-container small&quot; id=&quot;grid-5&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;That’s because:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;5&lt;/strong&gt; + 5 = 10&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;7&lt;/strong&gt; + 3 = 10&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;5&lt;/strong&gt; + &lt;strong&gt;7&lt;/strong&gt; + 3 = 15&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;And 10 + 10 + 15 = 35.&lt;/p&gt;
+
+&lt;p&gt;Now you know how to play Quinto! The game ends when you run out of tiles; whoever has the highest score at the end of the game wins.&lt;/p&gt;
+
+&lt;h2 id=&quot;but-wait&quot;&gt;But Wait!&lt;/h2&gt;
+
+&lt;p&gt;There’s one last rule: you can never make a move that would cause there to be a run of more than five tiles in a row. For instance, this move is invalid!&lt;/p&gt;
+
+&lt;div class=&quot;grid-container medium&quot; id=&quot;grid-6&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;If you try to put that zero there, your opponent will heckle you, and you’ll have to come up with another move instead.&lt;/p&gt;
+
+&lt;h2 id=&quot;that-rule-is-infuriating&quot;&gt;That Rule Is Infuriating&lt;/h2&gt;
+
+&lt;p&gt;It turns out that this last rule makes the game really hard to play, because it adds this whole extra category of stuff that you need to keep track of in your head. When I’m deep into a game and there are a ton of tiles on the board, it takes &lt;em&gt;all&lt;/em&gt; of my brainpower to look at the tiles in my hand, look back at the board, and feverishly think about whether placing these three tiles over &lt;em&gt;here&lt;/em&gt; would—no, that’s not a multiple of five. Hm, maybe over here! Yes, perfect! Except—oh no, I can’t put a tile down on &lt;em&gt;that&lt;/em&gt; space, because that would break the no-more-than-five-tiles-in-a-row rule!&lt;/p&gt;
+
+&lt;p&gt;This some-cells-are-implicitly-verboten rule drove me just completely nuts. I was like: if you can’t make a move on a space, the board should light that space up in red! But of course the board couldn’t do that, because it’s just a dumb piece of cardboard.&lt;/p&gt;
+
+&lt;p&gt;So I decided to write a computer program that would light up invalid cells in red and playable cells in green.&lt;/p&gt;
+
+&lt;div class=&quot;grid-container large&quot; id=&quot;grid-7&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;While I was at it, I added a few more features that your cardboard copy of Quinto doesn’t have:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;An AI opponent that plays against you (and will probably beat you).&lt;/li&gt;
+  &lt;li&gt;Automatic score tracking.&lt;/li&gt;
+  &lt;li&gt;If you play an “optimal” move—the highest-scoring move you could have made with the hand you had—your score for that move will be drawn in green to celebrate your achievement.&lt;/li&gt;
+  &lt;li&gt;If you mouse over the score for one of your past non-optimal moves, the game will show you what the optimal move &lt;em&gt;would have been&lt;/em&gt;. You can use this information to learn how to get better at the game! The AI will still beat you, though.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&quot;/quinto&quot; style=&quot;font-weight: bold; font-size: 25px;&quot;&gt;You can play Quinto here&lt;/a&gt;. You can also read the &lt;a href=&quot;https://github.com/jrheard/quinto/tree/master/src/quinto&quot;&gt;source code&lt;/a&gt; if you like.&lt;/p&gt;
+
+&lt;p&gt;There are keyboard shortcuts for when clicking becomes too annoying: escape, enter, the left arrow key, and the 1-5 keys all control the parts of the UI that you expect them to.&lt;/p&gt;
+
+&lt;p&gt;Have a good old time, and then come back so I can tell you about the tools I used to build this game.&lt;/p&gt;
+
+&lt;h1 id=&quot;tools&quot;&gt;Tools&lt;/h1&gt;
+
+&lt;h2 id=&quot;clojure&quot;&gt;Clojure&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://clojure.org/&quot;&gt;Clojure&lt;/a&gt; is my favorite programming language. It’s got a strong focus on writing pure functions—all of its built-in data structures are immutable!—but you can still easily perform side effects when you want to. It sits on top of Java, so in addition to the excellent libraries that the Clojure community has created, you can also use any Java library in your Clojure program.&lt;/p&gt;
+
+&lt;p&gt;The community’s great, too—they’re very active on &lt;a href=&quot;https://www.reddit.com/r/Clojure/&quot;&gt;/r/clojure&lt;/a&gt; and the &lt;a href=&quot;http://clojurians.net/&quot;&gt;Clojurians Slack&lt;/a&gt;, and are just generally a nice, smart, helpful, positive group that I’m proud to be a part of.&lt;/p&gt;
+
+&lt;p&gt;Clojure strikes a nice balance between functional purity and actually getting stuff done. It’s a particularly excellent language for writing computer programs that transform and filter data&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;. You should try it out! I’ll include some useful links for beginners at the end of this article.&lt;/p&gt;
+
+&lt;h2 id=&quot;clojurescript&quot;&gt;ClojureScript&lt;/h2&gt;
+
+&lt;p&gt;I actually wrote my program in &lt;a href=&quot;https://clojurescript.org/&quot;&gt;ClojureScript&lt;/a&gt;, though. ClojureScript is a dialect of Clojure that compiles to JavaScript&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
+
+&lt;p&gt;ClojureScript lets you write a Clojure program and then run it in a web browser. This means:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;If you know a little HTML and CSS, your Clojure program now has a GUI.&lt;/li&gt;
+  &lt;li&gt;You can share your program with other people by just uploading a .js file (and probably an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;index.html&lt;/code&gt; and a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;style.css&lt;/code&gt;) somewhere and giving your friends a link to it.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ClojureScript programs can use any JavaScript library, as well as the majority of Clojure libraries. ClojureScript programs aren’t just limited to the browser—they can run &lt;em&gt;anywhere&lt;/em&gt; JavaScript programs can run.&lt;/p&gt;
+
+&lt;p&gt;On top of all that, programming in ClojureScript is &lt;strong&gt;fun&lt;/strong&gt;, because the community has created a ton of really stellar libraries that make development a pleasure. Let’s take a look at some of my favorites.&lt;/p&gt;
+
+&lt;h2 id=&quot;reagent&quot;&gt;Reagent&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://reagent-project.github.io/&quot;&gt;Reagent&lt;/a&gt; is a React library for ClojureScript with a beautifully minimal interface. It lets you write code like this:&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/jrheard/8c3b19198c36a0efa19be059475e3fa4.js&quot;&gt;&lt;/script&gt;
+
+&lt;div id=&quot;reagent-example&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;(Try clicking the square.)&lt;/p&gt;
+
+&lt;p&gt;There’s not much going on in that code: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cell-class&lt;/code&gt; is an &lt;a href=&quot;https://clojure.org/reference/atoms&quot;&gt;atom&lt;/a&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@cell-class&lt;/code&gt; is how you read the atom’s value, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;reset!&lt;/code&gt; modifies that value. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;colorful-cell&lt;/code&gt; is a function that evaluates to a plain old ClojureScript vector. This is all standard stuff.&lt;/p&gt;
+
+&lt;p&gt;The remarkable thing about Reagent is that it gives you a &lt;em&gt;special&lt;/em&gt; kind of atom, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;r/atom&lt;/code&gt; you see on line 1. When your code modifies one of those special atoms, Reagent notices, and automatically recalculates just the parts of your UI that use that atom. If any of those parts have changed since the last time they were drawn, Reagent redraws just those parts.&lt;/p&gt;
+
+&lt;p&gt;In Quinto, I keep the game’s entire state in a &lt;a href=&quot;https://github.com/jrheard/quinto/blob/e4132342409369ae0ea8e03e6765205693ba0c27/src/quinto/core.cljs#L7&quot;&gt;single atom&lt;/a&gt;, and the UI is just a bunch of &lt;a href=&quot;https://github.com/jrheard/quinto/blob/e4132342409369ae0ea8e03e6765205693ba0c27/src/quinto/html.cljs#L198&quot;&gt;Reagent components&lt;/a&gt; that take the game state as input and return HTML (represented by regular ClojureScript vectors) as output. Whenever the game’s state &lt;a href=&quot;https://github.com/jrheard/quinto/blob/e4132342409369ae0ea8e03e6765205693ba0c27/src/quinto/input.cljs#L16&quot;&gt;changes&lt;/a&gt; due to user input, the UI automatically redraws only the parts that need to be redrawn.&lt;/p&gt;
+
+&lt;p&gt;You just write a bunch of pure functions and Reagent handles the rest. Reagent is fantastic. I adore it.&lt;/p&gt;
+
+&lt;p&gt;If you’d like to learn more about Reagent, I recommend &lt;a href=&quot;http://timothypratley.blogspot.com/2017/01/reagent-deep-dive-part-1.html&quot;&gt;Timothy Pratley’s excellent articles&lt;/a&gt; on the library.&lt;/p&gt;
+
+&lt;h2 id=&quot;figwheel&quot;&gt;Figwheel&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/bhauman/lein-figwheel&quot;&gt;Figwheel&lt;/a&gt; is a lifechanging tool. It’s best explained by its author in &lt;a href=&quot;https://www.youtube.com/watch?v=j-kj2qwJa_E&quot;&gt;this great talk&lt;/a&gt;, but here’s the short version.&lt;/p&gt;
+
+&lt;p&gt;Frontend JavaScript development usually looks like this: you’ve got your editor up on one screen and your app up in another; you make a change to your JS; and then you manually reload the browser window and navigate the app—by hand—back to the state it was in before you made your change, so that you can see whether or not the code you just changed does the thing you wanted it to do.&lt;/p&gt;
+
+&lt;p&gt;Figwheel makes it so that you don’t have to do that any more. When you’ve got Figwheel running, the changes you make to your code show up &lt;em&gt;immediately&lt;/em&gt; in the browser, and your application’s state isn’t dropped on the ground in the process.&lt;/p&gt;
+
+&lt;p&gt;Here’s what that looks like. I’m working in my editor off-camera, adding code that attaches a random nonsense CSS class to each cell on the grid. Whenever I save the file I’m working in, Figwheel instantly updates my running game’s behavior without clobbering its state.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://thumbs.gfycat.com/ImperturbableScientificImperialeagle-size_restricted.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;spec&quot;&gt;Spec&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://clojure.org/guides/spec&quot;&gt;Spec&lt;/a&gt; is an indispensable tool added in recent versions of Clojure/Script. It lets you formally specify what your program’s data looks like.&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/jrheard/637d5815786edb8aa44100c018470eb3.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;Once you’ve done that, you can also annotate your program’s functions. For example, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;draw-tiles&lt;/code&gt; is a function that removes &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;num-tiles&lt;/code&gt; tiles from a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;deck&lt;/code&gt; and adds them to a player’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hand&lt;/code&gt;.&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/jrheard/7bd6f27cb49240b50a87a391092d2da3.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;Annotations like this make it easy for a human reader to figure out the shape of your program’s data. These annotations can also be &lt;strong&gt;verified&lt;/strong&gt; using &lt;a href=&quot;https://clojure.org/guides/spec#_instrumentation_and_testing&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;instrument&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;check&lt;/code&gt;&lt;/a&gt;.&lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;I’m very happy that spec was added to the language. It makes Clojure/Script programs a lot easier to write, read, understand, and confidently modify.&lt;/p&gt;
+
+&lt;h2 id=&quot;specter&quot;&gt;Specter&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/nathanmarz/specter&quot;&gt;Specter&lt;/a&gt; is a library that allows you to elegantly and performantly manipulate Clojure data. &lt;a href=&quot;https://www.youtube.com/watch?v=rh5J4vacG98&quot;&gt;This screencast&lt;/a&gt; was extremely useful when I was first trying to wrap my head around it.&lt;/p&gt;
+
+&lt;p&gt;This was my first time using Specter, and I really enjoyed it. I’ll be using it often in the future.&lt;/p&gt;
+
+&lt;h2 id=&quot;intellij-and-cursive&quot;&gt;IntelliJ and Cursive&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://cursive-ide.com/&quot;&gt;Cursive&lt;/a&gt; is a plugin that makes &lt;a href=&quot;https://www.jetbrains.com/idea/&quot;&gt;IntelliJ&lt;/a&gt; into a glorious environment for writing Clojure/Script programs. If you’re using Cursive for “non-commercial use, including personal hacking, open-source and student work”, then it’s &lt;a href=&quot;https://cursive-ide.com/buy.html&quot;&gt;free&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;My favorite feature of Cursive is its REPL integration. Lisp programmers are used to this sort of thing, and often have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;comment&lt;/code&gt; blocks in their programs where they stash chunks of code that are useful for debugging. I never understood what that was all about until I tried doing it myself, and now I do this constantly: you just move the cursor over one of those blocks of code, press a keybinding, and you immediately see the result without leaving your editor. It makes for an incredibly tight feedback loop.&lt;/p&gt;
+
+&lt;p&gt;Here’s what that looks like in action—I recorded this video when I was working on the code featured in my &lt;a href=&quot;/procedural-dungeon-generation-drunkards-walk-in-clojurescript&quot;&gt;Drunkard’s Walk&lt;/a&gt; post.&lt;/p&gt;
+
+&lt;iframe class=&quot;youtube-embed&quot; width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/Ilfk_OpXKgc?rel=0&amp;amp;start=1603&quot; frameborder=&quot;0&quot; allow=&quot;autoplay; encrypted-media&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;I use Cursive with rainbow parentheses and paredit mode enabled. I also have the IdeaVim plugin installed so that I can use Vim keybindings.&lt;/p&gt;
+
+&lt;h2 id=&quot;color-picking&quot;&gt;Color Picking&lt;/h2&gt;
+&lt;p&gt;I don’t have a good tool for this, and that bothers me. The colors I picked for the Quinto UI are awful, but all of the other combinations I tried were even worse.&lt;/p&gt;
+
+&lt;p&gt;What would you have done if you were building this game and had to pick colors for UI elements? Do you have any advice for me?&lt;/p&gt;
+
+&lt;h1 id=&quot;techniques&quot;&gt;Techniques&lt;/h1&gt;
+
+&lt;h2 id=&quot;dev-diary&quot;&gt;Dev Diary&lt;/h2&gt;
+
+&lt;p&gt;In the past few personal projects I’ve worked on, I’ve created a &lt;a href=&quot;https://github.com/jrheard/quinto/blob/master/dev-diary.txt&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dev-diary.txt&lt;/code&gt;&lt;/a&gt; file and used it as a scratchpad. Whenever I notice that I’m not sure what code to write next, I force myself to narrate my thoughts into that text file.&lt;/p&gt;
+
+&lt;p&gt;This serves several purposes:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Expressing my thoughts in written form forces me to actually figure out what problem I’m currently facing and what solutions I’m currently thinking about. This helps me get to a better solution, faster.&lt;/li&gt;
+  &lt;li&gt;If I can’t remember why I made a particular decision, I can just search for it in the text file to see what other options I considered.&lt;/li&gt;
+  &lt;li&gt;If it’s been a little while since the last time I worked on the project and I don’t remember what I was working on, I can just look at most recent entry in my dev diary and I’m off to the races.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This habit has been immensely valuable for me. I’m still figuring out the specifics—this system breaks down if I’m working on several projects at once, or on projects where I’m not the sole contributor—but those are solvable problems, and when I do solve them I’ll do a brief writeup about my finalized workflow.&lt;/p&gt;
+
+&lt;h2 id=&quot;grid-validation-function&quot;&gt;Grid Validation Function&lt;/h2&gt;
+
+&lt;p&gt;In &lt;a href=&quot;http://www.codersatwork.com/&quot;&gt;Coders At Work&lt;/a&gt;, an interviewee (can’t remember which) has this piece of (paraphrased) advice: when you’re working with a novel data structure, you should create a function that inspects the data structure and checks to see if it’s “valid”, and then you should call that validation function all over the place.&lt;/p&gt;
+
+&lt;p&gt;My Quinto grid is just a 2D vector of integers-or-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nil&lt;/code&gt;s, which is not particularly novel. It does have a bunch of invariants that need to be maintained, though: you can never have more than five non-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nil&lt;/code&gt; cells in a row; all contiguous runs of cells have to sum to a multiple of five; etc.&lt;/p&gt;
+
+&lt;p&gt;Early on in development, I wrote &lt;a href=&quot;https://github.com/jrheard/quinto/blob/daed3c3a426f00a5f9c9176b087dedfb8765bff7/src/quinto/grid.cljs#L208&quot;&gt;a function that verifies these invariants&lt;/a&gt;, and sprinkled a few asserts in various places in my program&lt;sup id=&quot;fnref:4&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:4&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;4&lt;/a&gt;&lt;/sup&gt;. These asserts failed immediately whenever I introduced a bug into the program, and so I was able to immediately fix the bug instead of finding it hours or days later.&lt;/p&gt;
+
+&lt;p&gt;(Unit tests would have surfaced these bugs too.)&lt;/p&gt;
+
+&lt;h2 id=&quot;thats-it&quot;&gt;That’s It!&lt;/h2&gt;
+
+&lt;p&gt;ClojureScript with Reagent is truly a sweet spot for writing turn-based games. You happily write pure functions that express the game’s business logic; your UI is just a pure function of your game state; and Clojure’s atom abstraction makes it easy for you to manage that state confidently.&lt;/p&gt;
+
+&lt;p&gt;I love these tools and hope you’ll consider trying them out yourself.&lt;/p&gt;
+
+&lt;p&gt;If you’re interested in learning Clojure, I hear that &lt;a href=&quot;https://www.braveclojure.com/&quot;&gt;Clojure for the Brave and True&lt;/a&gt; is the current best way to do that. I haven’t read that book myself, but it has a good reputation. I &lt;em&gt;can&lt;/em&gt; confidently recommend &lt;a href=&quot;http://shop.oreilly.com/product/0636920013754.do&quot;&gt;Clojure Programming&lt;/a&gt; and &lt;a href=&quot;https://www.manning.com/books/the-joy-of-clojure-second-edition&quot;&gt;The Joy of Clojure&lt;/a&gt;, because those are the books that I read when I learned the language.&lt;/p&gt;
+
+&lt;h1 id=&quot;appendix-a&quot; class=&quot;appendix&quot;&gt;Appendix A: Quinto Origin Story&lt;/h1&gt;
+
+&lt;p&gt;From what I can piece together from &lt;a href=&quot;https://boardgamegeek.com/boardgame/2366/quinto&quot;&gt;BoardGameGeek&lt;/a&gt;, Quinto was printed once in 1964, once in 1968, and then never again. My friend’s copy was a purchase from Goodwill.&lt;/p&gt;
+
+&lt;p&gt;Several different versions of Quinto were printed, each using different board sizes and tile distributions. For my program, I picked an arbitrary board size I liked, but I used the same &lt;a href=&quot;https://github.com/jrheard/quinto/blob/2913a907344d2c016793785badf276c3c86dc04f/src/quinto/deck.cljs#L7&quot;&gt;tile distribution&lt;/a&gt; from the particular version I’d played at my friend’s house.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=NeKIgFFtuoo&quot;&gt;This video&lt;/a&gt; shows a version that sometimes uses a different base number instead of 5, which is interesting—the version I played on didn’t have that feature, so I didn’t include it. Exercise for the reader, pull requests accepted, etc.&lt;/p&gt;
+
+&lt;p&gt;To be honest, I think Quinto died out because it’s not a very good game. It was fun to program, though!&lt;/p&gt;
+
+&lt;h1 id=&quot;appendix-b-quintus-origin-story&quot;&gt;Appendix B: Quintus Origin Story&lt;/h1&gt;
+
+&lt;p&gt;The Quinto box looks like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/quinto_box.jpg&quot; width=&quot;286&quot; height=&quot;400&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Those Roman(?) dudes, combined with the name Quinto, reminded me of Latin class. I took Latin in middle school because my mom heard it would help my SAT scores. My teacher, Mr. Brunner, assigned me the “Latin name” Quintus.&lt;/p&gt;
+
+&lt;p&gt;I remember liking Mr. Brunner, so when Quinto’s name reminded me of his class, I googled his name to see how things ended up going for him. He seems to be doing well, but that’s not what I’m writing about here.&lt;/p&gt;
+
+&lt;p&gt;In middle school English, I had a teacher named Rick Riordan. I loved his class. I don’t remember what English-related material we covered, but I do have fond memories of learning all about Norse mythology and Japanese geography in that class, for reasons which elude me. Anyway, some years later, Rick struck it big: his book &lt;a href=&quot;https://en.wikipedia.org/wiki/The_Lightning_Thief&quot;&gt;Percy Jackson and the Lightning Thief&lt;/a&gt; was a huge hit and ended up being made into a movie. I heard about this at some point in college and was happy for Mr. Riordan, but never ended up reading the book or seeing the movie.&lt;/p&gt;
+
+&lt;p&gt;And so imagine my surprise when I googled Mr. Brunner and learned that he was a character in the book. He’s Percy’s Latin teacher. Pierce Brosnan plays him in the movie.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/brunner_normal.png&quot; width=&quot;700&quot; height=&quot;298&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Except it turns out that Mr. Brunner is actually a centaur in disguise named Chiron.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/brunner_centaur.jpg&quot; width=&quot;467&quot; height=&quot;300&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;So that’s what I think about when I think about Quinto.&lt;/p&gt;
+
+&lt;script src=&quot;/assets/js/quinto.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;quinto.core.main()&lt;/script&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;This is all computer programs. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;When I first heard about ClojureScript, I thought it sounded like a wacky idea. I am delighted to have been proven so completely wrong. If you also think that ClojureScript is a wacky idea, you might enjoy &lt;a href=&quot;https://www.youtube.com/watch?v=gsffg5xxFQI&quot;&gt;this talk&lt;/a&gt;. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;The built-in version of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;instrument&lt;/code&gt; &lt;a href=&quot;https://www.reddit.com/r/Clojure/comments/7g4fl0/are_return_types_a_black_eye_for_clojure/dqglxv5/?context=3&quot;&gt;does not verify that your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fdef&lt;/code&gt;s’ &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;:ret&lt;/code&gt; type annotations are respected&lt;/a&gt;. &lt;a href=&quot;https://github.com/jeaye/orchestra&quot;&gt;Orchestra&lt;/a&gt; has a drop-in replacement for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;instrument&lt;/code&gt; that solves this problem nicely. &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:4&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Later on, when I was tracking down a few performance issues, I realized that one of these asserts was getting run in the bottom of a hot loop; moving the assert somewhere less sensitive fixed my performance problem. &lt;a href=&quot;https://thedailywtf.com/articles/The-Speedup-Loop&quot;&gt;Classic&lt;/a&gt;. &lt;a href=&quot;#fnref:4&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Painting Pictures and Making Games with a Watercoloring Robot</title>
+   <link href="http://blog.jrheard.com/watercolorbot"/>
+   <updated>2017-11-30T00:00:00-08:00</updated>
+   <id>http://blog.jrheard.com/watercolorbot</id>
+   <content type="html">&lt;p&gt;I’m spending the 2017-18 school year volunteering in a few tech classes in a local high school, including a beginner/intermediate Python course led by a teacher named Tamara O’Malley. She’s new to Python, and I have a lot of experience with the language, so I’ve been helping her come up with &lt;a href=&quot;http://blog.jrheard.com/python/passwords&quot;&gt;fun projects&lt;/a&gt; for the students to work on.&lt;/p&gt;
+
+&lt;p&gt;When we started talking about potential projects, Tamara mentioned that she had a &lt;a href=&quot;http://watercolorbot.com/&quot;&gt;WaterColorBot&lt;/a&gt; that she’d like to have the students use in some way. Here’s a picture from its official website:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/wcb_pristine.jpg&quot; width=&quot;720&quot; height=&quot;540&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;She’d already had a lot of success using the bot in another intro-to-programming course via a block-based language called &lt;a href=&quot;https://github.com/evil-mad/WaterColorBlocks&quot;&gt;Snap&lt;/a&gt;, but she wasn’t sure how to talk to the bot via Python.&lt;/p&gt;
+
+&lt;p&gt;This sounded like a fun project, so I looked into it. It turns out that there are &lt;a href=&quot;http://wiki.evilmadscientist.com/WaterColorBot#Part_II:_Software_for_WaterColorBot&quot;&gt;lot of great ways&lt;/a&gt; to drive the bot via software, but I couldn’t find anything Python-based that did what we wanted. I came up with a few possible approaches and asked &lt;a href=&quot;https://www.evilmadscientist.com/about/&quot;&gt;Windell Oskay&lt;/a&gt; for advice, and he kindly set us on the right track — thanks, Windell!&lt;/p&gt;
+
+&lt;h2 id=&quot;madison_wcb&quot;&gt;madison_wcb&lt;/h2&gt;
+
+&lt;p&gt;I ended up writing a library called &lt;a href=&quot;http://madison-wcb.readthedocs.io/en/latest/&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;madison_wcb&lt;/code&gt;&lt;/a&gt; to solve our problem. (This library was easy to write, thanks to the excellent and well-documented &lt;a href=&quot;https://github.com/techninja/cncserver/blob/master/scratch/SCRATCH.API.md&quot;&gt;“Scratch API”&lt;/a&gt; that the bot supports.)&lt;/p&gt;
+
+&lt;p&gt;The library lets students write code like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# Dip the brush in the palette&apos;s top-most color.
+&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;get_color&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Move the brush to the mid-right side of the page, &quot;face&quot; directly
+# &quot;south&quot;, and lower the brush so that it touches the paper.
+&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;move_to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;point_in_direction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;90&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;brush_down&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Paint a circle!
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;360&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+	&lt;span class=&quot;nf&quot;&gt;move_forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;nf&quot;&gt;turn_right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If you’ve got a WaterColorBot lying around, you can use this library too! Just check out the &lt;a href=&quot;http://madison-wcb.readthedocs.io/en/latest/&quot;&gt;documentation&lt;/a&gt; or &lt;a href=&quot;https://github.com/jrheard/madison_wcb&quot;&gt;source code&lt;/a&gt; and go nuts.&lt;/p&gt;
+
+&lt;p&gt;Here’s one student’s program in action:&lt;/p&gt;
+
+&lt;video autoplay=&quot;&quot; loop=&quot;&quot; muted=&quot;&quot; playsinline=&quot;&quot;&gt;
+    &lt;source src=&quot;/assets/img/watercolorbot.mp4&quot; type=&quot;video/mp4&quot; /&gt;
+&lt;/video&gt;
+
+&lt;p&gt;The library also uses Python’s built-in &lt;a href=&quot;https://docs.python.org/3.3/library/turtle.html?highlight=turtle&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;turtle&lt;/code&gt;&lt;/a&gt; module to show you what your program will do.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/wcb_turtle.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This saves users a lot of potential frustration, and also a bunch of paint.&lt;/p&gt;
+
+&lt;h2 id=&quot;perhaps-somewhat-impractical&quot;&gt;Perhaps Somewhat Impractical&lt;/h2&gt;
+
+&lt;p&gt;To be honest, this library is a pretty insane way to control the bot. It’s needlessly low-level: you’re manually controlling the brush’s position, you’ve got to remember to wash and re-ink the brush every so often, etc. If your main goal is to just get the bot to paint a pretty picture, there are lots of &lt;a href=&quot;http://wiki.evilmadscientist.com/WaterColorBot#Part_II:_Software_for_WaterColorBot&quot;&gt;better ways&lt;/a&gt; to go about it.&lt;/p&gt;
+
+&lt;p&gt;As a teaching aid, though, it’s been a total success, because it lets students flex their burgeoning Python skills and actually make a real thing in the process! We’ve been blown away by the stuff our students have created. Here’s an N64 logo in seven hundred and fifty hand-crafted lines of Python:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/wcb_1.JPG&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This clock depicts the time at which the program was run:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/wcb_2.JPG&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This student drew her image from scratch in Paint or something, using only straight lines and simple curves so it would paint well on the bot, and then translated it into Python:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/wcb_3.JPG&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;And here’s a nice windowsill cat.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/wcb_4.JPG&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;These kids haven’t yet learned how to use lists/dicts or how to make their own functions, and they’re already making cool programs like these!&lt;/p&gt;
+
+&lt;h2 id=&quot;interactivity&quot;&gt;Interactivity&lt;/h2&gt;
+
+&lt;p&gt;Once I finished writing the library, I thought it might be fun to use the bot as a “display” for a video game. As a proof of concept, I wrote an embarrassingly basic &lt;a href=&quot;https://github.com/jrheard/waterventure/blob/master/waterventure.py&quot;&gt;text adventure&lt;/a&gt; that uses the bot as a mini-map, painting in new rooms as you wander around the game world.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/waterventure.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;My favorite part about it is that once you’ve beaten the game, you end up with a completed map: a (slightly splotched) physical artifact that serves as proof of your victory.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/waterventure.jpg&quot; width=&quot;740&quot; height=&quot;510&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If you’re interested in making a game that runs on a watercoloring robot, here are some design constraints to keep in mind:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;You’ve got an &lt;em&gt;extremely&lt;/em&gt; finite amount of screen real estate (one page of printer paper)&lt;/li&gt;
+  &lt;li&gt;If you want to e.g. start a new page every level (maybe you’re writing a dungeon-crawler?), the user has to fiddle with the machine for ten seconds to take off the old page and ensure there’s a fresh page ready to go, which could get irritating over time&lt;/li&gt;
+  &lt;li&gt;You probably don’t want to paint on the same “pixel” twice (although I can imagine situations where an intentionally smudged page could make for a cool aesthetic)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Anyway, I thought the idea of an interactive watercolor program was interesting, so I showed the text adventure to the students. A few of them liked the idea and made their projects interactive too. Here’s me losing at one student’s Minesweeper:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/minesweeper.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This student has never used a two-dimensional array before, and he wrote a fully-functioning version of Minesweeper that runs on a watercoloring robot.&lt;/p&gt;
+
+&lt;p&gt;For this program and a few others, we decided to swap out the paints and paintbrush in favor of a pen. This allows for a lot more precision when drawing a grid or text/numbers, because if you try to do small fiddly motions on the bot with a paintbrush equipped you tend to just get an aimless splotch of paint.&lt;/p&gt;
+
+&lt;p&gt;Drawing text/numbers on the bot is kind of a hassle in general and can make for a visual mess, so I thought it was really clever that this student used domino-style dots in order to indicate how many mines are adjacent to a particular square. A small X on an individual square means “you’ve checked this square and there weren’t any mines nearby.”&lt;/p&gt;
+
+&lt;p&gt;Here’s another student’s implementation of Go:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/go.gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We didn’t want to stop the game after every move to swap out pens, so his program represents white pieces as squares and black pieces as triangles.&lt;/p&gt;
+
+&lt;h2 id=&quot;lessons-learned&quot;&gt;Lessons Learned&lt;/h2&gt;
+
+&lt;p&gt;I’ve been programming for a long time, but this was my first time writing code that controls a physical object. At first I was worried that a bug in my library could e.g. cause the three-hundred-dollar bot to rip itself apart, but Windell assured me that the bot’s “Scratch API” handles bounds checking automatically, and so that’s turned out not to be an issue.&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;One thing we didn’t foresee was that our paints kept getting dirty, because students’ rough-draft programs often didn’t wash the brush frequently enough — for instance, you may have noticed that the solar system program from earlier in this article depicts an unusually brown sun. We went through a few palettes before solving this problem by setting aside a “production” palette, which we only swap in when we’re painting a student’s known-good, final-draft program.&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;We also learned the hard way that it’s important to remove the bot’s water trays and paints whenever you equip the robot with a pen. Whoops.&lt;/p&gt;
+
+&lt;h2 id=&quot;thats-all-for-now&quot;&gt;That’s All For Now&lt;/h2&gt;
+&lt;p&gt;We’ve still got plenty of school year left, and I can’t wait to see what crazy antics these kids get up to in future projects!&lt;/p&gt;
+
+&lt;p&gt;BTW: If you’re a programmer interested in volunteering in a high school coding class, check out &lt;a href=&quot;https://www.tealsk12.org/&quot;&gt;TEALS&lt;/a&gt;, it’s how I originally got involved with this school.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;If &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;madison_wcb&lt;/code&gt; &lt;em&gt;does&lt;/em&gt; kill your bot, I’m very sorry. Use at your own risk 😕 &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;I can’t find the exact quote, but when I mentioned this in my friends’ &lt;a href=&quot;https://irc.darwin.network/&quot;&gt;IRC channel&lt;/a&gt;, one of them had a quip like “good programmers always separate stage and production”. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Procedural Dungeon Generation: Cellular Automata</title>
+   <link href="http://blog.jrheard.com/procedural-dungeon-generation-cellular-automata"/>
+   <updated>2016-11-22T00:00:00-08:00</updated>
+   <id>http://blog.jrheard.com/procedural-dungeon-generation-cellular-automata</id>
+   <content type="html">&lt;p&gt;Last time we looked at generating random dungeons for &lt;a href=&quot;https://github.com/jrheard/voke&quot;&gt;video games&lt;/a&gt; using the &lt;a href=&quot;/procedural-dungeon-generation-drunkards-walk-in-clojurescript&quot;&gt;Drunkard’s Walk&lt;/a&gt; algorithm. The Drunkard’s Walk is fun to play with, and often generates cool levels, but it’s also pretty unreliable. That’s not good enough for my purposes: I want to reliably generate big, open, cave-like maps, with lots of space for fast-moving enemies to swarm and surround the player.&lt;/p&gt;
+
+&lt;p&gt;To that end, we’ll be using a &lt;a href=&quot;http://natureofcode.com/book/chapter-7-cellular-automata/&quot;&gt;cellular automaton&lt;/a&gt; to generate levels that look like this:&lt;/p&gt;
+
+&lt;div id=&quot;cellular-example&quot;&gt;&lt;/div&gt;
+
+&lt;script src=&quot;/assets/js/cellular-blog.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+voke.world.visualize.cellular_example()
+&lt;/script&gt;
+
+&lt;p&gt;We’re still using a 2D grid to represent our level, but we’ll be using some new vocabulary this time. Each spot on the grid is now a &lt;em&gt;cell&lt;/em&gt;. Each cell is either &lt;em&gt;alive&lt;/em&gt; or &lt;em&gt;dead&lt;/em&gt;. (An alive cell is a cave wall, and a dead cell is empty space where the player can move around freely.)&lt;/p&gt;
+
+&lt;p&gt;The algorithm starts by generating a grid of these cells, each of which has a certain chance of being alive.&lt;/p&gt;
+
+&lt;pre class=&quot;hidden&quot;&gt;&lt;code class=&quot;cljs&quot;&gt;
+
+(def canvas-id (atom &quot;canvas-1&quot;))
+
+(defn draw-grid
+ [grid]
+ (let [canvas (js/document.getElementById @canvas-id)
+  ctx (.getContext canvas &quot;2d&quot;)
+  width (count (first grid))
+  height (count grid)
+  canvas-width (.-width canvas)
+  canvas-height (.-height canvas)
+  cell-width (/ canvas-width width)
+  cell-height (/ canvas-height height)]
+
+  (.clearRect ctx 0 0 canvas-width canvas-height)
+  (set! (.-fillStyle ctx) &quot;#CCC&quot;)
+
+  (loop [x 0 y 0]
+
+   (when (&amp;lt; y height)
+	(when (= (-&amp;gt; grid
+			  (get y)
+			  (get x))
+		   :dead)
+
+	 (doto ctx
+	  (.beginPath)
+	  (.rect (* x cell-width) (* y cell-height) cell-width cell-height)
+	  (.fill)))
+
+	(recur (if (identical? (inc x) width) 0 (inc x))
+	 (if (identical? (inc x) width) (inc y) y))))))
+
+(defn highlight-neighbors
+[grid x y]
+(let [canvas (js/document.getElementById @canvas-id)
+  ctx (.getContext canvas &quot;2d&quot;)
+  width (count (first grid))
+  height (count grid)
+  canvas-width (.-width canvas)
+  canvas-height (.-height canvas)
+  cell-width (/ canvas-width width)
+  cell-height (/ canvas-height height)]
+
+  (set! (.-fillStyle ctx) &quot;#00ff00&quot;)
+  (doto ctx
+  (.save)
+(aset &quot;globalAlpha&quot; 0.3)
+(.beginPath)
+(.rect (* cell-width (dec x)) (* cell-height (dec y)) (* 3 cell-width) cell-height)
+(.fill)
+(.beginPath)
+(.rect (* cell-width (dec x)) (* cell-height y) cell-width cell-height)
+(.fill)
+(.beginPath)
+(.rect (* cell-width (inc x)) (* cell-height y) cell-width cell-height)
+(.fill)
+(.beginPath)
+(.rect (* cell-width (dec x)) (* cell-height (inc y)) (* 3 cell-width) cell-height)
+(.fill)
+(.restore))))
+
+(defn draw-grid-highlighted
+[grid x y]
+(draw-grid grid)
+(highlight-neighbors grid x y))
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot; data-preamble=&quot;(reset! canvas-id &amp;quot;canvas-1&amp;quot;)&quot;&gt;
+
+(defn generate-row
+[width alive-probability]
+(vec
+(take width
+(repeatedly #(if (&amp;lt; (rand) alive-probability)
+:alive
+:dead)))))
+
+(defn generate-grid
+[width height alive-probability]
+(vec
+(take height
+(repeatedly #(generate-row width alive-probability)))))
+
+(draw-grid (generate-grid 50 50 0.5))
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;canvas id=&quot;canvas-1&quot; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;
+
+&lt;p&gt;As usual, all the code snippets in this article are interactive — try changing that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0.5&lt;/code&gt; to a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0.1&lt;/code&gt; or a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0.99&lt;/code&gt;. You can always focus a snippet and press Ctrl+Enter to rerun it, too!&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;The basic idea with cellular automata is that we start with an initial grid like the one we’ve just generated, and then we pretend that its cells are bacteria in a petri dish. We simulate the passage of time, during which cells are born and die.&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;The algorithm looks like this:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;If we’ve run the simulation &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;num-iterations&lt;/code&gt; times, we’re done.&lt;/li&gt;
+  &lt;li&gt;For each cell on the grid,
+    &lt;ol&gt;
+      &lt;li&gt;Calculate the number of its neighbors that are alive.&lt;/li&gt;
+      &lt;li&gt;If the cell is dead and has at least &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;birth-threshold&lt;/code&gt; alive neighbors, it becomes alive.&lt;/li&gt;
+      &lt;li&gt;If the cell is alive and has at least &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;survival-threshold&lt;/code&gt; alive neighbors, it stays alive.&lt;/li&gt;
+      &lt;li&gt;Otherwise, the cell is dead.&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Go back to step 1.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Before we get carried away, let’s consider an edge case we’ll have to deal with: cells on the outskirts of the grid will have some neighbors that are out of bounds!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot;&gt;
+(defn spot-is-off-grid?
+[grid x y]
+(let [height (count grid)
+width (count (first grid))]
+(or (&amp;lt; x 0)
+(&amp;gt;= x width)
+(&amp;lt; y 0)
+(&amp;gt;= y height))))
+
+(spot-is-off-grid? (generate-grid 5 5 0.5) -1 0)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For simplicity, we’ll say that these nonexistent neighbors are considered to be alive. (As a bonus, this rule tends to give our levels nice solid walls around the edges.)&lt;/p&gt;
+
+&lt;p&gt;Now let’s write a function that finds a given cell’s neighbors. In addition to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;draw-grid&lt;/code&gt; function from last time, I’ve supplied a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;draw-grid-highlighted&lt;/code&gt; function that lets you see what your cell’s neighbors look like.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot; data-preamble=&quot;(reset! canvas-id &amp;quot;canvas-2&amp;quot;)&quot;&gt;
+(defn neighbor-values
+[grid x y]
+(for [i (range (dec x) (+ x 2))
+j (range (dec y) (+ y 2))
+; We only care about our *neighbors*.
+:when (not= [i j] [x y])]
+(if (spot-is-off-grid? grid i j)
+:alive
+(get-in grid [j i]))))
+
+; Let&apos;s try it out.
+(let [grid (generate-grid 5 5 0.5)
+[x y] [2 2]]
+(draw-grid-highlighted grid x y)
+(neighbor-values grid x y))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;canvas id=&quot;canvas-2&quot; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;
+
+&lt;p&gt;Now that we’re able to count how many of our neighbors are alive, let’s figure out how to determine a cell’s new value at each step of the simulation.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot; data-preamble=&quot;(reset! canvas-id &amp;quot;canvas-3&amp;quot;)&quot;&gt;
+
+(defn new-value-at-position
+[grid x y birth-threshold survival-threshold]
+(let [cell-is-alive? (= (get-in grid [y x]) :alive)
+alive-neighbors (count
+(filter #(= % :alive)
+(neighbor-values grid x y)))]
+(cond
+(and cell-is-alive?
+(&amp;gt;= alive-neighbors survival-threshold)) :alive
+(and (not cell-is-alive?)
+(&amp;gt;= alive-neighbors birth-threshold)) :alive
+:else :dead)))
+
+; Let&apos;s try it out.
+(let [grid (generate-grid 5 5 0.5)
+[x y] [2 2]]
+(draw-grid-highlighted grid x y)
+(new-value-at-position grid x y 4 5))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;canvas id=&quot;canvas-3&quot; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;
+
+&lt;p&gt;That’s all the groundwork we need — let’s implement the algorithm!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot; data-preamble=&quot;(reset! canvas-id &amp;quot;canvas-4&amp;quot;)&quot;&gt;
+
+(defn automata-iteration
+[grid birth-threshold survival-threshold]
+(let [height (count grid)
+width (count (first grid))]
+(loop [new-grid grid
+x 0
+y 0]
+
+(if (= y height)
+; Done!
+new-grid
+
+; Otherwise:
+(let [new-value (new-value-at-position
+grid
+x
+y
+birth-threshold
+survival-threshold)]
+(recur (assoc-in new-grid [y x] new-value)
+(if (= (inc x) width) 0 (inc x))
+(if (= (inc x) width) (inc y) y)))))))
+
+(defn automata
+[width height initial-probability
+birth-threshold survival-threshold iterations]
+(nth
+(iterate
+#(automata-iteration
+%
+birth-threshold
+survival-threshold)
+(generate-grid width height initial-probability))
+iterations))
+
+(draw-grid
+(automata 40 40 0.35 3 5 4))
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;canvas id=&quot;canvas-4&quot; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;
+
+&lt;p&gt;It… works?&lt;/p&gt;
+
+&lt;p&gt;Well, it sure looks like that code is doing &lt;em&gt;something&lt;/em&gt; to our grid, but it’s not easy to tell how we can use this to generate a cool cave like the one we saw at the beginning of this article. This problem is one of the most interesting things about procedural level generation — whenever you’re evaluating an algorithm, you’ve got to figure out what its inputs are, and try to develop some understanding of how you can manipulate those inputs to get the type of levels that you want.&lt;/p&gt;
+
+&lt;p&gt;I didn’t pop out of the womb with a well-developed intuition for how birth and survival thresholds affect the shape of caves generated by a cellular automaton, and so I had some trouble figuring out how to proceed when I got to this point. Like last time, building a little tool helped a lot. Try cranking up the number of iterations!&lt;/p&gt;
+
+&lt;div id=&quot;cellular-tool&quot;&gt;&lt;/div&gt;
+
+&lt;style&gt;
+#cellular-tool .message p {
+margin-bottom: 0;
+}
+
+#slider-canvas {
+margin-bottom: 0.5rem;
+}
+&lt;/style&gt;
+
+&lt;p&gt;After playing around with the different options available, I’ve settled on using an initial chance of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0.45&lt;/code&gt;, a survival threshold of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;4&lt;/code&gt;, and a birth threshold of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;5&lt;/code&gt;. This set of parameters seems to reliably generate the specific kind of open cave areas that I’m interested in. Let’s try our implementation again, using those values:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot; data-preamble=&quot;(reset! canvas-id &amp;quot;canvas-5&amp;quot;)&quot;&gt;
+(draw-grid
+(automata 40 40 0.45 5 4 4))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;canvas id=&quot;canvas-5&quot; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;
+
+&lt;p&gt;Looks good! Kinda small, though.&lt;/p&gt;
+
+&lt;p&gt;The snippet above runs our code on a little &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;40x40&lt;/code&gt; grid because this implementation of the algorithm is &lt;em&gt;really, really slow&lt;/em&gt;, and it takes forever if you run it on e.g. a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;100x100&lt;/code&gt; grid. This speed issue is also the reason that these snippets use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;4&lt;/code&gt; as their default number of iterations — in real life, I find that a value around &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;12&lt;/code&gt; makes for smoother caves.&lt;/p&gt;
+
+&lt;p&gt;In a future article, we’ll revisit this code and figure out how to make it much faster, and we’ll learn a little bit about ClojureScript in the process.&lt;/p&gt;
+
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+
+&lt;p&gt;I learned about today’s algorithm from &lt;a href=&quot;http://www.gridsagegames.com/blog/2014/06/mapgen-cellular-automata/&quot;&gt;Kyzrati’s post on the topic&lt;/a&gt;. His implementation is a bit different from ours — he starts by running these birth/survival/death rules on &lt;strong&gt;random, individual cells&lt;/strong&gt; a bunch of times, rather than applying them to all cells on the grid at the same time. He then performs several smoothing passes, in which he applies cellular automata rules to the entire grid at once like we’ve been doing, in order to remove straggling single-cell pillars and cavelets.&lt;/p&gt;
+
+&lt;p&gt;I have an implementation that tries to mimic his, and I &lt;em&gt;think&lt;/em&gt; I like the results it gives, but I’ve been playing with it for a couple of weeks and frankly I still have no idea what actual effect this run-on-individual-cells-many-times approach has. It does &lt;em&gt;something&lt;/em&gt;, and it doesn’t seem to make the levels worse, so I’m keeping it for now. Give it a shot yourself using &lt;a href=&quot;/cellular-automata-tool.html&quot;&gt;my visualization tool&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;future-work&quot;&gt;Future work&lt;/h2&gt;
+
+&lt;p&gt;There’s a lot left to do before these levels are super fun and playable:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;If we generate one of these caves, place the player at one end, and put his goal at the other end, he’ll have to do a ton of backtracking along the way in his search for the exit, and that isn’t very fun. &lt;a href=&quot;http://www.gridsagegames.com/blog/2014/06/mapgen-cellular-automata/&quot;&gt;Kyzrati’s solution&lt;/a&gt; is to tweak the boundaries of the input grid so that the algorithm generates longer, narrower caves that require less backtracking.&lt;/li&gt;
+  &lt;li&gt;The algorithm often generates small “island” caves that are completely disconnected from the main cave; I need to write a post-processing step that &lt;a href=&quot;https://en.wikipedia.org/wiki/Flood_fill&quot;&gt;detects them&lt;/a&gt; and fills them in.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This seems like a good stopping point for now, though. We’ve written some code that generates neato caves! We’ll make it better in future posts.&lt;/p&gt;
+
+&lt;h2 id=&quot;further-reading&quot;&gt;Further Reading&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.gridsagegames.com/blog/2014/06/mapgen-cellular-automata/&quot;&gt;Mapgen: Cellular Automata&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://jeremykun.com/2012/07/29/the-cellular-automaton-method-for-cave-generation/&quot;&gt;The Cellular Automaton Method for Cave Generation&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://natureofcode.com/book/chapter-7-cellular-automata/&quot;&gt;The Nature of Code: Cellular Automata&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels&quot;&gt;Cellular Automata Method for Generating Random Cave-Like Levels&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://gamedevelopment.tutsplus.com/tutorials/generate-random-cave-levels-using-cellular-automata--gamedev-9664&quot;&gt;Generate Random Cave Levels Using Cellular Automata&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script src=&quot;/assets/js/seedrandom.min.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+voke.world.visualize.cellular_tool()
+&lt;/script&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Can we talk about how crazy this is? How many blogs have you ever seen with interactive code snippets like this? &lt;a href=&quot;https://github.com/viebel/klipse/&quot;&gt;KLIPSE&lt;/a&gt; rules. It’s super-easy to use, &lt;em&gt;and&lt;/em&gt; it can run python, ruby, javascript, plus &lt;a href=&quot;http://blog.klipse.tech/klipse/2016/09/09/klipse-languages.html&quot;&gt;other languages too&lt;/a&gt;. Give it a shot in your blog! &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;This algorithm will seem very familiar to you if you’ve ever seen &lt;a href=&quot;https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life&quot;&gt;Conway’s Game of Life&lt;/a&gt;. &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Procedural Dungeon Generation: A Drunkard's Walk in ClojureScript</title>
+   <link href="http://blog.jrheard.com/procedural-dungeon-generation-drunkards-walk-in-clojurescript"/>
+   <updated>2016-10-31T00:00:00-07:00</updated>
+   <id>http://blog.jrheard.com/procedural-dungeon-generation-drunkards-walk-in-clojurescript</id>
+   <content type="html">&lt;style&gt;
+
+#slider-ui .message p {
+margin-bottom: 0;
+}
+
+#slider-canvas {
+margin-bottom: 0.5rem;
+}
+
+#slider-ui input {
+width: 100%;
+}
+
+&lt;/style&gt;
+
+&lt;pre class=&quot;hidden&quot;&gt;&lt;code class=&quot;cljs&quot;&gt;
+
+(def canvas-id (atom &quot;canvas-1&quot;))
+
+(defn draw-grid
+ [grid]
+ (let [canvas (js/document.getElementById @canvas-id)
+  ctx (.getContext canvas &quot;2d&quot;)
+  width (count (first grid))
+  height (count grid)
+  canvas-width (.-width canvas)
+  canvas-height (.-height canvas)
+  cell-width (/ canvas-width width)
+  cell-height (/ canvas-height height)]
+
+  (.clearRect ctx 0 0 canvas-width canvas-height)
+  (set! (.-fillStyle ctx) &quot;#CCC&quot;)
+
+  (loop [x 0 y 0]
+
+   (when (&amp;lt; y height)
+	(when (= (-&amp;gt; grid
+			  (get y)
+			  (get x))
+		   :empty)
+
+	 (doto ctx
+	  (.beginPath)
+	  (.rect (* x cell-width) (* y cell-height) cell-width cell-height)
+	  (.fill)))
+
+	(recur (if (identical? (dec x) width) 0 (inc x))
+	 (if (identical? (dec x) width) (inc y) y))))))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I’m working on a toy &lt;a href=&quot;http://github.com/jrheard/voke&quot;&gt;game&lt;/a&gt;, and figured it’d be fun to learn how to write code that generates random levels for it. I’d like to show you a simple algorithm for level generation called the &lt;a href=&quot;http://www.roguebasin.com/index.php?title=Random_Walk_Cave_Generation&quot;&gt;Drunkard’s Walk&lt;/a&gt;. It generates levels that look like this:&lt;/p&gt;
+
+&lt;canvas id=&quot;canvas-4&quot; width=&quot;400&quot; height=&quot;400&quot;&gt;&lt;/canvas&gt;
+
+&lt;div class=&quot;button-wrapper&quot;&gt;
+&lt;a class=&quot;button&quot; id=&quot;generate-button&quot;&gt;generate another&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;p&gt;As you can see, our level is a two-dimensional grid. Each cell on the grid is either empty or full. If it’s empty, the player can wander around in there and find monsters and gold and items and stuff. If it’s full, then it’s a cave wall and the player smacks into it.&lt;/p&gt;
+
+&lt;p&gt;The Drunkard’s Walk algorithm starts with a totally-filled-in level and then hollows it out one cell at a time, so let’s start by defining a function that creates a filled-in level.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot;&gt;
+(defn full-grid
+ [width height]
+ (vec (repeat height
+	   (vec (repeat width :full)))))
+
+(full-grid 3 5)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;All of the code snippets in this article are interactive - go ahead and change that last line to &lt;code&gt;(full-grid 10 10)&lt;/code&gt; and see what happens.&lt;/p&gt;
+
+&lt;p&gt;Our &lt;code&gt;full-grid&lt;/code&gt; function is a good start, but its output doesn’t really look like a cave. Let’s fix that. I’ve provided a &lt;code&gt;draw-grid&lt;/code&gt; function that takes a grid and draws it for you, like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot; data-preamble=&quot;(reset! canvas-id &amp;quot;canvas-1&amp;quot;)&quot;&gt;
+(draw-grid (full-grid 10 10))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;canvas id=&quot;canvas-1&quot; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;
+
+&lt;p&gt;That’s not a very interesting cave. Let’s try it again with a few empty cells carved out by hand, just so we’re sure that this &lt;code&gt;draw-grid&lt;/code&gt; function actually works.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot; data-preamble=&quot;(reset! canvas-id &amp;quot;canvas-2&amp;quot;)&quot;&gt;
+(-&amp;gt; (full-grid 10 10)
+ (assoc-in [1 2] :empty)
+ (assoc-in [8 5] :empty)
+ (assoc-in [5 9] :empty)
+ draw-grid)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;canvas id=&quot;canvas-2&quot; width=&quot;200&quot; height=&quot;200&quot;&gt;&lt;/canvas&gt;
+
+&lt;p&gt;Did I mention all the code in this article is interactive? Play around with it, go nuts. Hollow out some more cells. Make the whole level empty. Remove the &lt;code&gt;draw-grid&lt;/code&gt; call to see what our actual 2D grid datastructure looks like when some of its cells have been hollowed out.&lt;/p&gt;
+
+&lt;p&gt;Okay, so the Drunkard’s Walk algorithm looks like this:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Pick a random cell on the grid as a starting point.&lt;/li&gt;
+  &lt;li&gt;If we’ve carved out enough empty spots, we’re done.&lt;/li&gt;
+  &lt;li&gt;Walk one step in a random cardinal direction - north, south, east, or west, no diagonals - and carve out that new spot.&lt;/li&gt;
+  &lt;li&gt;Go back to step 2.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;We’re almost ready to implement it, but first let’s define a little helper function that we’ll use to make sure that we stay within the bounds of our grid and don’t try to walk off into the gaping void beyond.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot;&gt;
+
+(defn bound-between
+ [number lower upper]
+ (cond
+  (&amp;lt; number lower) lower
+  (&amp;gt; number upper) upper
+  :else number))
+
+(bound-between 10 0 9)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Okay, here we go!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;cljs&quot; data-preamble=&quot;(reset! canvas-id &amp;quot;canvas-3&amp;quot;)&quot;&gt;
+
+(defn drunkards-walk
+ [grid num-empty-cells]
+ (let [height (count grid)
+  width (count (first grid))]
+  ; Guard against impossible demands.
+  (when (&amp;lt;= num-empty-cells (* width height))
+
+  (loop [grid grid
+   ; Step 1: pick a random cell.
+   x (rand-int width)
+   y (rand-int height)
+   empty-cells 0]
+
+   ; Step 2: if we&apos;re done, return the grid.
+   (if (= empty-cells num-empty-cells)
+	grid
+
+	(let [cell-was-full? (= (get-in grid [y x]) :full)
+	 ; Step 3: walk one step in a random direction.
+	 direction (rand-nth [:north :east :south :west])]
+
+	 ; Step 4: back to step 2.
+	 (recur (assoc-in grid [y x] :empty)
+	  (case direction
+	   :east (bound-between (inc x) 0 (dec width))
+	   :west (bound-between (dec x) 0 (dec width))
+	   x)
+	  (case direction
+	   :north (bound-between (dec y) 0 (dec height))
+	   :south (bound-between (inc y) 0 (dec height))
+	   y)
+	  (if cell-was-full?
+	   (inc empty-cells)
+	   empty-cells))))))))
+
+(-&amp;gt; (full-grid 40 40)
+ (drunkards-walk 350)
+ draw-grid)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The fruits of our labor:&lt;/p&gt;
+
+&lt;canvas id=&quot;canvas-3&quot; width=&quot;400&quot; height=&quot;400&quot;&gt;&lt;/canvas&gt;
+
+&lt;p&gt;Focus the code snippet above and then press Control+Enter a few times to generate some more levels. Neat, huh? Go on, make it a 200x200 grid and carve out 5000 cells.&lt;/p&gt;
+
+&lt;p&gt;When looking at generated levels, I often find myself wondering: what exactly happened to make the level turn out this way? I’ve come up with a little tool that helps answer that question for this particular algorithm. Try dragging this slider around.&lt;/p&gt;
+
+&lt;div id=&quot;slider-ui&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;/assets/js/drunkards-blog.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script src=&quot;/assets/js/seedrandom.min.js?v=2025-12-11 14:39:50 -0800&quot;&gt;&lt;/script&gt;
+
+&lt;script&gt;
+voke.world.visualize.drunkards_blog()
+&lt;/script&gt;
+
+&lt;p&gt;So, that’s the Drunkard’s Walk. I learned about it from &lt;a href=&quot;http://www.gridsagegames.com/blog/2014/06/procedural-map-generation/&quot;&gt;Kyzrati’s excellent introductory blog post on procedural map generation&lt;/a&gt;. It usually generates surprisingly cavelike levels, and they will always be connected — there will never be two separate subcaves that are separated from each other by a wall.&lt;/p&gt;
+
+&lt;p&gt;The bad news: you probably don’t want to actually use this to generate levels for a video game. The main problem with it is that it’s &lt;strong&gt;unreliable&lt;/strong&gt; — it’s so dang random that sometimes it’ll generate super cool tunnely cavey levels, and sometimes it’ll just generate a boring-looking blob. It’s pretty fun to play with, though!&lt;/p&gt;
+
+&lt;p&gt;Don’t worry, we’ll look at a more useful algorithm next time 👍&lt;/p&gt;
+
+&lt;pre class=&quot;hidden&quot;&gt;&lt;code class=&quot;cljs&quot;&gt;
+
+(defn draw-top-canvas []
+(reset! canvas-id &quot;canvas-4&quot;)
+(-&amp;gt; (full-grid 40 40) (drunkards-walk 400) draw-grid))
+
+(draw-top-canvas)
+
+(-&amp;gt; &quot;generate-button&quot;
+ (js/document.getElementById)
+ (.addEventListener &quot;click&quot;  (fn [e]
+							 (draw-top-canvas))))
+&lt;/code&gt;&lt;/pre&gt;
+</content>
+ </entry>
+ 
+
+</feed>

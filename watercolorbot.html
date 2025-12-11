@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Painting Pictures and Making Games with a Watercoloring Robot &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="post">
+	<h1 class="post-title">Painting Pictures and Making Games with a Watercoloring Robot</h1>
+	<span class="post-date">30 Nov 2017</span>
+	<p>I’m spending the 2017-18 school year volunteering in a few tech classes in a local high school, including a beginner/intermediate Python course led by a teacher named Tamara O’Malley. She’s new to Python, and I have a lot of experience with the language, so I’ve been helping her come up with <a href="http://blog.jrheard.com/python/passwords">fun projects</a> for the students to work on.</p>
+
+<p>When we started talking about potential projects, Tamara mentioned that she had a <a href="http://watercolorbot.com/">WaterColorBot</a> that she’d like to have the students use in some way. Here’s a picture from its official website:</p>
+
+<p><img src="/assets/img/wcb_pristine.jpg" width="720" height="540" /></p>
+
+<p>She’d already had a lot of success using the bot in another intro-to-programming course via a block-based language called <a href="https://github.com/evil-mad/WaterColorBlocks">Snap</a>, but she wasn’t sure how to talk to the bot via Python.</p>
+
+<p>This sounded like a fun project, so I looked into it. It turns out that there are <a href="http://wiki.evilmadscientist.com/WaterColorBot#Part_II:_Software_for_WaterColorBot">lot of great ways</a> to drive the bot via software, but I couldn’t find anything Python-based that did what we wanted. I came up with a few possible approaches and asked <a href="https://www.evilmadscientist.com/about/">Windell Oskay</a> for advice, and he kindly set us on the right track — thanks, Windell!</p>
+
+<h2 id="madison_wcb">madison_wcb</h2>
+
+<p>I ended up writing a library called <a href="http://madison-wcb.readthedocs.io/en/latest/"><code class="language-plaintext highlighter-rouge">madison_wcb</code></a> to solve our problem. (This library was easy to write, thanks to the excellent and well-documented <a href="https://github.com/techninja/cncserver/blob/master/scratch/SCRATCH.API.md">“Scratch API”</a> that the bot supports.)</p>
+
+<p>The library lets students write code like this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Dip the brush in the palette's top-most color.
+</span><span class="nf">get_color</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Move the brush to the mid-right side of the page, "face" directly
+# "south", and lower the brush so that it touches the paper.
+</span><span class="nf">move_to</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nf">point_in_direction</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">)</span>
+<span class="nf">brush_down</span><span class="p">()</span>
+
+<span class="c1"># Paint a circle!
+</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">360</span><span class="p">):</span>
+	<span class="nf">move_forward</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+	<span class="nf">turn_right</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>If you’ve got a WaterColorBot lying around, you can use this library too! Just check out the <a href="http://madison-wcb.readthedocs.io/en/latest/">documentation</a> or <a href="https://github.com/jrheard/madison_wcb">source code</a> and go nuts.</p>
+
+<p>Here’s one student’s program in action:</p>
+
+<video autoplay="" loop="" muted="" playsinline="">
+    <source src="/assets/img/watercolorbot.mp4" type="video/mp4" />
+</video>
+
+<p>The library also uses Python’s built-in <a href="https://docs.python.org/3.3/library/turtle.html?highlight=turtle"><code class="language-plaintext highlighter-rouge">turtle</code></a> module to show you what your program will do.</p>
+
+<p><img src="/assets/img/wcb_turtle.gif" /></p>
+
+<p>This saves users a lot of potential frustration, and also a bunch of paint.</p>
+
+<h2 id="perhaps-somewhat-impractical">Perhaps Somewhat Impractical</h2>
+
+<p>To be honest, this library is a pretty insane way to control the bot. It’s needlessly low-level: you’re manually controlling the brush’s position, you’ve got to remember to wash and re-ink the brush every so often, etc. If your main goal is to just get the bot to paint a pretty picture, there are lots of <a href="http://wiki.evilmadscientist.com/WaterColorBot#Part_II:_Software_for_WaterColorBot">better ways</a> to go about it.</p>
+
+<p>As a teaching aid, though, it’s been a total success, because it lets students flex their burgeoning Python skills and actually make a real thing in the process! We’ve been blown away by the stuff our students have created. Here’s an N64 logo in seven hundred and fifty hand-crafted lines of Python:</p>
+
+<p><img src="/assets/img/wcb_1.JPG" /></p>
+
+<p>This clock depicts the time at which the program was run:</p>
+
+<p><img src="/assets/img/wcb_2.JPG" /></p>
+
+<p>This student drew her image from scratch in Paint or something, using only straight lines and simple curves so it would paint well on the bot, and then translated it into Python:</p>
+
+<p><img src="/assets/img/wcb_3.JPG" /></p>
+
+<p>And here’s a nice windowsill cat.</p>
+
+<p><img src="/assets/img/wcb_4.JPG" /></p>
+
+<p>These kids haven’t yet learned how to use lists/dicts or how to make their own functions, and they’re already making cool programs like these!</p>
+
+<h2 id="interactivity">Interactivity</h2>
+
+<p>Once I finished writing the library, I thought it might be fun to use the bot as a “display” for a video game. As a proof of concept, I wrote an embarrassingly basic <a href="https://github.com/jrheard/waterventure/blob/master/waterventure.py">text adventure</a> that uses the bot as a mini-map, painting in new rooms as you wander around the game world.</p>
+
+<p><img src="/assets/img/waterventure.gif" /></p>
+
+<p>My favorite part about it is that once you’ve beaten the game, you end up with a completed map: a (slightly splotched) physical artifact that serves as proof of your victory.</p>
+
+<p><img src="/assets/img/waterventure.jpg" width="740" height="510" /></p>
+
+<p>If you’re interested in making a game that runs on a watercoloring robot, here are some design constraints to keep in mind:</p>
+<ul>
+  <li>You’ve got an <em>extremely</em> finite amount of screen real estate (one page of printer paper)</li>
+  <li>If you want to e.g. start a new page every level (maybe you’re writing a dungeon-crawler?), the user has to fiddle with the machine for ten seconds to take off the old page and ensure there’s a fresh page ready to go, which could get irritating over time</li>
+  <li>You probably don’t want to paint on the same “pixel” twice (although I can imagine situations where an intentionally smudged page could make for a cool aesthetic)</li>
+</ul>
+
+<p>Anyway, I thought the idea of an interactive watercolor program was interesting, so I showed the text adventure to the students. A few of them liked the idea and made their projects interactive too. Here’s me losing at one student’s Minesweeper:</p>
+
+<p><img src="/assets/img/minesweeper.gif" /></p>
+
+<p>This student has never used a two-dimensional array before, and he wrote a fully-functioning version of Minesweeper that runs on a watercoloring robot.</p>
+
+<p>For this program and a few others, we decided to swap out the paints and paintbrush in favor of a pen. This allows for a lot more precision when drawing a grid or text/numbers, because if you try to do small fiddly motions on the bot with a paintbrush equipped you tend to just get an aimless splotch of paint.</p>
+
+<p>Drawing text/numbers on the bot is kind of a hassle in general and can make for a visual mess, so I thought it was really clever that this student used domino-style dots in order to indicate how many mines are adjacent to a particular square. A small X on an individual square means “you’ve checked this square and there weren’t any mines nearby.”</p>
+
+<p>Here’s another student’s implementation of Go:</p>
+
+<p><img src="/assets/img/go.gif" /></p>
+
+<p>We didn’t want to stop the game after every move to swap out pens, so his program represents white pieces as squares and black pieces as triangles.</p>
+
+<h2 id="lessons-learned">Lessons Learned</h2>
+
+<p>I’ve been programming for a long time, but this was my first time writing code that controls a physical object. At first I was worried that a bug in my library could e.g. cause the three-hundred-dollar bot to rip itself apart, but Windell assured me that the bot’s “Scratch API” handles bounds checking automatically, and so that’s turned out not to be an issue.<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup></p>
+
+<p>One thing we didn’t foresee was that our paints kept getting dirty, because students’ rough-draft programs often didn’t wash the brush frequently enough — for instance, you may have noticed that the solar system program from earlier in this article depicts an unusually brown sun. We went through a few palettes before solving this problem by setting aside a “production” palette, which we only swap in when we’re painting a student’s known-good, final-draft program.<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup></p>
+
+<p>We also learned the hard way that it’s important to remove the bot’s water trays and paints whenever you equip the robot with a pen. Whoops.</p>
+
+<h2 id="thats-all-for-now">That’s All For Now</h2>
+<p>We’ve still got plenty of school year left, and I can’t wait to see what crazy antics these kids get up to in future projects!</p>
+
+<p>BTW: If you’re a programmer interested in volunteering in a high school coding class, check out <a href="https://www.tealsk12.org/">TEALS</a>, it’s how I originally got involved with this school.</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>If <code class="language-plaintext highlighter-rouge">madison_wcb</code> <em>does</em> kill your bot, I’m very sorry. Use at your own risk 😕 <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>I can’t find the exact quote, but when I mentioned this in my friends’ <a href="https://irc.darwin.network/">IRC channel</a>, one of them had a quip like “good programmers always separate stage and production”. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</div>
+
+
+<div class="message">
+	
+	<p>If you've found an error or have a suggestion, please open an issue or pull request on <a
+			href="https://github.com/jrheard/blog">GitHub</a>.</p>
+</div>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

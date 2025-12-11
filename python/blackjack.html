@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Madison CS 3-4: Blackjack &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item active" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="page">
+  <h1 class="page-title">Madison CS 3-4: Blackjack</h1>
+  <p>In this project, you’ll write a Python program that lets a user play Blackjack.</p>
+
+<p><strong>You will be using starter code for this project! Download <a href="/python/blackjack_starter_code.py">this file</a> and use it as the basis for your program.</strong></p>
+
+<h1 id="how-its-played">How It’s Played</h1>
+
+<p>Blackjack is a card game. We’ll be making a simple version of it. In our version, there’s a <strong>player</strong> (controlled by a human) and a <strong>dealer</strong> (a computer-controlled opponent).</p>
+
+<p>The player starts with two cards, and can choose to draw more cards (“hit”) or to end their turn (“stand”). Once the player is done drawing cards, it’s the dealer’s turn. Once the dealer’s turn is over, the game tells the player whether they won or lost.</p>
+
+<p>A card has a <strong>suit</strong> (a string like <code class="language-plaintext highlighter-rouge">'spades'</code> or <code class="language-plaintext highlighter-rouge">'diamonds'</code>), and a <strong>value</strong> (a number between <code class="language-plaintext highlighter-rouge">1</code> and <code class="language-plaintext highlighter-rouge">10</code>). Each player has a <strong>count</strong>, which is the sum of all of their cards’ values. If I have a five of diamonds, a three of hearts, and a ten of spades, my count is 18.</p>
+
+<p>The goal of the game is to beat the dealer by getting a count as close to 21 as possible without going over 21<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>.</p>
+
+<p>I’ll go into a lot more detail about all this later on. First, though, let’s figure out how to write a Python program that has playing cards in it.</p>
+
+<h1 id="how-to-program-a-card-game">How to Program a Card Game</h1>
+
+<h2 id="representing-a-card">Representing a Card</h2>
+
+<p>Here’s what a five of diamonds looks like in real life:</p>
+
+<p><img src="/assets/img/five_of_diamonds.png" width="295px" height="400px" /></p>
+
+<p>Here’s what a five of diamonds looks like in a Python program:</p>
+
+<textarea class="hidden">
+[5, "diamonds"]
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>That’s a two-item list that <strong>represents</strong> a five of diamonds card.</p>
+
+<p>“Representing” something means “getting it out of your head and into a computer program.” In this example, I took the concept of &lt;a five of diamonds card&gt; and turned it into &lt;a list with two things in it; the first thing is a number that represents the card’s value, and the second thing is a string that represents the card’s suit&gt;. This is important because Python doesn’t really know what you mean when you say “a five of diamonds card”, but it <em>does</em> understand <code class="language-plaintext highlighter-rouge">[5, "diamonds"]</code>.</p>
+
+<p>There are a lot of different ways to represent a five of diamonds in a Python program - we’re using a two-item list in this project, but in future projects you might use a dict or a class instead<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup>. We’ll learn about those later.</p>
+
+<h2 id="representing-a-deck">Representing a Deck</h2>
+
+<p>That’s just one card, though, and there are fifty-two cards in a deck.</p>
+
+<p>A deck of cards has four <strong>suits</strong>: <code class="language-plaintext highlighter-rouge">diamonds</code>, <code class="language-plaintext highlighter-rouge">hearts</code>, <code class="language-plaintext highlighter-rouge">spades</code>, and <code class="language-plaintext highlighter-rouge">clubs</code>.</p>
+
+<p>Each suit has thirteen cards:</p>
+
+<ul>
+  <li>an ace,</li>
+  <li>the cards 2 through 10,</li>
+  <li>and a jack, a queen, and a king.</li>
+</ul>
+
+<p>Jacks, queens, and kings have the value 10. In the simple version of Blackjack that you’re building in this project, aces always have the value 1.</p>
+
+<p>Here’s a full suit of diamonds:</p>
+
+<pre class="dont-format-output"><code class="py">
+diamonds = [
+	# The ace has value 1.
+	[1, "diamonds"],
+	[2, "diamonds"],
+	[3, "diamonds"],
+	[4, "diamonds"],
+	[5, "diamonds"],
+	[6, "diamonds"],
+	[7, "diamonds"],
+	[8, "diamonds"],
+	[9, "diamonds"],
+	[10, "diamonds"],
+	# The jack, queen, and king
+	# all have value 10.
+	[10, "diamonds"],
+	[10, "diamonds"],
+	[10, "diamonds"],
+]
+
+print("There are " + str(len(diamonds)) + " cards in this suit.")
+print("The sixth card is " + str(diamonds[5]) + ".")
+print("The sixth card's value is " + str(diamonds[5][0]) + ".")
+print("The twelfth card's value is " + str(diamonds[11][0]) + ".")
+</code></pre>
+
+<p>Notice that <code class="language-plaintext highlighter-rouge">diamonds</code> is a list of <strong>cards</strong>, and a <strong>card</strong> is a list like <code class="language-plaintext highlighter-rouge">[5, "diamonds"]</code> - so <code class="language-plaintext highlighter-rouge">diamonds</code> is a list of lists. It’s totally fine and normal for lists to contain other lists, you’ll do this a lot in future projects. Notice how I can say <code class="language-plaintext highlighter-rouge">diamonds[5][0]</code> to refer to the value of the sixth card in the <code class="language-plaintext highlighter-rouge">diamonds</code> list.</p>
+
+<p>Your program’s deck should be a list with fifty-two elements: thirteen cards for each of the four suits. You might find a <code class="language-plaintext highlighter-rouge">for</code> loop (or two!) to be useful for cutting down on the amount of copy-pasting you’ll be doing in this part of the project.</p>
+
+<h2 id="shuffling-the-deck">Shuffling the Deck</h2>
+<p>Once you’ve got a deck of cards, you should shuffle the deck. Here’s how you can randomize the order of the items in a list:</p>
+
+<pre><code class="py">
+import random
+
+my_favorite_foods = ["Fried Rice", "Red Curry", "Pizza", "Sandwiches"]
+
+# This line is the important one!
+random.shuffle(my_favorite_foods)
+
+print(my_favorite_foods)
+</code></pre>
+
+<h2 id="dealing-hands">Dealing Hands</h2>
+
+<p>Now that your deck’s shuffled, you should give two cards to the player and two cards to the dealer. The player and dealer should each have a <strong>hand</strong>, which is a list of cards.</p>
+
+<p>Here’s an example of what a hand might look like:</p>
+
+<textarea class="hidden">
+[[10, "spades"], [5, "clubs"]]
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p><strong>Make sure that whenever you deal a card to someone, that card is removed from the deck</strong>. There should only ever be fifty-two cards at a time throughout your program—if the player has two cards and the dealer has two cards, then the deck should have forty-eight cards.</p>
+
+<p>Keep these hands in variables named something like <code class="language-plaintext highlighter-rouge">player_hand</code> and <code class="language-plaintext highlighter-rouge">dealer_hand</code>. You’ll also want to create variables named something like <code class="language-plaintext highlighter-rouge">player_count</code> and <code class="language-plaintext highlighter-rouge">dealer_count</code>.</p>
+
+<p>You should update these variables whenever the player or dealer gets dealt a new card.</p>
+
+<p>If <code class="language-plaintext highlighter-rouge">player_hand</code> is <code class="language-plaintext highlighter-rouge">[[10, "spades"], [5, "clubs"]]</code>, then <code class="language-plaintext highlighter-rouge">player_count</code> should be <code class="language-plaintext highlighter-rouge">15</code>.</p>
+
+<p>You might find it helpful to write a function called e.g. <code class="language-plaintext highlighter-rouge">score_hand(hand)</code> that takes a hand (a list of cards) and returns its score (a number like 12 or 3 or 25). That would make it so that you don’t have to maintain these <code class="language-plaintext highlighter-rouge">player_count</code> and <code class="language-plaintext highlighter-rouge">dealer_count</code> variables, since instead you could just e.g. call <code class="language-plaintext highlighter-rouge">score_hand(player_hand)</code> whenever you want to determine the player’s count. Up to you!</p>
+
+<h1 id="milestone-1-displaying-output">Milestone 1: Displaying Output</h1>
+
+<p>You’ve done a lot of good stuff so far!</p>
+
+<p>The <a href="/python/blackjack_starter_code.py">starter code</a> for this project contains a function called <code class="language-plaintext highlighter-rouge">print_game_status()</code>. Add a line to your program that uses this function.</p>
+
+<p>At this point, your program should look exactly like this when it’s run:</p>
+
+<asciinema-player src="/blackjack_cast_milestone_1.json" rows="17" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>The cards and counts your program prints out will be different every time the program is run, so it’s fine that they’ll be different from what you see in my demo above.</p>
+
+<h1 id="players-turn">Player’s Turn</h1>
+
+<p>Once the cards have been dealt, it’s the player’s turn. In our simple version of Blackjack, the player has two options:</p>
+
+<ol>
+  <li>The player can draw another card by saying <code class="language-plaintext highlighter-rouge">"hit"</code>. They can do this as many times as they want, as long as their <strong>count</strong> is below 21.</li>
+  <li>The player can end their turn by saying <code class="language-plaintext highlighter-rouge">"stand"</code>.</li>
+</ol>
+
+<p>Your program should prompt the user for input over and over until they say <code class="language-plaintext highlighter-rouge">"stand"</code>, at which point their turn is over. You’ll want to use a <code class="language-plaintext highlighter-rouge">while True:</code> loop with one or more <code class="language-plaintext highlighter-rouge">break</code> statements in it. Print out something like <code class="language-plaintext highlighter-rouge">"Do you want to 'hit' or 'stand'?"</code> when you’re prompting the player for input.</p>
+
+<p>Each time the player says <code class="language-plaintext highlighter-rouge">"hit"</code>, you should call <code class="language-plaintext highlighter-rouge">print_game_status()</code> after giving them a new card, so that they can see their updated hand.</p>
+
+<p>If the player inputs something that’s not <code class="language-plaintext highlighter-rouge">"hit"</code> or <code class="language-plaintext highlighter-rouge">"stand"</code> - for instance, if they enter the word <code class="language-plaintext highlighter-rouge">"pizza"</code> for their move - your program should not crash.</p>
+
+<p><strong>Note</strong>: If the player draws too many cards and their count goes over 21, that’s called “busting”, and it’s game over for the player. End the game immediately, print out the current state of the game, and tell them that they lost.</p>
+
+<h1 id="dealers-turn">Dealer’s Turn</h1>
+
+<p>Once the player has said <code class="language-plaintext highlighter-rouge">"stand"</code>, it’s time for the dealer’s turn.</p>
+
+<p>Here’s what should happen during the dealer’s turn:</p>
+
+<ul>
+  <li>If the dealer’s count is less than <strong>17</strong>, the dealer should draw cards until its count is <strong>17 or higher</strong>.</li>
+  <li>If at any point dealer’s count is 17 or higher, the dealer’s turn immediately ends.</li>
+  <li>If the dealer’s count goes over 21, the dealer busts and the player wins.</li>
+</ul>
+
+<p>Once the dealer’s turn is over, you should call <code class="language-plaintext highlighter-rouge">print_game_status()</code> so that the player can see what happened. You should only call it a single time at the end of the dealer’s turn, you don’t need to call it every time the dealer draws a card.</p>
+
+<p><strong>Note</strong>: If the player busted during their turn, the game should end immediately and you should <strong>skip the dealer’s turn</strong>.</p>
+
+<h1 id="check-counts">Check Counts</h1>
+
+<p>Once the dealer’s turn is over, compare the player’s count to the dealer’s count. If the player’s count is <em>higher</em> than the dealer’s count, the player wins. If the player’s count is <em>lower</em> than the dealer’s count, the player loses. If the two counts are <em>equal</em>, it’s a tie!</p>
+
+<p>The last line of your program’s output should be something like <code class="language-plaintext highlighter-rouge">You won!</code> or <code class="language-plaintext highlighter-rouge">It's a tie!</code>. The <a href="/python/blackjack_starter_code.py">starter code</a> for this project has the specific strings that you should use - be sure to use them, because we’ll be running an automated test program that’ll be looking for them!</p>
+
+<p><strong>Note</strong>: If the player busted during their turn, you should skip the dealer’s turn <em>as well as</em> this count-checking phase. If the player busted, they lost the game, so there’s no need to check their count against the dealer’s count.</p>
+
+<p><strong>Note</strong>: If the <em>dealer</em> busted during its turn, you should skip this count-checking phase. If the dealer busted, the player won the game, so there’s no need to check the player’s count against the dealer’s count.</p>
+
+<h1 id="milestone-2-completed-game">Milestone 2: Completed Game</h1>
+
+<p>Congratulations, you’ve implemented Blackjack!</p>
+
+<p>Go through your program and double-check to make sure that you didn’t forget to implement anything. If you forgot something, we <em>will</em> find it and make you fix it :)</p>
+
+<p>Our automated test program will be reading your program’s output, so <strong>it’s really important that you call <code class="language-plaintext highlighter-rouge">print_game_status()</code> every time the state of the game changes</strong>.</p>
+
+<p>Your program should look <strong>exactly like this</strong> when it’s run. Check carefully to make sure that your output is formatted exactly like what you see below!</p>
+
+<asciinema-player src="/blackjack_cast_milestone_2.json" rows="35" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<h1 id="submitting-your-project">Submitting your project</h1>
+<p><strong>Remove all “TODO” comments from your code before submitting your finished program.</strong></p>
+
+<p>Submit a file called <code class="language-plaintext highlighter-rouge">blackjack_&lt;YOUR_NAME&gt;.py</code>.</p>
+
+<p>For instance, I’d submit a file called <code class="language-plaintext highlighter-rouge">blackjack_jr_heard.py</code>.</p>
+
+<p>On the first line of that file, write a comment with your name on it, like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># JR Heard
+</code></pre></div></div>
+
+<p>Remember to follow this class’s <a href="https://docs.google.com/document/d/1UbyhIkxOdhpf-MGna_5dwh0yHXe02HTZ69CfEuYv76Y/edit">style guide</a>.</p>
+
+<h1 id="other-features">Other Features</h1>
+
+<p>In real life, Blackjack can be much more complicated than the version we’ve built. Check out the <a href="https://en.wikipedia.org/wiki/Blackjack">Wikipedia page</a> and implement any features that jump out at you (e.g. aces being worth 1 <em>or</em> 11; splitting; betting)!</p>
+
+<p>Our test program won’t be able to handle your program once you’ve added more features to it, so be sure to submit your finished Blackjack program <strong>before</strong> adding new features to it. Once you’ve submitted the simple version of the program, we’ll have a saved copy of it and you can go ahead and add more features to it.</p>
+
+<script src="/assets/js/asciinema-player.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p><a href="https://www.bicyclecards.com/how-to-play/blackjack/">How to play: Blackjack</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>I’d use a <a href="https://pymotw.com/2/collections/namedtuple.html">namedtuple</a>, because I love namedtuples. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</div>
+
+
+<script src="/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800"></script>
+<script>
+  var textAreas = document.getElementsByTagName("textarea");
+  var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+  for (var i = 0; i < textAreas.length; i++) {
+    CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+  }
+
+  window.klipse_settings = {
+    selector_eval_python_client: '.py',
+    codemirror_options_in: {
+      theme: "friendship-bracelet"
+    },
+    codemirror_options_out: {
+      theme: "friendship-bracelet"
+    }
+  };
+</script>
+<script src="/assets/js/klipse.min.js?v=2025-12-11 14:39:50 -0800"></script>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

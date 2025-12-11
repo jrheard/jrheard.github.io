@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Madison CS 3-4: Tic-Tac-Toe &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item active" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="page">
+  <h1 class="page-title">Madison CS 3-4: Tic-Tac-Toe</h1>
+  <p>In this project, you’ll write a program that lets you play a game of tic-tac-toe against a computer opponent.</p>
+
+<p>The goal of this project is to get you comfortable with writing <strong>functions</strong>. You’ve been using functions all year, but in this project you’ll write more of them at one time than you have before.</p>
+
+<p>Before we start, I want to spend just a quick second talking about how I think about functions, because I think it’s a useful picture to have in your head. It’s helped me a lot.</p>
+
+<p>Functions are like LEGO blocks.</p>
+
+<p><img src="/assets/img/lego.jpg" /></p>
+
+<p>A LEGO block is a small, simple thing—but if you put a bunch of those simple blocks together in the right way, you can make the Milennium Falcon, or the Eiffel Tower, or I don’t know, a pizza or a dog or something.</p>
+
+<p>Functions are just like that. <strong>The functions you write should each be small, simple, and easy to understand</strong>—but if you put a bunch of your functions together in the right way, you can make a website, or control a robot, or fly a spaceship.</p>
+
+<p>The best part about functions is that they’re even better than LEGO blocks, because you can make your own! When you buy a LEGO set, you’re stuck with whatever kinds of blocks come with the set; when you use a programming language, you can use its built-in functions to make <em>your own</em> way cooler functions that do whatever you want, and then you can put <em>those</em> functions together to make a program that does something awesome. Functions are basically my favorite thing about programming.</p>
+
+<p>OK, enough philosophy. Let’s write some simple functions and put them together to make a tic-tac-toe game!</p>
+
+<h2 id="demo">Demo</h2>
+
+<p>The game we’re making will look like this (the “index” stuff will make more sense in a second, keep reading):</p>
+
+<asciinema-player src="/tictactoe_cast.json" rows="25" cols="95" autoplay="true" loop="true"></asciinema-player>
+
+<p>(The idea for this project was taken from Al Sweigart’s excellent book “Invent Your Own Computer Games With Python”.)</p>
+
+<h2 id="representing-the-board">Representing The Board</h2>
+
+<p>A game of tic-tac-toe takes place on a 3x3 board. A space on the board is either empty, or it has an X in it, or it has an O in it.</p>
+
+<p>We need to <strong>represent</strong> that board in our program somehow - we need to have a variable whose value is a tic-tac-toe board. Python doesn’t come with a tic-tac-toe-board data type, so we’ll have to make our own!</p>
+
+<p>I think that a good way to represent a tic-tac-toe board in Python would be to use a list of strings, like this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="sh">'</span><span class="s">X</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">O</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">O</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">X</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">X</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">O</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>That’s a list of nine strings, because that’s how many spaces there are on a 3x3 tic-tac-toe board. Each string is either <code class="language-plaintext highlighter-rouge">'X'</code> or <code class="language-plaintext highlighter-rouge">'O'</code> or <code class="language-plaintext highlighter-rouge">' '</code>.</p>
+
+<p>Tic-tac-toe boards are squares, but that list above is just a straight line, it isn’t a square. How can we use a list with 9 elements to represent a 3x3 square?</p>
+
+<p>Well, we could just say: the first three elements in the list are the top row of the board, and the second three elements are the middle row, and the last three are the bottom row. Like this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># This list:
+</span><span class="p">[</span><span class="sh">'</span><span class="s">X</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">O</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">O</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">X</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">X</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">O</span><span class="sh">'</span><span class="p">]</span>
+
+<span class="c1"># Represents this board:
+# X | O |
+#   | O | X
+# X |   | O
+</span></code></pre></div></div>
+
+<p>Remember that we can get the value of an element in a list by using its <strong>index</strong>, like this:</p>
+
+<pre class="dont-format-output"><code class="py">
+board = ['X', 'O', ' ', ' ', 'O', 'X', 'X', ' ', 'O']
+
+print('The board is a list with {} elements.'.format(len(board)))
+
+# Look up the second element in the list by getting the element
+# at index 1. Remember, the first item in the list has index 0!
+second_element = board[1]
+print('The second element in the list is {}.'.format(second_element))
+
+last_element = board[8]
+print('The last (ninth) element in the list is {}.'.format(last_element))
+</code></pre>
+
+<p>Here’s a visualization of where the indexes of the list end up in the printed board, in case that’s helpful for you:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># A nine-element list has these indexes:
+</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+
+<span class="c1"># Those indexes represent these spots on the game board:
+# 0 | 1 | 2
+# 3 | 4 | 5
+# 6 | 7 | 8
+</span></code></pre></div></div>
+
+<p>So, that’s our board—we’ll be using a list of nine strings, and those strings will either be <code class="language-plaintext highlighter-rouge">'X'</code>, <code class="language-plaintext highlighter-rouge">'O'</code>, or <code class="language-plaintext highlighter-rouge">' '</code>. The board will start off empty (all the strings will be <code class="language-plaintext highlighter-rouge">' '</code> initally ) and it will change over time as the player and computer make their moves.</p>
+
+<h1 id="a-note-on-grading">A Note On Grading</h1>
+
+<p>Throughout this assignment, I’ll be telling you to write specific functions that behave a certain way. I’ll tell you what the functions should be named; I’ll tell you what inputs the functions should take; and I’ll tell you what outputs the function should return.</p>
+
+<p>It’s <strong>really important</strong> that your functions have the <strong>exact names</strong> specified in the assignment. If I tell you to write a function named <code class="language-plaintext highlighter-rouge">make_pizza()</code>, but you write a function named <code class="language-plaintext highlighter-rouge">make_hamburger()</code> instead, my tests won’t be able to find your function and so you won’t pass the tests for this assignment. You want to pass the tests for this assignment, because that’s how you get a good grade!</p>
+
+<h2 id="starter-code">Starter Code</h2>
+
+<p>Start by <strong>downloading the <a href="/python/tictactoe_starter_code.py">starter code</a> for this project.</strong></p>
+
+<p>The starter code defines five empty functions. <strong>Your job is to fill in those empty functions using the instructions below</strong>. When you’re done, you’ll have a working tic-tac-toe game!</p>
+
+<p>Feel free to add more functions of your own if you want! Just be sure not to change the names of the functions provided in the starter code, because my automated tests will be looking for functions with those names.</p>
+
+<p>OK, here’s what each of those functions should do!</p>
+
+<h1 id="function-make_board">Function: <code class="language-plaintext highlighter-rouge">make_board()</code></h1>
+
+<div class="function-spec">
+<p class="function-name">Write a function called <code class="highlighter-rouge">make_board</code>.</p>
+
+<p class="function-inputs">It should take <b>no inputs</b>.</p>
+
+<p class="function-output">It should return as output <b>an empty tic-tac-toe board</b> like the one described above.</p>
+</div>
+
+<p>When you call <code class="language-plaintext highlighter-rouge">make_board()</code>, it should return an empty tic-tac-toe board, which is a list that looks just like this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>That’s it for this one! This function is very simple, it’s just a warm-up.</p>
+
+<h1 id="function-print_boardboard">Function: <code class="language-plaintext highlighter-rouge">print_board(board)</code></h1>
+
+<div class="function-spec">
+<p>Write a function called <code class="highlighter-rouge">print_board</code>.</p>
+
+<p>It should take as input <b>a tic-tac-toe board</b>.</p>
+
+<p>It shouldn't return anything.</p>
+</div>
+
+<p>This function should take a game board as input, and it should print that board out to the screen.</p>
+
+<p>Here’s what its output should look like when you pass it a fresh new empty board:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; print_board([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
+  |   |
+  |   |
+  |   |
+</code></pre></div></div>
+
+<p>And here’s what it should look like when you pass it the board that we saw earlier:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; print_board(['X', 'O', ' ', ' ', 'O', 'X', 'X', ' ', 'O'])
+X | O |
+  | O | X
+X |   | O
+</code></pre></div></div>
+
+<p>You’ll want to use several <code class="language-plaintext highlighter-rouge">print()</code> calls. Notice how each time you call <code class="language-plaintext highlighter-rouge">print()</code>, Python ends the current line of output and starts a new line. How many <code class="language-plaintext highlighter-rouge">print()</code> calls do you think you’ll need in order to print out a 3x3 tic-tac-toe board? The answer isn’t 9! :)</p>
+
+<p>Remember that if e.g. I wanted to find the value of the third element in the list, I could do <code class="language-plaintext highlighter-rouge">board[2]</code> (assuming my board lived in a variable named <code class="language-plaintext highlighter-rouge">board</code>).</p>
+
+<p>Remember that you can use the <code class="language-plaintext highlighter-rouge">+</code> sign to concatenate small strings together to make a bigger string.</p>
+
+<p><strong>Hint:</strong> When you’re working on this function (and all the other ones in this assignment!), <strong>try it out</strong> as you work on it. Use the IDLE shell to call your function with a particular input (an empty board, a half-full board, a full board—you can write all of these boards by hand, they’re just lists of nine strings!), and see how your function behaves when it’s given that input. <strong>This trick really, really helps</strong>. You’ll end up with working code much faster, and you’ll have more fun doing it.</p>
+
+<p>Next, let’s think about how we’ll handle the player’s move.</p>
+
+<h1 id="function-get_player_moveboard">Function: <code class="language-plaintext highlighter-rouge">get_player_move(board)</code></h1>
+
+<div class="function-spec">
+<p>Write a function called <code class="highlighter-rouge">get_player_move</code>.</p>
+
+<p>It should take as input <b>a tic-tac-toe board</b>.</p>
+
+<p>It should return as output <b>a number between <code class="highlighter-rouge">0</code> and <code class="highlighter-rouge">8</code></b>, indicating where the player wants to move.</p>
+</div>
+
+<p>When you call <code class="language-plaintext highlighter-rouge">get_player_move(board)</code>, the function should ask the player where they’d like to make their next move (see the demo video from earlier for an example).</p>
+
+<p><strong>If the player chooses a spot that’s off the board or that isn’t empty, tell them to try again!</strong> You’ll need to write code that notices that the player has made a mistake like this and figures out how to handle it!</p>
+
+<p><strong>Note:</strong> this function takes a game board as input. This function <strong>should not modify that board</strong> (e.g. the function shouldn’t do something like <code class="language-plaintext highlighter-rouge">board[5] = 'X'</code>). I’ve written a test that checks for this.</p>
+
+<p>(In general, functions shouldn’t modify their inputs, and should instead just return an output. If a program has functions that modify their inputs, that program quickly becomes hard to understand and make changes to. When you’re using a function, you want to just figure out what data it takes as input and what data it returns—you <strong>don’t</strong> want to also have to ask questions like: “Will this function delete parts of the list I’m passing to it?”.)</p>
+
+<p>OK, now let’s implement our AI opponent!</p>
+
+<h1 id="function-get_computer_moveboard-computer_team">Function: <code class="language-plaintext highlighter-rouge">get_computer_move(board, computer_team)</code></h1>
+
+<div class="function-spec">
+<p>Write a function called <code class="highlighter-rouge">get_computer_move</code>.</p>
+
+<p>It should take as input <b>a tic-tac-toe board</b> and <b>a string like <code class="highlighter-rouge">'X'</code> or <code class="highlighter-rouge">'O'</code> that indicates which team the computer is on</b>.</p>
+
+<p>It should return as output <b>a number between <code class="highlighter-rouge">0</code> and <code class="highlighter-rouge">8</code></b>, indicating where the computer wants to move.</p>
+</div>
+
+<p>This function should look at the board and choose an empty space where the computer should make its next move. The function should pay attention to the value of <code class="language-plaintext highlighter-rouge">computer_team</code> so it knows which team it’s playing for!</p>
+
+<p>This function should only choose an <strong>empty</strong> space. If it chooses a space that already has an <code class="language-plaintext highlighter-rouge">'X'</code> or an <code class="language-plaintext highlighter-rouge">'O'</code> in it, then that’s a bug, and my tests will find it.</p>
+
+<p><strong>This function is your game’s AI opponent!</strong> Your goal here is to write some code that looks at the passed-in board, thinks really hard, and then picks the best possible space where the computer should make its next move.</p>
+
+<p>Start by making a super-simple AI that picks the first empty space it finds on the board. Once you’ve got a completely working tic-tac-toe game, come back to this function and make it as crazy as you want. The goal is for this function to crush the human player (or at least force a tie)!</p>
+
+<p><strong>Note</strong>: Just like <code class="language-plaintext highlighter-rouge">get_player_move(board)</code>, this function <strong>should not modify its input board</strong>. This function’s job is to take a board, look at it and figure out the space where the computer should move, and <em>return</em> that space. It should <strong>not</strong> change the board in the process.</p>
+
+<p><strong>Hint:</strong> A good trick is to check to see if the player’s about to win on their next move. If that’s the case, the computer should make a move on the spot the player needs so that the player isn’t able to use it!</p>
+
+<p>We’re almost done with our program now—just one more function to go!</p>
+
+<h1 id="function-check_for_winnerboard">Function: <code class="language-plaintext highlighter-rouge">check_for_winner(board)</code></h1>
+
+<div class="function-spec">
+<p>Write a function called <code class="highlighter-rouge">check_for_winner</code>.</p>
+
+<p>It should take as input <b>a tic-tac-toe board</b>.</p>
+
+<p>It should return as output one of the following values:<b><code class="highlighter-rouge">'X'</code>, <code class="highlighter-rouge">'O'</code>, <code class="highlighter-rouge">'tie'</code>, or <code class="highlighter-rouge">'keep playing'</code></b>.</p>
+</div>
+
+<p>This function’s job is to take a board as input and return as output a value that indicates whether or not the game’s over. If the function returns <code class="language-plaintext highlighter-rouge">'X'</code>, that means X wins; if the function returns <code class="language-plaintext highlighter-rouge">'O'</code>, that means O wins; if the function returns <code class="language-plaintext highlighter-rouge">'tie'</code>, that means the game’s over and there’s a tie; and if the function returns <code class="language-plaintext highlighter-rouge">'keep playing'</code>, that means that the game isn’t over yet.</p>
+
+<p><strong>Double-check to make sure that you’re returning the right values</strong>:</p>
+<ul>
+  <li>if you return <code class="language-plaintext highlighter-rouge">'x'</code> instead of <code class="language-plaintext highlighter-rouge">'X'</code>, that’s a bug.</li>
+  <li>If you return <code class="language-plaintext highlighter-rouge">'keepplaying'</code> instead of <code class="language-plaintext highlighter-rouge">'keep playing'</code>, that’s a bug.</li>
+  <li>You get the idea!</li>
+</ul>
+
+<p>There are eight possible ways to win at tic-tac-toe: there are three possible horizontal lines, three possible vertical lines, and two possible diagonal lines. Be sure to check for all of them! I’ll be testing to make sure that you do!</p>
+
+<h1 id="submitting-your-project">Submitting your project</h1>
+
+<p>Submit a file called <code class="language-plaintext highlighter-rouge">tictactoe_&lt;YOUR_NAME&gt;.py</code>.</p>
+
+<p>For instance, I’d submit a file called <code class="language-plaintext highlighter-rouge">tictactoe_jr_heard.py</code>.</p>
+
+<p>On the first line of that file, write a comment with your name on it, like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># JR Heard
+</code></pre></div></div>
+
+<p>Remember to follow this class’s <a href="https://docs.google.com/document/d/1UbyhIkxOdhpf-MGna_5dwh0yHXe02HTZ69CfEuYv76Y/edit">style guide</a>.</p>
+
+<script src="/assets/js/asciinema-player.js?v=2025-12-11 14:39:50 -0800"></script>
+
+
+</div>
+
+
+<script src="/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800"></script>
+<script>
+  var textAreas = document.getElementsByTagName("textarea");
+  var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+  for (var i = 0; i < textAreas.length; i++) {
+    CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+  }
+
+  window.klipse_settings = {
+    selector_eval_python_client: '.py',
+    codemirror_options_in: {
+      theme: "friendship-bracelet"
+    },
+    codemirror_options_out: {
+      theme: "friendship-bracelet"
+    }
+  };
+</script>
+<script src="/assets/js/klipse.min.js?v=2025-12-11 14:39:50 -0800"></script>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

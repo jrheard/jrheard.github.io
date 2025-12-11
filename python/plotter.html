@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Madison CS 3-4: Generated Art with a Pen Plotter &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item active" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="page">
+  <h1 class="page-title">Madison CS 3-4: Generated Art with a Pen Plotter</h1>
+  <p>In this project, you’ll learn how to install and use a Python library to write a program that generates cool art that can be drawn on a pen plotter.</p>
+
+<h1 id="whats-a-pen-plotter">What’s a pen plotter?</h1>
+
+<p>A pen plotter is an electronic gadget that holds a pen and draws stuff with it. The particular pen plotter we’ll be using is called an <a href="http://axidraw.com">AxiDraw</a>, and it looks like this:</p>
+
+<p><img src="/assets/img/axidraw.jpg" width="720" height="540" /></p>
+
+<p>The basic idea is that the device holds a pen, we put a piece of paper under the pen, and you write a computer program that tells the plotter to move the pen around so that it draws stuff on the piece of paper.</p>
+
+<p>If you’ve used the <a href="/watercolorbot">WaterColorBot</a>, this is a lot like that - except it’s simpler, because you don’t have to worry about writing code to wash the brush and dip it in different kinds of paint!</p>
+
+<h1 id="getting-started">Getting Started</h1>
+
+<p>I’ve written a library called <code class="language-plaintext highlighter-rouge">madison_axi</code> that’ll let you write Python code to control our classroom’s plotter. When you run your program on <em>your</em> computer, it’ll draw a preview of what you can expect to see on the plotter; once that preview looks the way you want it to, you can submit your program to us and we’ll run it on the plotter for you.</p>
+
+<p><strong>Start by reading the library’s <a href="https://madison-axi.readthedocs.io/en/latest/quickstart.html">QuickStart guide</a></strong>. Read the example program on that page and make sure you understand it. There are <a href="https://github.com/jrheard/madison_axi/tree/master/madison_axi/examples">some more example programs</a> if you want to read those too - <code class="language-plaintext highlighter-rouge">spiky_circle.py</code> is my favorite, try running it on your computer later on once you’re all set up.</p>
+
+<p><strong>NOTE:</strong> To access the command line on your classroom computer, click the Windows icon on the bottom-left of the screen and type <code class="language-plaintext highlighter-rouge">cmd</code>, then click <code class="language-plaintext highlighter-rouge">Command Prompt</code>.</p>
+
+<p><strong>NOTE:</strong> In order to install the library on your classroom computer, you’ll need to run <code class="language-plaintext highlighter-rouge">pip install --user madison_axi</code> at the command line. Notice that this is slightly different from what the QuickStart page says. If you don’t include the <code class="language-plaintext highlighter-rouge">--user</code> in there, it won’t work, because you don’t have administrator access on these computers. <strong>Once you install the library, you’ll need to close IDLE entirely and then open it back up again, it won’t be able to find the library until you do this.</strong></p>
+
+<p><strong>NOTE:</strong> You should call <code class="language-plaintext highlighter-rouge">initialize()</code> at the start of your program and <code class="language-plaintext highlighter-rouge">cleanup()</code> at the end of it.</p>
+
+<h1 id="how-to-use-the-library">How to use the library</h1>
+
+<p>In a new IDLE file, start by importing the AxiDraw library at the top of your code, like this:</p>
+
+<textarea class="hidden">
+from madison_axi.axi import *
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>After that, you can call functions from the library like this:</p>
+
+<textarea class="hidden">
+# Remember: you MUST call initialize() at the start of your program.
+initialize()
+
+# Move to the middle of the page, point to the right,
+# make the pen touch the paper, and go forward a little.
+move_to(0, 0)
+point_in_direction(0)
+pen_down()
+move_forward(50)
+
+# Be sure to call cleanup() at the end of your program.
+cleanup()
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>Controlling the plotter is a lot like controlling a turtle - the library gives you access to functions like <code class="language-plaintext highlighter-rouge">turn_right(45)</code>, <code class="language-plaintext highlighter-rouge">turn_left(90)</code>, <code class="language-plaintext highlighter-rouge">move_forward(100)</code>, etc. This will feel very familiar from previous assignments.</p>
+
+<p><strong><a href="https://madison-axi.readthedocs.io/en/latest/madison_axi.html">This page</a> has a list of all of the functions that the library gives you. Read the whole page, there aren’t very many functions</strong>. You can probably ignore <code class="language-plaintext highlighter-rouge">get_position()</code>, <code class="language-plaintext highlighter-rouge">get_y()</code>, and <code class="language-plaintext highlighter-rouge">get_x()</code>, but I bet you’ll use all of the other ones.</p>
+
+<p>When you run a program that uses this library, you’ll see a window appear on your screen, and it’ll draw a preview of what your program would do on the plotter. The window is a particular size, and I did that on purpose: <strong>make sure that your program doesn’t draw stuff outside the bounds of that window</strong>, or otherwise it won’t get drawn on the plotter’s piece of paper. Don’t resize the window - you can move it around on your screen, just don’t change its size.</p>
+
+<p>If your program draws stuff within the bounds of the demo window, that stuff’ll appear on the plotter’s piece of paper; if your program tries to go outside the window, that’ll make the plotter try to draw stuff outside of the piece of paper, and that’s no good because then there’ll be ink all over the table.</p>
+
+<h1 id="inspiration">Inspiration</h1>
+
+<p>Here’s some cool stuff that people have drawn with an AxiDraw:</p>
+
+<p><a target="_blank" href="https://twitter.com/ghrowe/status/1059552850987106305"><img src="https://pbs.twimg.com/media/DrRJs_uX4AAVAUI.jpg:large" /></a></p>
+
+<p><a target="_blank" href="https://twitter.com/v3ga/status/1057546359895703552"><img src="https://pbs.twimg.com/media/Dq0ozlHWwAEYq20.jpg" /></a></p>
+
+<p><a target="_blank" href="https://twitter.com/sasj_nl/status/1056205930403164162"><img src="https://pbs.twimg.com/media/DqhlqdJX4AE4L24.jpg" /></a></p>
+
+<p><a target="_blank" href="https://twitter.com/LyubomirPopov/status/880768915609145344"><img src="https://pbs.twimg.com/media/DDkepywWsAAcRdI.jpg" /></a></p>
+
+<p>Notice how some of these (like the second one) have an element of randomness to them. We’d really like to see that in your programs - it’d be really cool if you wrote code that draws something different every time it’s run. Just be sure that that your program stays within the bounds of the page like I mentioned earlier!</p>
+
+<p>For more examples, see:</p>
+
+<ul>
+  <li><a href="http://www.tobiastoft.com/posts/an-intro-to-pen-plotters">An Intro to Pen Plotters</a></li>
+  <li><a href="http://recodeproject.com/">The ReCode Project</a></li>
+  <li><a href="https://twitter.com/hashtag/plottertwitter">#plottertwitter</a></li>
+</ul>
+
+<p>Click around on those links and explore, you’ll see a lot of cool art that was generated using a bit of randomness!</p>
+
+<h1 id="requirements">Requirements</h1>
+
+<ul>
+  <li>You must define <strong>at least one function that takes some inputs</strong>. For example, you could make a function like <code class="language-plaintext highlighter-rouge">draw_square(length)</code> that draws a square of a certain size, or <code class="language-plaintext highlighter-rouge">draw_circle(x, y, radius)</code>, etc. You can make as many functions as you want, and they can do whatever you want - just make sure that you have at least one function that takes inputs.</li>
+  <li>You are <strong>strongly encouraged</strong> to use randomness somehow in your program while keeping some sort of artistic structure. Make a program that draws circles of random sizes to make a larger circle, that’d be cool! Or draw a grid of random shapes in increasing sizes. Or take inspiration from the links above. Just make sure that the program stays within the bounds of the demo window like I mentioned earlier.</li>
+</ul>
+
+<h1 id="submitting">Submitting</h1>
+
+<p>Submit a file called <code class="language-plaintext highlighter-rouge">axidraw_&lt;YOUR_NAME&gt;.py</code>. For instance, I’d submit a file called <code class="language-plaintext highlighter-rouge">axidraw_jr_heard.py</code>.</p>
+
+<p>On the first line of that file, write a comment with your name on it, like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># JR Heard
+</code></pre></div></div>
+
+<p>Once you’re done, turn in your code on Google Classroom.</p>
+
+<p>Remember to follow this class’s <a href="https://docs.google.com/document/d/1UbyhIkxOdhpf-MGna_5dwh0yHXe02HTZ69CfEuYv76Y/edit">style guide</a>.</p>
+
+<h1 id="advanced-games">Advanced: Games!</h1>
+
+<p>Last year, some students and I figured out <a href="https://blog.jrheard.com/watercolorbot#interactivity">how to write games that can run on a WaterColorBot</a>. Here’s the text adventure I wrote:</p>
+
+<p><img src="/assets/img/waterventure.gif" /></p>
+
+<p>And here’s the Minesweeper game a student wrote:</p>
+
+<p><img src="/assets/img/minesweeper.gif" /></p>
+
+<p>You can do the same thing on an AxiDraw, since it’s like a much simpler WaterColorBot!</p>
+
+<p>To write a game that runs on a device like this, all you have to do is:</p>
+
+<ol>
+  <li>use the <code class="language-plaintext highlighter-rouge">input()</code> function to get a string of text from a user, and then</li>
+  <li>have your game’s code do something based on that string.</li>
+</ol>
+
+<p>For example, my game let the user say stuff like <code class="language-plaintext highlighter-rouge">go east</code> or <code class="language-plaintext highlighter-rouge">open jar</code>; the Minesweeper game let the user say something like <code class="language-plaintext highlighter-rouge">4</code> <code class="language-plaintext highlighter-rouge">5</code> to indicate which square they’d like to check for mines; etc. Your game might let the user say <code class="language-plaintext highlighter-rouge">attack skeleton</code>, or <code class="language-plaintext highlighter-rouge">climb ladder</code>, or whatever you want!</p>
+
+<p>Aside from that, you write some code that does game-logic-type stuff, and then when you get to a point where a game would normally print something out to the screen (e.g. “Your sword hits the skeleton for 2 points of damage!”), you use the <code class="language-plaintext highlighter-rouge">madison_axi</code> library to draw stuff on a piece of paper instead. That’s the general idea, but please feel free to ask us in person if you want more specific advice!</p>
+
+<p>You’re welcome to read <a href="https://github.com/jrheard/waterventure/blob/master/plotterventure.py">my text adventure’s source code</a>, but it uses some Python features we haven’t learned about yet, so don’t worry if it’s hard to understand right now - we’ve still got a lot more material to cover in this class! :)</p>
+
+<script src="/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script src="/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script src="/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script>
+var textAreas = document.getElementsByTagName("textarea");
+var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+for (var i = 0; i < textAreas.length; i++) {
+	CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+}
+</script>
+
+
+</div>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

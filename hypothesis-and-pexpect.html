@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Using Hypothesis and Pexpect to Test High School Programming Assignments &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="post">
+	<h1 class="post-title">Using Hypothesis and Pexpect to Test High School Programming Assignments</h1>
+	<span class="post-date">25 Jan 2018</span>
+	<p>I’ve been coming up with some <a href="/python/passwords">fun</a> <a href="/python/caesar">projects</a> for a <a href="/watercolorbot">beginner Python high school class</a>. Most of these projects are simple command-line programs that prompt the user for some input, perform some calculation, and print some output. For instance, here’s the password checker project:</p>
+
+<asciinema-player src="/password_checker_cast.json?v=1" rows="12" cols="90" autoplay="true"></asciinema-player>
+
+<p>This program should prompt the user for their username, student ID, and password, and it should print out the string GOOD or BAD to indicate whether or not the password is “valid”; see the <a href="/python/passwords">assignment writeup</a> for more details.</p>
+
+<h1 id="testing">Testing</h1>
+
+<p>When a student finishes their password checker, we need to examine it to see whether or not the student programmed it correctly. We have around thirty students, and the checker program needs to satisfy a variety of constraints, and students often don’t get them all right the first time, so each student will usually submit several versions of the checker.</p>
+
+<p>Testing submitted password checkers a jillion times by hand (“does the latest version of Jane’s checker correctly reject <code class="language-plaintext highlighter-rouge">'abcd'</code>? How about <code class="language-plaintext highlighter-rouge">'$!@#5555'</code>?”) sounded pretty awful, so I decided to write a program to do this for us.</p>
+
+<p>These students hadn’t learned about functions yet, so their programs didn’t have an <code class="language-plaintext highlighter-rouge">is_password_good(password)</code> function that I could import and unit-test. Instead, I needed to write code that would run the student’s program, send it several lines of input, and read its output.</p>
+
+<p>My first instinct was to use <a href="https://docs.python.org/3/library/subprocess.html">the <code class="language-plaintext highlighter-rouge">subprocess</code> library</a> to do this, but I had trouble getting that to work. I needed to send a line to the program, then wait and then send another line, and then wait and send a third line; but the <code class="language-plaintext highlighter-rouge">subprocess</code> library’s API isn’t particularly well-suited for situations where you want to send a program more than one line of input. I Googled around and found a bunch of StackOverflow questions written by people in my exact situation, and the answers all said to use <code class="language-plaintext highlighter-rouge">pexpect</code> instead.</p>
+
+<h1 id="pexpect">Pexpect</h1>
+
+<p><a href="https://github.com/pexpect/pexpect">Pexpect</a> is a library that lets you start a program, feed it as many lines of input as you want, and read as many lines of output as you want.</p>
+
+<p>Here’s how to use pexpect to operate the password-checker program you saw earlier:<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup></p>
+
+<textarea class="hidden">
+def get_checker_output(password, checker):
+	program = pexpect.popen_spawn.PopenSpawn('python ' + checker)
+	program.sendline('jrheard')
+	program.sendline('12345')
+	program.sendline(password)
+
+	lines = program.read().decode('utf-8').splitlines()
+	# Return the last line of the program's output,
+	# which should be a string like 'GOOD' or 'BAD'.
+	return filter(bool, lines)[-1]
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>Once I had that working, I wrote some standard unit tests.</p>
+
+<textarea class="hidden">
+def test_contains_student_id(checker):
+    assert_bad('jifoaw12345@!#*LKJFSklfaew', checker)
+
+def test_two_categories(checker):
+    assert_bad('JIFEOWjiofewajife', checker)
+    assert_bad('13283248JIOFEWOI', checker)
+    assert_bad('faewjio*(#$@$', checker)
+    assert_bad('$#*(($#@83248', checker)
+    assert_bad('jioaew123345', checker)
+
+def test_exactly_eight_characters(checker):
+    assert_good('abc123!P', checker)
+
+# Remember this one for later!
+def test_too_short_rejected(checker):
+    assert_bad('X$3', checker)
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>I hand-wrote around twenty assertions like those and called it a day. It was very satisfying to run the resulting tests, and I felt great about the amount of time that they would save.</p>
+
+<p>A week later, though, I stumbled across Hypothesis and realized that my tests had a lot of room for improvement.</p>
+
+<h1 id="hypothesis">Hypothesis</h1>
+
+<p><a href="http://hypothesis.works/">Hypothesis</a> is a <strong><a href="http://blog.jessitron.com/2013/04/property-based-testing-what-is-it.html">property-based testing</a></strong> library. Its homepage says:</p>
+
+<blockquote>
+  <p>Hypothesis runs your tests against a much wider range of scenarios than a human tester could, finding edge cases in your code that you would otherwise have missed.</p>
+</blockquote>
+
+<p>Earlier, I showed you a test called <code class="language-plaintext highlighter-rouge">test_too_short_rejected()</code>. That test asserts that the password <code class="language-plaintext highlighter-rouge">'X$3'</code> is marked “BAD”, because the password checker is supposed to reject passwords that are shorter than eight characters.</p>
+
+<textarea class="hidden">
+def test_too_short_rejected(checker):
+    assert_bad('X$3', checker)
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>This is an <strong>example-based test</strong>, which means that I wrote it by hand using an example too-short password that I came up with off the top of my head.</p>
+
+<p>This test is actually pretty flimsy, because it only checks to see if <code class="language-plaintext highlighter-rouge">'X$3'</code> is rejected—but if the student’s checker program incorrectly allows a seven-character-long password like <code class="language-plaintext highlighter-rouge">'X$12345'</code>, my test won’t catch that bug, because I didn’t think to include that example in my test. I could add more examples to my test, but that isn’t very fun; and even if I did think really hard and came up with five more examples, my test still wouldn’t be very exhaustive, because students are very good at coming up with bugs that I wouldn’t think to test for.</p>
+
+<h2 id="how-to-use-hypothesis">How To Use Hypothesis</h2>
+
+<p>Let’s use Hypothesis to improve this test. We’ll start by adding the <code class="language-plaintext highlighter-rouge">@given</code> decorator to our test function.</p>
+
+<textarea class="hidden">
+from hypothesis import given
+
+@given(password=TODO_DEFINE_ME)
+def test_too_short_rejected(password, checker):
+    assert_bad(password, checker)
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>When Hypothesis sees a test that’s annotated with the <code class="language-plaintext highlighter-rouge">@given</code> decorator, it runs that test a bunch of times. This test’s decorator says that the test wants a random <code class="language-plaintext highlighter-rouge">password</code> argument; so each time Hypothesis runs this test, it’ll generate a random password, and will supply it to the test via the test function’s newly added <code class="language-plaintext highlighter-rouge">password</code> parameter.</p>
+
+<p>We’re halfway there—all we have to do now is tell Hypothesis how to actually <em>generate</em> too-short passwords.</p>
+
+<p>A too-short password is a string with some characters in it. Those characters can be the lowercase letters a-z, the uppercase letters A-Z, the digits 0-9, and some specific symbols given in the assignment writeup. The student’s password-checker program is supposed to reject passwords that are shorter than eight characters, so a too-short password can have at most seven characters.</p>
+
+<p>Here’s how to say that to Hypothesis:</p>
+
+<textarea class="hidden">
+from hypothesis import strategies as st
+
+VALID_PASSWORD_CHARACTERS = string.ascii_letters \
+	+ string.digits \
+	+ '!@#$%^&amp;*()-_=+.,'
+
+short_password_strategy = st.text(alphabet=VALID_PASSWORD_CHARACTERS,
+                               max_size=7)
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p><code class="language-plaintext highlighter-rouge">st.text()</code> returns a <strong>strategy</strong>, which is an object that Hypothesis can use to generate random data. Hypothesis has a <a href="http://hypothesis.readthedocs.io/en/latest/data.html">ton of these</a> that you can use to generate all sorts of stuff.<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup></p>
+
+<p>When we give <code class="language-plaintext highlighter-rouge">short_password_strategy</code> to the <code class="language-plaintext highlighter-rouge">@given</code> decorator, Hypothesis will generate random passwords like these:</p>
+
+<textarea class="hidden">
+'yKbSH7)'
+'aa'
+',xcc69'
+'#g^teH'
+''
+'pbFr'
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>That’s all there is to it—now that we know how to generate random too-short passwords, we can convert our example-based test to a property-based test.</p>
+
+<textarea class="hidden">
+@given(password=short_password_strategy)
+def test_too_short_rejected(password, checker):
+       assert_bad(password, checker)
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>We’re done! That wasn’t so hard.</p>
+
+<p>Here’s what our test looks like in action:<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup></p>
+
+<asciinema-player src="/hypothesis_cast.json?v=1" rows="16" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>That’s a lot more thorough than <code class="language-plaintext highlighter-rouge">assert_bad('X$3', checker)</code>.</p>
+
+<p>Before I wrap up, I’d like to tell you about two of my favorite Hypothesis features: <strong>shrinking</strong> and the <strong>example database</strong>. Both of these features are also described in <a href="http://hypothesis.works/articles/anatomy-of-a-test/">Anatomy of a Hypothesis Based Test</a>, which is well worth a read.</p>
+
+<h2 id="shrinking">Shrinking</h2>
+
+<p>If Hypothesis generates a random value that causes your test to fail, it will then attempt to <strong>shrink</strong> that value, which means that it tries to find a “<a href="http://hypothesis.works/articles/compositional-shrinking/">simpler</a>” value that still causes your test to fail.</p>
+
+<p>For instance, if Hypothesis finds that a student’s password checker incorrectly accepts the too-short password<code class="language-plaintext highlighter-rouge">',xcc69'</code>, it will usually shrink that password down to <code class="language-plaintext highlighter-rouge">'A1!'</code>. That’s because even when students forget to implement the at-least-eight-characters rule, they still often remember to implement the rule that says that passwords must contain “at least three categories of character”; and so for programs like that, <code class="language-plaintext highlighter-rouge">'A1!'</code> is the simplest possible input that causes the test to fail.</p>
+
+<p>This is a really great quality-of-life feature that makes test failures much easier to decipher. It doesn’t make much of a difference in this example, but it’s a lifesaver when you’re dealing with large/complex inputs.</p>
+
+<h2 id="example-database">Example Database</h2>
+
+<p>When I first learned about Hypothesis, I was concerned that its randomness would be a liability. If Hypothesis gives my tests random input every time, and the program I’m testing has a failure that’s only triggered by a rare input, then won’t my tests sometimes pass and sometimes fail?</p>
+
+<p>Hypothesis solves this problem by saving previously seen failures in a folder called <code class="language-plaintext highlighter-rouge">.hypothesis/examples</code> and trying them again the next time you run your tests. This “example database” feature means that once your Hypothesis test fails, it’ll keep on failing until you fix the bug. Which is an extremely good thing.</p>
+
+<h2 id="what-it-feels-like-to-use-hypothesis">What It Feels Like To Use Hypothesis</h2>
+
+<p>It feels really good.</p>
+
+<p>Our Hypothesis tests have caught a really amazing amount of bugs in students’ programs, many of which were things I simply would not have caught with example-based tests. One student’s password checker turned out to use the hand-crafted string <code class="language-plaintext highlighter-rouge">abcdefghijklmnopqrstuvwyz</code>, which if you’ll look closely you may notice is missing the letter <code class="language-plaintext highlighter-rouge">x</code>. <em>Lots</em> of little tiny bugs like this.</p>
+
+<p>Hypothesis tests—at least, the basic ones I’ve written so far—aren’t hard to write. In fact, writing them is pretty fun! When I write Hypothesis tests, my tests find a lot of bugs; I tell our students to fix their bugs; and I feel like a happy calm wizard.</p>
+
+<p>You should try using <a href="http://hypothesis.works/">Hypothesis</a> the next time you’re writing tests in Python. If you use a different programming language, check <a href="http://hypothesis.works/articles/quickcheck-in-every-language/">this page</a> to see if your language has a good property-based testing library. If it does, try it out!</p>
+
+<script src="/assets/js/asciinema-player.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script src="/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script src="/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script src="/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<script>
+var textAreas = document.getElementsByTagName("textarea");
+var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+for (var i = 0; i < textAreas.length; i++) {
+	CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+}
+</script>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>It’s interesting to note that <a href="https://github.com/pexpect/pexpect/blob/master/pexpect/popen_spawn.py#L46"><code class="language-plaintext highlighter-rouge">pexpect.popen_spawn.PopenSpawn</code> uses the <code class="language-plaintext highlighter-rouge">subprocess</code> library</a> under the hood. The <code class="language-plaintext highlighter-rouge">subprocess</code> library can’t easily be used to send/receive multiple lines to/from a program, but it seems to still be a fine primitive to use when building a system that <em>can</em> do that. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>If you’d like to generate instances of classes defined in your program, you might find <a href="http://hypothesis.works/articles/generating-the-right-data/">this guide</a> handy. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>In this recording, I’ve put Hypothesis into verbose mode using the <a href="http://hypothesis.readthedocs.io/en/latest/settings.html#seeing-intermediate-result">HYPOTHESIS_VERBOSITY_LEVEL</a> environment variable so that we can see the random passwords that it generates. On the rare occasions when I write a Hypothesis test that passes the first time it’s run, I like to put Hypothesis into verbose mode and run the test again to convince myself that I haven’t made some sort of generation mistake. <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</div>
+
+
+<div class="message">
+	
+	<p>If you've found an error or have a suggestion, please open an issue or pull request on <a
+			href="https://github.com/jrheard/blog">GitHub</a>.</p>
+</div>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

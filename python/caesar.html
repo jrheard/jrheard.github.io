@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Madison CS 3-4: Caesar Cipher &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item active" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="page">
+  <h1 class="page-title">Madison CS 3-4: Caesar Cipher</h1>
+  <p>In this project, you’ll write a program that takes a <strong>plaintext</strong> sentence like <code class="language-plaintext highlighter-rouge">THE WEATHER IS NICE TODAY</code> and converts it to a <strong>ciphertext</strong> sentence like <code class="language-plaintext highlighter-rouge">GUR JRNGURE VF AVPR GBQNL</code>. The program can also convert ciphertext <em>back</em> to plaintext, when given the right <strong>key</strong>.</p>
+
+<p>Don’t worry, you’re about to learn what those words mean!</p>
+
+<div class="message update">
+<p>All of the words and pictures between this yellow box and the next yellow box have been copy-pasted directly from Al Sweigart's excellent book "Invent Your Own Computer Games With Python". I've made a few very minor edits.</p>
+
+<p>This is OK because Al has graciously made his book available under a <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/us/">Creative Commons license</a>. Thanks, Al!</p>
+</div>
+
+<h1 id="encryption">Encryption</h1>
+
+<p>The science of writing secret codes is called <strong>cryptography</strong>. For thousands of years cryptography has made secret messages that only the sender and recipient could read, even if someone captured the messenger and read the coded message. A secret code system is called a <strong>cipher</strong>. The cipher used by the program you’re about to build is called the Caesar cipher.</p>
+
+<p>In cryptography, we call the message that we want to be secret the <strong>plaintext</strong>. The plaintext could look like this:</p>
+
+<p><code class="language-plaintext highlighter-rouge">HELLO THERE! THE KEYS TO THE HOUSE ARE HIDDEN UNDER THE FLOWER POT.</code></p>
+
+<p>Converting the plaintext into the encoded message is called <strong>encrypting</strong> the plaintext. The plaintext is encrypted into the <strong>ciphertext</strong>. The ciphertext looks like random letters, and we cannot understand what the original plaintext was just by looking at the ciphertext. Here is the previous example encrypted into ciphertext:</p>
+
+<p><code class="language-plaintext highlighter-rouge">YVCCF KYVIV! KYV BVPJ KF KYV YFLJV RIV YZUUVE LEUVI KYV WCFNVI GFK.</code></p>
+
+<p>But if you know about the cipher used to encrypt the message, you can <strong>decrypt</strong> the ciphertext back to the plaintext. (Decryption is the opposite of encryption.)</p>
+
+<p>Many ciphers also use keys. <strong>Keys</strong> are secret values that let you decrypt ciphertext that was encrypted using a specific cipher. Think of the cipher as being like a door lock. You can only unlock it with a particular key.</p>
+
+<h1 id="the-caesar-cipher">The Caesar Cipher</h1>
+
+<p><strong>The key for the Caesar Cipher will be a number from 1 to 26</strong>. Unless you know the key (that is, know the number used to encrypt the message), you won’t be able to decrypt the secret code.</p>
+
+<p>The Caesar Cipher was one of the earliest ciphers ever invented. In this cipher, you encrypt a message by taking each letter in the message (in cryptography, these letters are called symbols because they can be letters, numbers, or any other sign) and replacing it with a “shifted” letter. If you shift the letter A by one space, you get the letter B. If you shift the letter A by two spaces, you get the letter C.</p>
+
+<p>Here’s a picture of some letters shifted over by three spaces:</p>
+
+<p><img src="/assets/img/caesar_1.jpg" /></p>
+
+<p>To get each shifted letter, draw out a row of boxes with each letter of the alphabet. Then draw a second row of boxes under it, but start a certain number (this number is the key) of spaces over. After the letters at the end, <strong>wrap around</strong> back to the start of the boxes.</p>
+
+<p>Here’s an example with the letters shifted by three spaces:</p>
+
+<p><img src="/assets/img/caesar_2.png" /></p>
+
+<p><strong>The number of spaces you shift is the key in the Caesar Cipher</strong>. The example above shows the letter translations for the key 3.</p>
+
+<p>If you encrypt the plaintext <code class="language-plaintext highlighter-rouge">“HOWDY”</code> with a key of 3, then:</p>
+
+<ul>
+  <li>The “H” becomes “K”.</li>
+  <li>The letter “O” becomes “R”.</li>
+  <li>The letter “W” becomes “Z”.</li>
+  <li>The letter “D” becomes “G”.</li>
+  <li>The letter “Y” becomes “B”.</li>
+</ul>
+
+<p>The ciphertext of <code class="language-plaintext highlighter-rouge">“HOWDY”</code> with key 3 becomes <code class="language-plaintext highlighter-rouge">“KRZGB”</code>.</p>
+
+<p>We will keep any non-letter characters the same. To decrypt <code class="language-plaintext highlighter-rouge">“KRZGB”</code> with the key 3, we go from the bottom boxes back to the top:</p>
+
+<ul>
+  <li>The letter “K” becomes “H”.</li>
+  <li>The letter “R” becomes “O”.</li>
+  <li>The letter “Z” becomes “W”.</li>
+  <li>The letter “G” becomes “D”.</li>
+  <li>The letter “B” becomes “Y”.</li>
+</ul>
+
+<h1 id="ascii-and-using-numbers-for-letters">ASCII, and Using Numbers for Letters</h1>
+
+<p>How do we implement this shifting of the letters as code? We can do this by representing each letter as a number called an <strong>ordinal</strong>, and then adding or subtracting from this number to form a new ordinal (and a new letter). ASCII (pronounced “ask-ee” and stands for American Standard Code for Information Interchange) is a code that <strong>connects each character to a number between 32 and 126</strong>.</p>
+
+<p>The capital letters “A” through “Z” have the ASCII numbers <strong>65 through 90</strong>. The lowercase letters “a” through “z” have the ASCII numbers <strong>97 through 122</strong>. The numeric digits “0” through “9” have the ASCII numbers <strong>48 through 57</strong>.</p>
+
+<p><strong>So if you wanted to shift “A” by three spaces, you would do the following:</strong></p>
+
+<ul>
+  <li>Convert “A” to an ordinal (65).</li>
+  <li>Add 3 to 65, to get 68.</li>
+  <li>Convert the ordinal 68 back to a letter (“D”).</li>
+</ul>
+
+<div class="message update">
+<p>That's the end of the copy-pasted section of Al's book. Everything after this box was written by JR like usual.</p>
+</div>
+
+<h1 id="letters-a-z-dont-have-ascii-codes-1-26">Letters A-Z Don’t Have ASCII Codes 1-26</h1>
+
+<p>This might feel weird at first, but you’ll get used to it. Most of the ASCII codes between 0 and 31 are junk left over from the days when computers were giant room-sized machines controlled by jury-rigged typewriters.</p>
+
+<p>Here’s the full ASCII table from <a href="http://www.asciitable.com">asciitable.com</a> - don’t worry, you don’t need to memorize this or anything, I’m just showing it to you in case you find it helpful. I’ve highlighted the section of the table that concerns the uppercase letters A-Z. <strong>You only care about the “Dec” (decimal) and “Char” (character) columns in this table.</strong></p>
+
+<p><img src="/assets/img/ascii_table.jpg" /></p>
+
+<p>That’s the whole thing! Notice how e.g. uppercase <code class="language-plaintext highlighter-rouge">J</code> has the ASCII code 74, and lowercase <code class="language-plaintext highlighter-rouge">j</code> has the ASCII code 106.</p>
+
+<h1 id="converting-between-letters-and-numbers">Converting between letters and numbers</h1>
+
+<p>Python comes with the <code class="language-plaintext highlighter-rouge">ord()</code> function, which lets you convert a letter to its corresponding ordinal number:</p>
+
+<pre><code class="py">
+print(ord('J'))
+</code></pre>
+
+<p>To go from an ordinal number back to a letter, you can use the <code class="language-plaintext highlighter-rouge">chr()</code> function.</p>
+
+<pre><code class="py">
+print(chr(74))
+</code></pre>
+
+<p>Let’s try shifting the letter <code class="language-plaintext highlighter-rouge">H</code> over by 3, like we did in the <code class="language-plaintext highlighter-rouge">"Howdy"</code> example above:</p>
+
+<pre><code class="py">
+print(chr(ord('H') + 3))
+</code></pre>
+
+<p>It turns into <code class="language-plaintext highlighter-rouge">K</code>, just like we expected! <code class="language-plaintext highlighter-rouge">ord()</code> and <code class="language-plaintext highlighter-rouge">chr()</code> are going to be your best friends while you’re working on this project.</p>
+
+<p><strong>The code snippet above is going to be very, very, very useful in this project. Read it again and mess around with it (change the <code class="language-plaintext highlighter-rouge">3</code> to a <code class="language-plaintext highlighter-rouge">5</code> or a <code class="language-plaintext highlighter-rouge">-7</code>, change the <code class="language-plaintext highlighter-rouge">H</code> to some other uppercase letter) to make sure you understand it.</strong></p>
+
+<h1 id="string-manipulation-tip">String Manipulation Tip</h1>
+
+<p>You’ll probably want to use a <code class="language-plaintext highlighter-rouge">for</code> loop at some point in your program - here’s how you can use a <code class="language-plaintext highlighter-rouge">for</code> loop to do <em>something</em> to each letter of a string:</p>
+
+<pre><code class="py">
+some_letters = "ABCDEFG"
+lowercased_letters = ""
+
+for letter in some_letters:
+	lowercased_letters = lowercased_letters + chr(ord(letter) + 32)
+
+print(lowercased_letters)
+</code></pre>
+
+<p>That chunk of code lowercases a string, one letter at a time - you might end up doing something similar (but <strong>different!</strong>) when you’re building up your program’s <code class="language-plaintext highlighter-rouge">ciphertext</code> variable.</p>
+
+<p><strong>Do not just copy that snippet into your program. It won’t do what you want. Carefully read it, think about it, and try to figure out how you might use <em>something like it</em> in your program.</strong></p>
+
+<h1 id="your-program-should-only-change-uppercase-letters">Your Program Should Only Change Uppercase Letters</h1>
+
+<p>If your program is given some plaintext that includes numbers, or lowercase letters, or punctuation marks like <code class="language-plaintext highlighter-rouge">!</code> or <code class="language-plaintext highlighter-rouge">.</code> or <code class="language-plaintext highlighter-rouge">$</code> or <em>anything</em> that’s not a letter from <code class="language-plaintext highlighter-rouge">A</code> to <code class="language-plaintext highlighter-rouge">Z</code>, <strong>it should leave that character unmodified</strong>. For example, if given a plaintext string of <code class="language-plaintext highlighter-rouge">HOWDY! Hello.</code> and a key of <code class="language-plaintext highlighter-rouge">5</code>, your program should output the ciphertext <code class="language-plaintext highlighter-rouge">MTBID! Mello.</code></p>
+
+<p>Note that in that message, the <code class="language-plaintext highlighter-rouge">W</code> ends up “wrapping around” to become a <code class="language-plaintext highlighter-rouge">B</code> when it’s encrypted. <strong>You will have to implement wrapping around by hand - the way that students tend to approach this project, wrapping around won’t happen unless you specifically write code that makes it happen.</strong></p>
+
+<h1 id="start-by-writing-these-two-functions">Start By Writing These Two Functions</h1>
+
+<p>Write a function called <code class="language-plaintext highlighter-rouge">encrypt(text, key)</code> and another function called <code class="language-plaintext highlighter-rouge">decrypt(text, key)</code>.</p>
+
+<hr />
+
+<p><code class="language-plaintext highlighter-rouge">encrypt(text, key)</code> takes a string and an integer key and returns a string that’s <code class="language-plaintext highlighter-rouge">text</code> encrypted using the Caesar cipher with the key <code class="language-plaintext highlighter-rouge">key</code>.</p>
+
+<p>When you call <code class="language-plaintext highlighter-rouge">encrypt('ABC', 2)</code>, you should get <code class="language-plaintext highlighter-rouge">'CDE'</code> back.</p>
+
+<hr />
+
+<p><code class="language-plaintext highlighter-rouge">decrypt(text, key)</code> is the opposite - it takes a string and an integer key and returns a string that’s <code class="language-plaintext highlighter-rouge">text</code> <em>decrypted</em> using the Caesar cipher with the key <code class="language-plaintext highlighter-rouge">key</code>.</p>
+
+<p>When you call <code class="language-plaintext highlighter-rouge">decrypt('CDE', 2)</code>, you should get <code class="language-plaintext highlighter-rouge">'ABC'</code> back.</p>
+
+<hr />
+
+<p><strong>NOTE:</strong> A good way to test that you’ve written your functions correctly is to check to see if e.g. <code class="language-plaintext highlighter-rouge">decrypt(encrypt('PIZZA', 10), 10)</code> is equal to <code class="language-plaintext highlighter-rouge">PIZZA</code>.</p>
+
+<p><strong>HINT:</strong> Once you’ve written <code class="language-plaintext highlighter-rouge">encrypt(text, key)</code>, it should be possible to implement <code class="language-plaintext highlighter-rouge">decrypt(text, key)</code> with <strong>a single line of code</strong>.</p>
+
+<p>If you find yourself copy-pasting all of the code from <code class="language-plaintext highlighter-rouge">encrypt(text, key)</code> into <code class="language-plaintext highlighter-rouge">decrypt(text, key)</code>, you’re doing something wrong. Take a step back and try to find a simpler way. Ask me for help if you can’t figure it out :)</p>
+
+<h1 id="after-that-write-a-main-function">After That, Write A <code class="language-plaintext highlighter-rouge">main()</code> Function</h1>
+
+<p>Take a look at the code you’ve written in past assignments. Notice how there’s always a <code class="language-plaintext highlighter-rouge">main()</code> function, and a weird <code class="language-plaintext highlighter-rouge">if __name__ == '__main__':</code> bit at the end of the file. Do that in this program!</p>
+
+<p>Write a <code class="language-plaintext highlighter-rouge">main()</code> function that prompts the user for some input (see the “Demo” section right below this section for details) and calls <code class="language-plaintext highlighter-rouge">encrypt()</code> or <code class="language-plaintext highlighter-rouge">decrypt()</code> with the stuff the user gives you.</p>
+
+<p>Note that you’re only calling <strong>one of</strong> <code class="language-plaintext highlighter-rouge">encrypt()</code> <strong>or</strong> <code class="language-plaintext highlighter-rouge">decrypt()</code>. Use the user’s input to decide which of those two functions to call. Print out the return value of the function.</p>
+
+<p>Copy-paste these two lines and add them to the bottom of your program:</p>
+
+<textarea class="hidden">
+if __name__ == '__main__':
+	main()
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>One of these days we’ll explain why you need to do that :)</p>
+
+<h1 id="demo">Demo</h1>
+
+<p>Your program should allow the user to both encrypt messages <strong>and</strong> decrypt them. Your program should look <strong>exactly</strong> like this when it’s run:</p>
+
+<asciinema-player src="/caesar_cast_1.json" rows="19" cols="80" autoplay="true" loop="true"></asciinema-player>
+
+<p>Remember that you can write code like <code class="language-plaintext highlighter-rouge">input("Hi there, what's your name?")</code> to get a string of text from the user.</p>
+
+<h1 id="nitty-gritty">Nitty Gritty</h1>
+
+<p>If the user inputs an invalid mode (i.e. something that’s not “encrypt” or “decrypt”), it’s fine if your program crashes.</p>
+
+<p>If the user inputs an invalid key (i.e. something that’s not a number between 0 and 26), it’s fine if your program crashes.</p>
+
+<h1 id="submitting-your-project">Submitting your project</h1>
+
+<p>Submit a file called <code class="language-plaintext highlighter-rouge">caesar_&lt;YOUR_NAME&gt;.py</code>.</p>
+
+<p>For instance, I’d submit a file named <code class="language-plaintext highlighter-rouge">caesar_jr_heard.py</code>.</p>
+
+<p>On the first line of that file, write a comment with your name on it, like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># JR Heard
+</code></pre></div></div>
+
+<p>Remember to follow this class’s <a href="https://docs.google.com/document/d/1UbyhIkxOdhpf-MGna_5dwh0yHXe02HTZ69CfEuYv76Y/edit">style guide</a>.</p>
+
+<h1 id="other-features">Other Features</h1>
+
+<p>Here are some more features to add to your program once you get basic encryption and decryption working. Do any or all of them!</p>
+
+<h2 id="lowercase-letters">Lowercase Letters</h2>
+
+<p>Make your program work with uppercase <em>and</em> lowercase characters, like this:</p>
+
+<asciinema-player src="/caesar_upper_and_lower_cast.json" rows="19" cols="80" autoplay="true" loop="true"></asciinema-player>
+
+<p>When I did this, I ended up switching away from <code class="language-plaintext highlighter-rouge">ord()</code> and <code class="language-plaintext highlighter-rouge">chr()</code>, and instead made a string like <code class="language-plaintext highlighter-rouge">transformable_characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'</code> and had my code do stuff based on the position of each letter of the message in my <code class="language-plaintext highlighter-rouge">transformable_characters</code> string. Here’s how you can find the first position of a letter in a string in Python:</p>
+
+<pre><code class="py">
+# 'l' is in 'Hello', so this evaluates to number 2.
+print('Hello'.find('l'))
+
+# 'z' isn't in 'Hello', so this evalutes to -1, which is
+# Python's way of saying: I looked for this but couldn't find it!
+print('Hello'.find('z'))
+</code></pre>
+
+<h2 id="brute-force">Brute Force</h2>
+
+<p>Add a “brute force” mode that lets you try to decrypt a message even if you don’t know the right key for it - notice the correct translation on Line 5:</p>
+
+<asciinema-player src="/caesar_brute_cast.json" rows="30" cols="80" autoplay="true" loop="true"></asciinema-player>
+
+<p>This can be done using nested for loops or functions (we haven’t officially covered functions in class yet, but you are welcome to use them if you know how).</p>
+
+<h2 id="smart-brute-force">Smart Brute Force</h2>
+
+<p>This is my favorite one: enhance your program’s “brute force” mode so that it can <em>automatically detect</em> the correct key:</p>
+
+<asciinema-player src="/caesar_brute_smart_cast.json" rows="15" cols="80" autoplay="true" loop="true"></asciinema-player>
+
+<p>You can do this however you want. Be creative! My solution involved using <a href="https://svnweb.freebsd.org/csrg/share/dict/words?revision=61569&amp;view=co">this text file</a>, which is a list of all of the English words in the 1934 edition of Webster’s Second International Dictionary.</p>
+
+<p>If you’d like to figure out how to open a text file in Python and get all the lines out of it, Google around until you find a solution - you can always ask me for help if you get stuck, but I think you’d be surprised how far you can get by just Googling stuff!</p>
+
+<script src="/assets/js/asciinema-player.js?v=2025-12-11 14:39:50 -0800"></script>
+
+
+</div>
+
+
+<script src="/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800"></script>
+<script>
+  var textAreas = document.getElementsByTagName("textarea");
+  var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+  for (var i = 0; i < textAreas.length; i++) {
+    CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+  }
+
+  window.klipse_settings = {
+    selector_eval_python_client: '.py',
+    codemirror_options_in: {
+      theme: "friendship-bracelet"
+    },
+    codemirror_options_out: {
+      theme: "friendship-bracelet"
+    }
+  };
+</script>
+<script src="/assets/js/klipse.min.js?v=2025-12-11 14:39:50 -0800"></script>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

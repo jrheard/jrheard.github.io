@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Getting High Schoolers To Write A Tiny 'Roguelike' In An Intro Python Class &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="post">
+	<h1 class="post-title">Getting High Schoolers To Write A Tiny 'Roguelike' In An Intro Python Class</h1>
+	<span class="post-date">15 Jun 2019</span>
+	<p>I spent the past couple years volunteering in a couple of tech classes at a local high school, primarily in an introductory Python class led by an excellent teacher named Tamara O’Malley. I’ve written about this a <a href="https://blog.jrheard.com/watercolorbot">few</a> <a href="https://blog.jrheard.com/hypothesis-and-pexpect">times</a> <a href="https://blog.jrheard.com/truthiness-and-short-circuit-evaluation-in-python">before</a>.<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup> It was extremely fun, and it still hasn’t really sunk in that it’s over now.</p>
+
+<p>The students in this Python class were beginners - they had all done some programming in block-based languages like <a href="https://snap.berkeley.edu/">Snap!</a>, but none of them had taken AP CS yet, to give you an idea of where they were at experience-wise.</p>
+
+<p>As one of the final projects of the year, we had them write a little roguelike (a term with many definitions, which here I’m using to mean “a game where you’re an <code class="language-plaintext highlighter-rouge">@</code> sign and you wander around an ASCII art world”). We gave them some <a href="https://repl.it/@jrheard/roguelike">starter code</a> and one of my usual <a href="https://blog.jrheard.com/python/roguelike">project writeups</a> and turned them loose.</p>
+
+<p>This is what the starter code does when you run it:</p>
+
+<asciinema-player src="/roguelike_starter.json" rows="32" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>You’re the @ sign, you can move around, you can’t go through walls. Great game, right?</p>
+
+<p>We had the kids start by changing my terrible controls to be WASD-based, which turned out to be a good way for them to get their bearings - this was their first time being dumped into a (tiny) legacy codebase, and having to change the controls forced them to read the code and figure out where the relevant moving parts were.</p>
+
+<p>After that, we walked them through how to add a <a href="https://blog.jrheard.com/python/roguelike#adding-a-goal-space">goal space</a> that ends the game if you get to it, then showed them how to add some <a href="https://blog.jrheard.com/python/roguelike#implementing-dumb-monsters">dumb monsters</a> that just sit there and don’t do anything. Once they had done that, we were like: okay, now make a game!</p>
+
+<h1 id="heres-some-of-the-cool-stuff-they-made">Here’s some of the cool stuff they made!</h1>
+
+<h2 id="coin-getter">Coin Getter</h2>
+
+<p>You’re the smiley face, you want to get to the X, but there’s a door blocking the way to it - the door doesn’t open until you get all the coins first.</p>
+
+<asciinema-player src="/roguelike_coin_getter.json" rows="34" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>The program uses the © symbol for its coins, and so when we were having the kids demo each other’s games on the projector at the end of the project, some kid in the peanut gallery shouted “if you get all five copyright strikes, your channel gets taken down!”.</p>
+
+<p>I thought that was pretty good.</p>
+
+<h2 id="bait-and-switch">Bait-And-Switch</h2>
+
+<p>In this one, you’re the <code class="language-plaintext highlighter-rouge">Ö</code>, the <code class="language-plaintext highlighter-rouge">Ӂ</code>s are enemy squids, the <code class="language-plaintext highlighter-rouge">ᵹ</code>s are health potions, and your goal is to get to the next level, which is too big to fit on this page so I’ll just show you the first level.</p>
+
+<p>The squids don’t do anything, but notice how if you pick up a health potion, your health increases!</p>
+
+<p>If you pick up the second health potion, though, your health <em>decreases</em>. This puzzled me for a bit, but I pieced it together - if you pick up the farthest-down health potion on the level, the game gets confused and thinks it’s a health potion and <em>also</em> a monster, and so it increments your health by 10 but then decrements it by 20 because that’s what bumping into a squid is supposed to do. Interesting little bug.</p>
+
+<asciinema-player src="/roguelike_bait_and_switch.json" rows="30" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>This game has a little trick to it - the door to the next level is actually the <code class="language-plaintext highlighter-rouge">▐</code>, but if you get confused and hit the <code class="language-plaintext highlighter-rouge">+</code> instead, the game insults you in big ASCII art and unceremoniously exits. I love it.</p>
+
+<h2 id="king-of-thing">King Of THING</h2>
+
+<p>You’re the <code class="language-plaintext highlighter-rouge">☻</code>, the <code class="language-plaintext highlighter-rouge">∩</code>s are harmless barrels that you effortlessly smash through, the <code class="language-plaintext highlighter-rouge">r</code>s are rats, the <code class="language-plaintext highlighter-rouge">g</code>s are goblins. You can kill the rats and goblins, but it’s hard and you take a lot of damage doing it because you start off with really low attack power. If you pick up a <code class="language-plaintext highlighter-rouge">†</code>, though, now you have a dagger and can wreck ‘em easily!</p>
+
+<p>Once you make it to the next level, you can pick up a <code class="language-plaintext highlighter-rouge">✟</code> (sword) to really boost your damage, and if your HP is low after fighting some goblins you can chug a <code class="language-plaintext highlighter-rouge">✚</code> (health potion) to heal up. Be careful of the <code class="language-plaintext highlighter-rouge">✠</code> you’ll pass on your way to the next floor of the dungeon - it’s a chainsaw, and if you touch it, you’ll die!</p>
+
+<p>After that, it’s time to fight the big boss himself: you’ve gotta beat the king and take his crown! I love how this third level is structured, it’s so simple but somehow, like, evocative. It starts with a traditional ammo room so you just <em>know</em> you’re about to fight a scary boss, and I love the little corridor you have to squeeze through to get to the king - I actually got kinda scared on my way through it. It felt like anything could happen!</p>
+
+<asciinema-player src="/roguelike_king_thing.json" rows="37" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>Favorite parts:</p>
+<ul>
+  <li>The little heart in the congratulations message</li>
+  <li><code class="language-plaintext highlighter-rouge">Kings Killed: 0</code></li>
+</ul>
+
+<h2 id="a-maze-ing">A-Maze-Ing</h2>
+
+<p>Look, I didn’t come up with these names, it’s not my fault.</p>
+
+<asciinema-player src="/roguelike_maze.json" rows="30" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<p>I think I have RSI now.</p>
+
+<h2 id="soccer">Soccer</h2>
+
+<p>One kid made the starter code into a soccer game!</p>
+
+<p>You’re the <code class="language-plaintext highlighter-rouge">%</code>, the <code class="language-plaintext highlighter-rouge">$</code> is the AI enemy player and it chases the ball, the <code class="language-plaintext highlighter-rouge">@</code> is the ball, and when you kick the ball there’s some randomness involved so sometimes you find yourself chasing after it and trying to get there before the AI does.</p>
+
+<asciinema-player src="/roguelike_soccer.json" rows="38" cols="90" autoplay="true" loop="true"></asciinema-player>
+
+<h2 id="other-cool-projects-we-did-this-year">Other Cool Projects We Did This Year</h2>
+
+<p>Here are all the projects I put together for this class, in increasing order of difficulty. They start off assuming basically zero knowledge of Python, and slowly require more and more over time as the students learn about if-statements, loops, lists, etc.</p>
+
+<ul>
+  <li><a href="https://blog.jrheard.com/python/mad-libs">Mad Libs</a></li>
+  <li><a href="https://blog.jrheard.com/python/guess-my-number">A guess-my-number game</a></li>
+  <li><a href="https://blog.jrheard.com/python/plotter">Generated art with a pen plotter</a></li>
+  <li><a href="https://blog.jrheard.com/python/password-generator">A password generator</a></li>
+  <li><a href="https://blog.jrheard.com/python/password-checker">A password strength checker</a></li>
+  <li><a href="https://blog.jrheard.com/python/caesar">A Caesar cipher program</a></li>
+  <li><a href="https://blog.jrheard.com/python/tic-tac-toe">Tic-Tac-Toe with an AI opponent</a></li>
+  <li><a href="https://blog.jrheard.com/python/blackjack">Blackjack against an AI dealer</a></li>
+  <li><a href="https://blog.jrheard.com/python/roguelike">Roguelike</a> (<a href="https://repl.it/@jrheard/roguelike">starter code</a>)</li>
+</ul>
+
+<p>I put a lot of time into these over the course of two years, and I’m really proud of how they turned out. Many many thanks to Tamara for her help and feedback.</p>
+
+<p>If you’d like to use these projects in a classroom or for practice on your own, please feel free! Hit me up at jrrrheard@gmail.com if you have questions or want me to review your code, I’d be delighted to hear from you.</p>
+
+<h2 id="whats-next-for-me">What’s Next For Me</h2>
+
+<p>This has been a really great time, but I feel like having a regular job again and having coworkers to hang out with, so I’m joining <a href="https://www.ridereport.com/">Ride Report</a> as a senior engineer. They offered me the job back in April, and were kind enough to let me finish out the school year before my start date.</p>
+
+<p>I’ve been looking forward to this for a while, it’s going to be fun and I’m going to learn a lot. Down with cars!</p>
+
+<script src="/assets/js/asciinema-player.js?v=2025-12-11 14:39:50 -0800"></script>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>I was originally placed in this high school through an organization called <a href="https://www.tealsk12.org/">TEALS</a>. They’re accepting applications for the coming school year, so you should apply if this sounds like fun. It <em>is</em> fun! <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</div>
+
+
+<div class="message">
+	
+	<p>If you've found an error or have a suggestion, please open an issue or pull request on <a
+			href="https://github.com/jrheard/blog">GitHub</a>.</p>
+</div>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>

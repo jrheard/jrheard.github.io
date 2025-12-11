@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    Book Report: Architecture Patterns with Python &middot; jrheard's blog
+    
+  </title>
+
+  <link rel="stylesheet" href="/assets/css/codemirror.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/poole.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/syntax.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/lanyon.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="/assets/css/asciinema-player.css?v=2025-12-11 14:39:50 -0800" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144"
+    href="/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+</head>
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WPQ6LVYFJM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-WPQ6LVYFJM');
+</script>
+
+
+
+<body class="theme-base-08">
+
+  <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+
+  <nav class="sidebar-nav">
+    <a class="sidebar-nav-item" href="/">Home</a>
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/about">About Me</a>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/blackjack">Madison CS 3-4: Blackjack</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/caesar">Madison CS 3-4: Caesar Cipher</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/guess-my-number">Madison CS 3-4: Guess My Number</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/mad-libs">Madison CS 3-4: Mad Libs</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-checker">Madison CS 3-4: Password Checker</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/password-generator">Madison CS 3-4: Password Generator</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/plotter">Madison CS 3-4: Generated Art with a Pen Plotter</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/roguelike">Madison CS 3-4: Roguelike</a>
+    
+    
+    
+    
+    
+    <a class="sidebar-nav-item" href="/python/tic-tac-toe">Madison CS 3-4: Tic-Tac-Toe</a>
+    
+    
+    
+
+    <a class="sidebar-nav-item" href="http://github.com/jrheard">GitHub</a>
+    <a class="sidebar-nav-item" href="http://twitter.com/jrheard">Twitter</a>
+    <a class="sidebar-nav-item" href="/quinto">Quinto</a>
+    <a class="sidebar-nav-item" href="/duelyst.html">Duelyst Tool</a>
+  </nav>
+
+</div>
+
+
+  <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/" title="Home">jrheard's blog</a>
+          <small></small>
+        </h3>
+      </div>
+    </div>
+
+    <div class="container content">
+      
+      <div class="post">
+	<h1 class="post-title">Book Report: Architecture Patterns with Python</h1>
+	<span class="post-date">22 Jun 2024</span>
+	<p>I recently read <a href="https://www.cosmicpython.com/">Architecture Patterns with Python</a>. The book’s primary focus is on how to structure programs so that they stay simple and maintainable as they grow: that’s my specific favorite programming topic, so of course I liked it. I’m probably not going to use the exact techniques that the authors recommend in this book, but they discussed some cool ideas that reminded me of things I’ve run into at past jobs, and the book’s <a href="https://www.cosmicpython.com/book/preface.html">available for free online</a>, so what’s not to like?</p>
+
+<p><img src="/assets/img/architecture_patterns_with_python.jpg" /></p>
+
+<p>The book discusses domain-driven design and an event-driven architecture (potentially, but not necessarily, a microservices-based one). I’m going to talk a bit about some of my favorite ideas from the book, but I want to knock out a few odds and ends before we get there:</p>
+
+<h2 id="side-notes">Side Notes</h2>
+<ul>
+  <li>It was a relatively fast read - nice clear prose, nice short chapters.</li>
+  <li>The book didn’t make me a total expert in DDD, but that’s OK<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>.</li>
+  <li>The authors were careful to not wholeheartedly recommend microservices, which I appreciated.</li>
+  <li>Each chapter had a short pros/cons table at the end with some really frank discussion of whether or not the technique discussed in that chapter could be worth applying in your own work. Many of the “cons” sections looked something like this, and I appreciated their candor:
+    <ul>
+      <li>“We’ve been at pains to point out that each pattern comes at a cost. Each layer of indirection has a price in terms of complexity and duplication in our code and will be confusing to programmers who’ve never seen these patterns before.”</li>
+    </ul>
+  </li>
+</ul>
+
+<p>OK, on to the good stuff.</p>
+
+<h2 id="value-objects">Value Objects</h2>
+
+<p>The book recommends using “value objects” to represent core primitive business concepts, and suggests using dataclasses to do it. Here’s an example from <a href="https://www.cosmicpython.com/book/chapter_01_domain_model.html#_dataclasses_are_great_for_value_objects">Chapter 1</a>:</p>
+
+<textarea class="hidden">
+@dataclass(frozen=True)
+class OrderLine:
+    order_id: OrderReference
+    sku: ProductReference
+    quantity: Quantity
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>I <strong>also</strong> recommend doing this. The important thing here is that this class doesn’t know anything about a database/ORM - it’s just a simple dataclass that refers to some other simple dataclasses. It’s really easy to write nice, easy-to-test pure functions that operate on data like this. In an ideal world, this is what <strong>all</strong> of your core primitives would look like.</p>
+
+<p>This brings us to our next topic, which is extremely related:</p>
+
+<h2 id="dependency-inversion-principle">Dependency Inversion Principle</h2>
+
+<p>This term was new to me. Apparently it’s an OO thing (it’s the D in SOLID?), and I don’t find the original formulation super helpful, but the authors translate it into a technique that I find very compelling. It’s easiest to demonstrate that technique by contrast to the previous example.</p>
+
+<p>Instead of using the “value object” technique, most of the codebases I’ve worked in have used models like this to represent their core primitives:</p>
+
+<textarea class="hidden">
+class OrderLine(ORMBaseClass):
+	order_id = orm.ForeignKey(Order)
+	sku = orm.ForeignKey(Product)
+	quantity = orm.IntegerField()
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>In a system like this, the vast majority of your code operates directly on these database-focused models, which makes it a lot harder to reliably write pure functions. Instead, you tend to end up with code that’s littered with lots of little reads+writes to the database. Code written this way is hard to unit test (because you have to patch out all of those database interactions), and it tends to grow in complexity over time as maintainers add more and more little reads and writes, because what’s the harm in just one more?</p>
+
+<p>The authors say that instead of using database-focused models as the core primitives of your system, you should use simple pure-Python data structures like the frozen dataclass you saw earlier, and <em>your database models should be derived from those pure-Python models</em>. <a href="https://www.cosmicpython.com/book/chapter_02_repository.html#_inverting_the_dependency_orm_depends_on_model">To put it another way</a>:</p>
+
+<blockquote>
+  <p>The ORM imports (or “depends on” or “knows about”) the domain model, and not the other way around.</p>
+</blockquote>
+
+<p>I’d love to work in a system like this someday :)</p>
+
+<h2 id="pure-functions">Pure Functions</h2>
+
+<p>Pure functions<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup> come up now and then throughout the book, although I don’t remember the authors spending much time addressing the topic head-on. That’s OK, because the book does a great job of showing them in action.</p>
+
+<p>For instance, <a href="https://www.cosmicpython.com/book/chapter_03_abstractions.html">Chapter 3</a> focuses on a program for syncing files between two directories, and the authors are trying to figure out how to make it easy to test. At first, the whole program is concerned with operating directly on the file system, and so in all their tests they have to spin up some temporary directories and write a bunch of files to them and call the program and then examine what it did to the temporary directories. Ick!</p>
+
+<p>Then they propose a different approach: “[w]e’re going to separate <em>what</em> we want to do from <em>how</em> to do it”. They change the core of their program so that it takes two dicts as input, each representing the files in a directory:</p>
+
+<textarea class="hidden">
+source_files = {'hash1': 'path1', 'hash2': 'path2'}
+dest_files = {'hash1': 'path1', 'hash2': 'pathX'}
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>And to go along with that, their program now returns a list of operations that it wants to perform in order to sync the two directories:</p>
+
+<textarea class="hidden">
+("COPY", "sourcepath", "destpath"),
+("MOVE", "old", "new"),
+</textarea>
+<pre class="cm-s-friendship-bracelet"></pre>
+
+<p>In order to test the sync algorithm, the authors don’t have to read from and write to the file system any more - they can just pass a couple of dicts into the program, examine the data that it returns as output, and check to see if the program <em>wants</em> to do the right thing. The dicts and tuples that their tests use are trivial to construct, no side effects or mocking/patching necessary.</p>
+
+<p>There’s still some code at the edges of their program that a) examines the file system to create those input dicts and b) modifies the file system based off of the instructions in those output commands, but that’s an unavoidable fact of life; the main thing that matters is that the bulk of the program is now side-effect-free. Lovely!</p>
+
+<p>This approach is often called <a href="https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell">“functional core, imperative shell”</a><sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup>, which is the idea that the bulk of your program should be pure functions with a thin layer at the edges for actually interacting with the real world. I like this idea very much 🙂</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This book was pretty decent, I’d give it 3.5 stars. I’m not going to go write an event-driven microservice-based system with lots of DDD techniques, but it was fun to hear the authors talk about those topics, and I enjoyed their treatment of the ideas above!</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>I have Scott Wlaschin’s “<a href="https://pragprog.com/titles/swdddf/domain-modeling-made-functional/">Domain Modeling Made Functional</a>” on my desk, and am hoping that that book’ll be the one that finally makes DDD click for me. I love his talks on YouTube, I need to go back and watch them all. Brilliant guy. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>For more info about pure functions: I love the talk “<a href="https://www.youtube.com/watch?v=PBQN62oUnN8">Hoist Your IO</a>”, and <a href="https://youtu.be/vK1DazRK_a0?si=c4onwoql5J7RH1Ty&amp;t=2368">this refactoring exercise</a> is a great companion piece. <a href="https://tylerayoung.com/2022/03/16/write-more-pure-functions/">This post</a> is pretty good, too! <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>Oh my gosh, I just found out as I was writing this that Scott Wlaschin just <a href="https://www.youtube.com/watch?v=P1vES9AgfC4">gave a talk on this exact topic</a>! Added it to my watchlist! <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</div>
+
+
+<div class="message">
+	
+	<p>If you've found an error or have a suggestion, please open an issue or pull request on <a
+			href="https://github.com/jrheard/blog">GitHub</a>.</p>
+</div>
+
+
+<script src="/assets/js/codemirror.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_python.js?v=2025-12-11 14:39:50 -0800"></script>
+<script src="/assets/js/codemirror_runmode.js?v=2025-12-11 14:39:50 -0800"></script>
+<script>
+	var textAreas = document.getElementsByTagName("textarea");
+	var pres = document.querySelectorAll("pre.cm-s-friendship-bracelet");
+
+	for (var i = 0; i < textAreas.length; i++) {
+		CodeMirror.runMode(textAreas[i].value, "python", pres[i]);
+	}
+
+	window.klipse_settings = {
+		selector_eval_python_client: '.py',
+		codemirror_options_in: {
+			theme: "friendship-bracelet"
+		},
+		codemirror_options_out: {
+			theme: "friendship-bracelet"
+		}
+	};
+</script>
+<script src="/assets/js/klipse.min.js?v=2025-12-11 14:39:50 -0800"></script>
+
+
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <script>
+    (function (document) {
+      var toggle = document.querySelector('.sidebar-toggle');
+      var sidebar = document.querySelector('#sidebar');
+      var checkbox = document.querySelector('#sidebar-checkbox');
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+
+        if (!checkbox.checked ||
+          sidebar.contains(target) ||
+          (target === checkbox || target === toggle)) return;
+
+        checkbox.checked = false;
+      }, false);
+    })(document);
+  </script>
+
+
+
+</body>
+
+</html>
